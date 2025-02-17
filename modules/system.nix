@@ -170,7 +170,7 @@
   ];
 
   # Set your time zone.
-  time.timeZone = "Asia/shanghai";
+  time.timeZone = "Europe/London";
 
   # Fonts
   fonts = {

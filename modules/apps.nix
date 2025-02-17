@@ -17,6 +17,9 @@
   environment.systemPackages = with pkgs; [
     neovim
     git
+    ripgrep
+    neovim
+    utm # virtual machine
     just # use Justfile to simplify nix-darwin's commands 
   ];
   environment.variables.EDITOR = "nvim";
@@ -40,50 +43,44 @@
     # otherwise Apple Store will refuse to install them.
     # For details, see https://github.com/mas-cli/mas 
     masApps = {
-      # TODO Feel free to add your favorite apps here.
-
-      Xcode = 497799835;
-      # Wechat = 836500024;
-      # NeteaseCloudMusic = 944848654;
-      # QQ = 451108668;
-      # WeCom = 1189898970;  # Wechat for Work
-      # TecentMetting = 1484048379;
-      # QQMusic = 595615424;
+      "Amphetamine" = 937984704;
+      "Magnet" = 441258766;
+      "iMovie" = 408981434;
+      "Xcode" = 497799835;
     };
 
     taps = [
       "homebrew/services"
+      "hashicorp/tap"
+      "nikitabobko/tap" # aerospace - an i3-like tiling window manager for macOS
+      "FelixKratz/formulae" # janky borders - highlight active window borders
+      "trycua/lume"
     ];
 
-    # `brew install`
-    # TODO Feel free to add your favorite apps here.
     brews = [
-      "wget" # download tool
-      "curl" # no not install curl via nixpkgs, it's not working well on macOS!
-      "aria2" # download tool
-      "httpie" # http client
+      lume
+      syncthing
     ];
 
-    # `brew install --cask`
-    # TODO Feel free to add your favorite apps here.
     casks = [
-      "firefox"
-      "google-chrome"
-      "visual-studio-code"
-
-      # IM & audio & remote desktop & meeting
-      "telegram"
-      "discord"
-
-      "anki"
-      "iina" # video player
-      "raycast" # (HotKey: alt/option + space)search, caculate and run scripts(with many plugins)
-      "stats" # beautiful system monitor
-      "eudic" # 欧路词典
-
-      # Development
-      "insomnia" # REST client
-      "wireshark" # network analyzer
+      bitwarden
+      blackhole-16ch
+      discord
+      firefox
+      ibkr
+      iterm2
+      moonlight
+      lm-studio
+      logitech-options
+      obsidian
+      protonvpn
+      raycast
+      spotify
+      stats
+      tidal
+      visual-studio-code
+      whatsapp
+      yubico-authenticator
     ];
   };
 }
