@@ -173,20 +173,12 @@
   time.timeZone = "Europe/London";
 
   # Fonts
-  fonts = {
-    packages = with pkgs; [
-      # icon fonts
-      material-design-icons
-      font-awesome
-      nerd-fonts = [
-          # symbols icon only
-          "NerdFontsSymbolsOnly"
-          # Characters
-          "FiraCode"
-          "JetBrainsMono"
-          "Iosevka"
-        ];
-      })
-    ];
-  };
+  fonts.packages = with pkgs; [
+    # icon fonts
+    material-design-icons
+    font-awesome
+    nerd-fonts.fira-code
+    nerd-fonts.jetbrains-mono
+    nerd-fonts.iosevka
+  ];
 }

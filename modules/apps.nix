@@ -44,7 +44,6 @@
       "Amphetamine" = 937984704;
       "Magnet" = 441258766;
       "iMovie" = 408981434;
-      "Xcode" = 497799835;
     };
 
     taps = [
@@ -58,13 +57,30 @@
     brews = [
       "lume"
       "syncthing"
+      # Deps
+      "ca-certificates"
+      "gmp"
+      "coreutils"
+      "gettext"
+      "libidn2"
+      "nettle"
+      "p11-kit"
+      "unbound"
+      "gnutls"
+      "jansson"
+      "tree-sitter"
+      "emacs"
+      "cask"
+      "openssl@3"
     ];
 
     casks = [
+      "aerospace" # an i3-like tiling window manager for macOS
       "bitwarden"
       "blackhole-16ch"
       "discord"
       "firefox"
+      "ghostty" # terminal emulator
       "ibkr"
       "iterm2"
       "moonlight"
