@@ -48,6 +48,7 @@
     home-manager,
     ...
   }: let
+    nix.enable = false;
     # TODO replace with your own username, email, system, and hostname
     username = "hrpr";
     useremail = "ryan@hrpr.dev";
@@ -75,6 +76,7 @@
           home-manager.useUserPackages = true;
           home-manager.extraSpecialArgs = specialArgs;
           home-manager.users.${username} = import ./home;
+          home-manager.backupFileExtension = "backup";
         }
       ];
     };
