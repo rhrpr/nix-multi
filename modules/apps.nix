@@ -15,14 +15,12 @@
   #
   # Related Discussion: https://discourse.nixos.org/t/darwin-again/29331
   environment.systemPackages = with pkgs; [
-    neovim
     git
     ripgrep
     neovim
-    utm # virtual machine
     just # use Justfile to simplify nix-darwin's commands 
   ];
-  environment.variables.EDITOR = "nvim";
+  environment.variables.EDITOR = "nano";
 
   # TODO To make this work, homebrew need to be installed manually, see https://brew.sh
   # 
