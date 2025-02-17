@@ -56,7 +56,6 @@
     ];
 
     brews = [
-      lume
       syncthing
     ];
 
@@ -69,6 +68,7 @@
       iterm2
       moonlight
       lm-studio
+      lume
       logitech-options
       obsidian
       protonvpn
