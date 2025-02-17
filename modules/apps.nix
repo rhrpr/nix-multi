@@ -56,29 +56,29 @@
     ];
 
     brews = [
-      syncthing
+      "lume"
+      "syncthing"
     ];
 
     casks = [
-      bitwarden
-      blackhole-16ch
-      discord
-      firefox
-      ibkr
-      iterm2
-      moonlight
-      lm-studio
-      lume
-      logitech-options
-      obsidian
-      protonvpn
-      raycast
-      spotify
-      stats
-      tidal
-      visual-studio-code
-      whatsapp
-      yubico-authenticator
+      "bitwarden"
+      "blackhole-16ch"
+      "discord"
+      "firefox"
+      "ibkr"
+      "iterm2"
+      "moonlight"
+      "lm-studio"
+      "logitech-options"
+      "obsidian"
+      "protonvpn"
+      "raycast"
+      "spotify"
+      "stats"
+      "tidal"
+      "visual-studio-code"
+      "whatsapp"
+      "yubico-authenticator"
     ];
   };
 }
