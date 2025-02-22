@@ -93,7 +93,7 @@ PATH = '/opt/homebrew/bin:/opt/homebrew/sbin:${PATH}'
 # See: https://nikitabobko.github.io/AeroSpace/commands#exec-and-forget
 # You can uncomment the following lines to open up terminal with alt + enter shortcut (like in i3)
 alt-enter = '''exec-and-forget osascript -e '
-tell application "kitty"
+tell application "Ghostty"
     do script
     activate
 end tell'
@@ -120,11 +120,11 @@ alt-shift-minus = 'resize smart -50'
 alt-shift-equal = 'resize smart +50'
 
 # See: https://nikitabobko.github.io/AeroSpace/commands#workspace
-alt-1 = 'workspace 1Kitty'
+alt-1 = 'workspace 1Ghostty'
 alt-2 = 'workspace 2Alacritty'
 alt-3 = 'workspace 3Work'
 alt-4 = 'workspace 4Firefox'
-alt-5 = 'workspace 5Chrome'
+alt-5 = 'workspace 5Ableton'
 alt-6 = 'workspace 6Chat'
 alt-7 = 'workspace 7Music'
 alt-8 = 'workspace 8Mail'
@@ -133,11 +133,11 @@ alt-0 = 'workspace 0Other'
 
 
 # See: https://nikitabobko.github.io/AeroSpace/commands#move-node-to-workspace
-alt-shift-1 = 'move-node-to-workspace 1Kitty'
+alt-shift-1 = 'move-node-to-workspace 1Ghostty'
 alt-shift-2 = 'move-node-to-workspace 2Alacritty'
 alt-shift-3 = 'move-node-to-workspace 3Work'
 alt-shift-4 = 'move-node-to-workspace 4Firefox'
-alt-shift-5 = 'move-node-to-workspace 5Chrome'
+alt-shift-5 = 'move-node-to-workspace 5Ableton'
 alt-shift-6 = 'move-node-to-workspace 6Chat'
 alt-shift-7 = 'move-node-to-workspace 7Music'
 alt-shift-8 = 'move-node-to-workspace 8Mail'
@@ -196,8 +196,8 @@ alt-shift-l = ['join-with right', 'mode main']
 # =================================================================
 
 [[on-window-detected]]
-if.app-id = 'net.kovidgoyal.kitty'
-run = 'move-node-to-workspace 1Kitty'
+if.app-id = 'net.kovidgoyal.Ghostty'
+run = 'move-node-to-workspace 1Ghostty'
 
 [[on-window-detected]]
 if.app-id = 'org.alacritty'
@@ -212,8 +212,8 @@ if.app-id = 'org.mozilla.firefox'
 run = 'move-node-to-workspace 4Firefox'
 
 [[on-window-detected]]
-if.app-id = 'com.google.Chrome'
-run = 'move-node-to-workspace 5Chrome'
+if.app-id = 'com.google.Ableton'
+run = 'move-node-to-workspace 5Ableton'
 
 [[on-window-detected]]
 if.app-id = 'ru.keepcoder.Telegram'
@@ -267,11 +267,11 @@ run = ['layout floating', 'move-node-to-workspace 0Other']
 # =================================================================
 
 [workspace-to-monitor-force-assignment]
-1Kitty = 'secondary'  # Non-main monitor in case when there are only two monitors'
+1Ghostty = 'secondary'  # Non-main monitor in case when there are only two monitors'
 2Alacritty = 'main'         # "Main" monitor ("main" as in System Settings → Displays → Use as)
 3Work = 'main'
 4Firefox = 'main'
-5Chrome = 'secondary'
+5Ableton = 'secondary'
 6Chat = 'main'
 7Music = 'main'
 8Mail = 'main'
