@@ -121,7 +121,7 @@ alt-shift-equal = 'resize smart +50'
 
 # See: https://nikitabobko.github.io/AeroSpace/commands#workspace
 alt-1 = 'workspace 1Ghostty'
-alt-2 = 'workspace 2Alacritty'
+alt-2 = 'workspace 2Code'
 alt-3 = 'workspace 3Work'
 alt-4 = 'workspace 4Firefox'
 alt-5 = 'workspace 5Ableton'
@@ -134,7 +134,7 @@ alt-0 = 'workspace 0Other'
 
 # See: https://nikitabobko.github.io/AeroSpace/commands#move-node-to-workspace
 alt-shift-1 = 'move-node-to-workspace 1Ghostty'
-alt-shift-2 = 'move-node-to-workspace 2Alacritty'
+alt-shift-2 = 'move-node-to-workspace 2Code'
 alt-shift-3 = 'move-node-to-workspace 3Work'
 alt-shift-4 = 'move-node-to-workspace 4Firefox'
 alt-shift-5 = 'move-node-to-workspace 5Ableton'
@@ -200,12 +200,14 @@ if.app-id = 'net.kovidgoyal.Ghostty'
 run = 'move-node-to-workspace 1Ghostty'
 
 [[on-window-detected]]
-if.app-id = 'org.alacritty'
-run = 'move-node-to-workspace 2Alacritty'
+if.app-id = ' com.apple.Terminal'
+run = 'move-node-to-workspace 1Ghostty'
+
 
 [[on-window-detected]]
-if.app-id = 'com.tencent.WeWorkMac'
-run = 'move-node-to-workspace 3Work'
+if.app-id = 'com.microsoft.VSCode'
+run = 'move-node-to-workspace 2Code'
+
 
 [[on-window-detected]]
 if.app-id = 'org.mozilla.firefox'
@@ -216,23 +218,15 @@ if.app-id = 'com.google.Ableton'
 run = 'move-node-to-workspace 5Ableton'
 
 [[on-window-detected]]
-if.app-id = 'ru.keepcoder.Telegram'
+if.app-id = 'net.whatsapp.WhatsApp'
 run = 'move-node-to-workspace 6Chat'
 
 [[on-window-detected]]
-if.app-id = 'com.tencent.xinWeChat'
+if.app-id = 'com.hnc.Discord'
 run = 'move-node-to-workspace 6Chat'
 
 [[on-window-detected]]
-if.app-id = 'com.tencent.qq'
-run = 'move-node-to-workspace 6Chat'
-
-[[on-window-detected]]
-if.app-id = 'com.tencent.QQMusicMac'
-run = 'move-node-to-workspace 7Music'
-
-[[on-window-detected]]
-if.app-id = 'com.netease.163music'
+if.app-id = 'com.spotify.client'
 run = 'move-node-to-workspace 7Music'
 
 [[on-window-detected]]
@@ -268,7 +262,7 @@ run = ['layout floating', 'move-node-to-workspace 0Other']
 
 [workspace-to-monitor-force-assignment]
 1Ghostty = 'secondary'  # Non-main monitor in case when there are only two monitors'
-2Alacritty = 'main'         # "Main" monitor ("main" as in System Settings → Displays → Use as)
+2Code = 'main'         # "Main" monitor ("main" as in System Settings → Displays → Use as)
 3Work = 'main'
 4Firefox = 'main'
 5Ableton = 'secondary'
