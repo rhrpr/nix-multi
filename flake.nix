@@ -34,11 +34,6 @@
       url = "github:lnl7/nix-darwin";
       inputs.nixpkgs.follows = "nixpkgs-darwin";
     };
-
-    # nvchad4nix = {
-    #   url = "github:nix-community/nix4nvchad";
-    #   inputs.nixpkgs.follows = "nixpkgs";
-    # };
   };
 
   # The `outputs` function will return all the build results of the flake.
@@ -63,7 +58,7 @@
     specialArgs =
       inputs
       // {
-        inherit username useremail hostname system inputs;
+        inherit username useremail hostname;
       };
   in {
     darwinConfigurations."${hostname}" = darwin.lib.darwinSystem {
@@ -77,7 +72,6 @@
         # home manager
         home-manager.darwinModules.home-manager
         {
-          inherit specialArgs;
           home-manager.useGlobalPkgs = true;
           home-manager.useUserPackages = true;
           home-manager.users.${username} = import ./home;

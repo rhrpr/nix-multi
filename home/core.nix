@@ -28,12 +28,20 @@
     glow # markdown previewer in terminal
   ];
 
+  programs = {
+    # modern vim
+    neovim = {
+      enable = true;
+      defaultEditor = true;
+      vimAlias = true;
+    };
+
     # A modern replacement for ‘ls’
     # useful in bash/zsh prompt, not in nushell.
     eza = {
       enable = true;
       git = true;
-      icons = "auto";
+      icons = true;
       enableZshIntegration = true;
     };
 
