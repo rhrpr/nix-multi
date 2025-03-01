@@ -69,7 +69,6 @@
       "gnutls"
       "jansson"
       "tree-sitter"
-      "emacs"
       "cask"
       "openssl@3"
     ];
@@ -91,7 +90,7 @@
       "raycast"
       "spotify"
       "stats"
-      "tidal"
+      "transmission"
       "visual-studio-code"
       "whatsapp"
       "yubico-authenticator"
