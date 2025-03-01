@@ -35,10 +35,10 @@
       inputs.nixpkgs.follows = "nixpkgs-darwin";
     };
 
-    nvchad4nix = {
-      url = "github:nix-community/nix4nvchad";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+    # nvchad4nix = {
+    #   url = "github:nix-community/nix4nvchad";
+    #   inputs.nixpkgs.follows = "nixpkgs";
+    # };
   };
 
   # The `outputs` function will return all the build results of the flake.
@@ -80,7 +80,6 @@
           inherit specialArgs;
           home-manager.useGlobalPkgs = true;
           home-manager.useUserPackages = true;
-          home-manager.extraSpecialArgs = specialArgs;
           home-manager.users.${username} = import ./home;
           home-manager.backupFileExtension = "backup";
         }
