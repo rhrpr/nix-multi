@@ -24,7 +24,7 @@
           symbol = "🅰 ";
         };
         azure = {
-          symbol = "󰠅"
+          symbol = "󰠅";
         };
         gcloud = {
           # do not show the account/project's info
