@@ -5,6 +5,7 @@
 }: let
   shellAliases = {
       k = "kubectl";
+      rebuild = "/Users/hrpr/.config/darwin/darwin-rebuild.sh";ßßß
   };
 in {
   # only works in bash/zsh, not nushell
@@ -24,7 +25,7 @@ in {
       initExtra = ''
       gr() {
           ripgrep -rnIi --color "$1" ./
-      }
+      };
       '';
   };
 }
