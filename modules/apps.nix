@@ -95,6 +95,10 @@
       "visual-studio-code"
       "whatsapp"
       "yubico-authenticator"
+# Security Apps
+      "lulu"
+      "knockknock"
+      "oversight"
     ];
   };
 }
