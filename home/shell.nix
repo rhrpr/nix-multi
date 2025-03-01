@@ -4,7 +4,7 @@
     enableCompletion = true;
     initExtra = ''
       gr() {
-        ripgrep -rnIi --colour "$1" ./
+        rg -rnIi --colour "$1" ./
       }
     '';
   };
