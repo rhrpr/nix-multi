@@ -92,7 +92,9 @@
       "spotify"
       "stats"
       "transmission"
+      "vagrant"
       "visual-studio-code"
+      "vmware-fusion"
       "whatsapp"
       "yubico-authenticator"
 # Security Apps
