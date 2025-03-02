@@ -43,6 +43,7 @@
     masApps = {
       "Amphetamine" = 937984704;
       "Bitwarden" = 1352778147;
+      "Ferromagnetic" = 1546537151;
       "Magnet" = 441258766;
       "iMovie" = 408981434;
     };
