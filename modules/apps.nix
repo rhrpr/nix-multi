@@ -77,6 +77,7 @@
       "aerospace" # an i3-like tiling window manager for macOS
       "bitwarden"
       "blackhole-16ch"
+      "cyberduck"
       "discord"
       "firefox"
       "ghostty" # terminal emulator

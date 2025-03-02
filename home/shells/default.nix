@@ -24,7 +24,7 @@ in {
       enableCompletion = true;
       initExtra = ''
       gr() {
-          ripgrep -rnIi --color "$1" ./
+        ripgrep -rnIi "$1" ./
       };
       '';
   };
