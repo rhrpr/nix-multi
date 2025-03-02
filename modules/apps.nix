@@ -93,6 +93,7 @@
       "stats"
       "transmission"
       "vagrant"
+      "vagrant-vmware-utility"
       "visual-studio-code"
       "vmware-fusion"
       "whatsapp"
