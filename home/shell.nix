@@ -11,5 +11,6 @@
   
   home.shellAliases = {
     k = "kubectl";
+    l = "eza -sold";
   };
 }
