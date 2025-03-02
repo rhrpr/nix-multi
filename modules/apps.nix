@@ -42,6 +42,7 @@
     # For details, see https://github.com/mas-cli/mas 
     masApps = {
       "Amphetamine" = 937984704;
+      "Bitwarden" = 1352778147;
       "Magnet" = 441258766;
       "iMovie" = 408981434;
     };
@@ -75,7 +76,6 @@
 
     casks = [
       "aerospace" # an i3-like tiling window manager for macOS
-      "bitwarden"
       "blackhole-16ch"
       "cyberduck"
       "discord"
