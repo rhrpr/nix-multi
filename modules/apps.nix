@@ -65,6 +65,7 @@
       "coreutils"
       "gettext"
       "libidn2"
+      "ffmpeg"
       "nettle"
       "p11-kit"
       "unbound"
