@@ -22,7 +22,14 @@
 
     defaults = {
       # menuExtraClock.Show24Hour = true;  # show 24 hour clock
-      
+      controlcenter = {
+        Bluetooth = true;  # show bluetooth in control center
+        FocusModes = true;  # show focus modes in control center
+        Sound = true;  # show sound in control center
+        DoNotDisturb = true;  # show do not disturb in control center
+        Display = true;  # show display in control center
+        NowPlaying = true;  # show now playing in control center
+      };
       # customize dock
       dock = {
         autohide = true;
