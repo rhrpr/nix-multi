@@ -55,7 +55,6 @@
 
       # customize Activity Monitor
       ActivityMonitor = {
-        ShowCategory = true;  # show category
         SortColumn = "CPUUsage";  # sort by use of CPU
         SortDirection = "Descending";  # sort in descending order
       };
