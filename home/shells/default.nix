@@ -5,7 +5,7 @@
 }: let
   shellAliases = {
       k = "kubectl";
-      rebuild = "/Users/hrpr/.config/darwin/darwin-rebuild.sh";ßßß
+      rebuild = "/Users/hrpr/.config/darwin/darwin-rebuild.sh";
   };
 in {
   # only works in bash/zsh, not nushell
