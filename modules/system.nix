@@ -56,7 +56,6 @@
       # customize Activity Monitor
       ActivityMonitor = {
         SortColumn = "CPUUsage";  # sort by use of CPU
-        SortDirection = "Descending";  # sort in descending order
       };
 
       # customize trackpad
