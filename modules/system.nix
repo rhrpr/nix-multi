@@ -54,7 +54,7 @@
       };
 
       # customize Activity Monitor
-      activitymonitor = {
+      ActivityMonitor = {
         ShowCategory = true;  # show category
         ShowCategoryInCPUView = true;  # show category in CPU view
         ShowCategoryInNetworkView = true;  # show category in network view
