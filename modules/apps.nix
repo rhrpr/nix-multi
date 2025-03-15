@@ -76,6 +76,7 @@
     ];
 
     casks = [
+      "aural"  # audio player
       "aerospace" # an i3-like tiling window manager for macOS
       "blackhole-16ch"
       "cyberduck"
@@ -95,6 +96,7 @@
       "transmission"
       "vagrant"
       "vagrant-vmware-utility"
+      "vox"
       "visual-studio-code"
       "vmware-fusion"
       "whatsapp"
