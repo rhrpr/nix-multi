@@ -56,11 +56,6 @@
       # customize Activity Monitor
       ActivityMonitor = {
         ShowCategory = true;  # show category
-        ShowCategoryInCPUView = true;  # show category in CPU view
-        ShowCategoryInNetworkView = true;  # show category in network view
-        ShowCategoryInPowerView = true;  # show category in power view
-        ShowCategoryInRAMView = true;  # show category in RAM view
-        ShowCategoryInStorageView = true;  # show category in storage view
         SortColumn = "CPUUsage";  # sort by use of CPU
         SortDirection = "Descending";  # sort in descending order
       };
