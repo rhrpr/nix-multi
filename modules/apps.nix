@@ -57,23 +57,23 @@
     ];
 
     brews = [
-      "lume"
-      "syncthing"
-      # Deps
       "ca-certificates"
-      "gmp"
+      "cask"
       "coreutils"
-      "gettext"
-      "libidn2"
       "ffmpeg"
-      "nettle"
-      "p11-kit"
-      "unbound"
+      "gettext"
+      "gmp"
       "gnutls"
       "jansson"
-      "tree-sitter"
-      "cask"
+      "libidn2"
+      "lume"
+      "nettle"
       "openssl@3"
+      "p11-kit"
+      "stats"
+      "syncthing"
+      "tree-sitter"
+      "unbound"
     ];
 
     casks = [
