@@ -45,10 +45,24 @@
       finder = {
         _FXShowPosixPathInTitle = true;  # show full path in finder title
         AppleShowAllExtensions = true;  # show all file extensions
+        AppleShowAllFiles = true;  # show hidden files
         FXEnableExtensionChangeWarning = false;  # disable warning when changing file extension
         QuitMenuItem = true;  # enable quit menu item
         ShowPathbar = true;  # show path bar
         ShowStatusBar = true;  # show status bar
+        FXPreferredViewStyle = "Nlsv";  # set default view style to list view
+      };
+
+      # customize Activity Monitor
+      activitymonitor = {
+        ShowCategory = true;  # show category
+        ShowCategoryInCPUView = true;  # show category in CPU view
+        ShowCategoryInNetworkView = true;  # show category in network view
+        ShowCategoryInPowerView = true;  # show category in power view
+        ShowCategoryInRAMView = true;  # show category in RAM view
+        ShowCategoryInStorageView = true;  # show category in storage view
+        SortColumn = "CPUUsage";  # sort by use of CPU
+        SortDirection = "Descending";  # sort in descending order
       };
 
       # customize trackpad
