@@ -70,7 +70,6 @@
       "nettle"
       "openssl@3"
       "p11-kit"
-      "stats"
       "syncthing"
       "tree-sitter"
       "unbound"
