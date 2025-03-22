@@ -92,7 +92,6 @@
       "logitech-options"
       "obsidian"
       "protonvpn"
-      "raycast"
       "spotify"
       "stats"
       "transmission"
