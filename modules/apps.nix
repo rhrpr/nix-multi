@@ -61,6 +61,7 @@
       "cask"
       "coreutils"
       "ffmpeg"
+      "gallery-dl"
       "gettext"
       "gmp"
       "gnutls"
@@ -72,6 +73,8 @@
       "p11-kit"
       "syncthing"
       "tree-sitter"
+      "tmux"
+      "yt-dlp"
       "unbound"
     ];
 
