@@ -11,6 +11,7 @@
   
   home.shellAliases = {
     k = "kubectl";
-    l = "eza -sold";
+    l = "eza -alg --sort oldest --git";
+    latr = "ls -latr";
   };
 }
