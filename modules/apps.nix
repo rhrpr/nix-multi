@@ -46,7 +46,6 @@
       "Ferromagnetic" = 1546537151;
       "Magnet" = 441258766;
       "iMovie" = 408981434;
-      "Remote for Samsung tv plus" = 1473273518;
     };
 
     taps = [
