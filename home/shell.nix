@@ -15,5 +15,6 @@
     ll = "ls -altr";
     ls = "ls --color=auto";
     latr = "ls -altr";
+    darwinup = "/Users/hrpr/.config/darwin/darwin-rebuild.sh";
   };
 }
