@@ -18,9 +18,15 @@
       url = "github:lnl7/nix-darwin";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    # Add nix4nvchad as an input
+    nvchad4nix = {
+      url = "github:nix-community/nix4nvchad";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
-  outputs = inputs @ { self, nixpkgs, darwin, home-manager, ... }: 
+  outputs = inputs @ { self, nixpkgs, darwin, home-manager, nvchad4nix, ... }: 
     let
       # User configuration
       username = "hrpr";
