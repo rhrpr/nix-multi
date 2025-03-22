@@ -84,7 +84,6 @@
       "blackhole-16ch"
       "cyberduck"
       "discord"
-      "edge"
       "firefox"
       "ghostty" # terminal emulator
       "google-chrome"
