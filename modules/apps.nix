@@ -87,7 +87,6 @@
       "firefox"
       "ghostty" # terminal emulator
       "ibkr"
-      "iterm2"
       "moonlight"
       "lm-studio"
       "logitech-options"
