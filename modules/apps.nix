@@ -41,11 +41,11 @@
     # otherwise Apple Store will refuse to install them.
     # For details, see https://github.com/mas-cli/mas 
     masApps = {
-      "Amphetamine" = 937984704;
-      "Bitwarden" = 1352778147;
-      "Ferromagnetic" = 1546537151;
-      "Magnet" = 441258766;
-      "iMovie" = 408981434;
+      "Amphetamine" = 937984704;   # Keep-awake utility to prevent Mac from sleeping
+      "Bitwarden" = 1352778147;    # Password manager application
+      "Ferromagnetic" = 1546537151; # Utility for managing magnet links
+      "Magnet" = 441258766;        # Window management tool for arranging windows
+      "iMovie" = 408981434;        # Apple's video editing software
     };
 
     taps = [
