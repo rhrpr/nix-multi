@@ -82,8 +82,10 @@
       "aural"  # audio player
       "aerospace" # an i3-like tiling window manager for macOS
       "blackhole-16ch"
+      "chrome"
       "cyberduck"
       "discord"
+      "edge"
       "firefox"
       "ghostty" # terminal emulator
       "ibkr"
