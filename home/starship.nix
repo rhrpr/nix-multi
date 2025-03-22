@@ -9,37 +9,29 @@
     enableZshIntegration = true;
     enableNushellIntegration = true;
 
-    settings = {
-      add_newline = false;
-      character = {
-        success_symbol = "[➜](bold purple)";
-        error_symbol = "[➜](bold red)";
+    settings =
+      {
+        character = {
+          success_symbol = "[›](bold green)";
+          error_symbol = "[›](bold red)";
+        };
+        time = {
+          disabled = false;
+          format = "at [$time]($style)";
+          time_format = "%T";
+        };
+        aws = {
+          symbol = "🅰 ";
+        };
+        azure = {
+          symbol = "󰠅";
+        };
+        gcloud = {
+          # do not show the account/project's info
+          # to avoid the leak of sensitive information when sharing the terminal
+          format = "on [$symbol$active(\($region\))]($style) ";
+          symbol = "🅶 ";
+        };
       };
-      directory = {
-        style = "bold purple";
-      };
-      git_branch = {
-        style = "bold purple";
-        symbol = " ";
-      };
-      git_status = {
-        style = "bold red";
-        conflicted = "✘";
-        ahead = "⇡";
-        behind = "⇣";
-        untracked = "★";
-        stashed = "⚑";
-        modified = "●";
-        staged = "+";
-        renamed = "»";
-        deleted = "✖";
-      };
-      time = {
-        disabled = false;
-        format = "at [$time]($style)";
-        time_format = "%T";
-        style = "bold yellow";
-      };
-    };
   };
 }
