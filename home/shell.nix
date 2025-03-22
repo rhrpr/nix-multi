@@ -11,7 +11,8 @@
   
   home.shellAliases = {
     k = "kubectl";
-    l = "ls -al";
+    l = "ls -altr";
+    ls = "ls --color=auto";
     latr = "ls -altr";
   };
 }
