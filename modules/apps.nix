@@ -69,7 +69,7 @@
       "htop"           # Interactive process viewer
       "jansson"        # C library for encoding/decoding JSON
       "libidn2"        # International domain name library
-      "lume"           # Command-line tool for local AI development
+      "lume"           # Command-line tool for virtual machines
       "nettle"         # Low-level cryptographic library
       "openssl@3"      # Cryptography and SSL/TLS toolkit
       "p11-kit"        # Library to load and share PKCS#11 modules
