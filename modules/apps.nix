@@ -57,57 +57,58 @@
     ];
 
     brews = [
-      "ca-certificates"
-      "cask"
-      "coreutils"
-      "ffmpeg"
-      "gallery-dl"
-      "gettext"
-      "gmp"
-      "gnutls"
-      "jansson"
-      "libidn2"
-      "lume"
-      "nettle"
-      "openssl@3"
-      "p11-kit"
-      "syncthing"
-      "tree-sitter"
-      "tmux"
-      "yt-dlp"
-      "unbound"
+      "btop"           # Resource monitor showing CPU, memory, disks, network
+      "ca-certificates" # Bundle of CA root certificates
+      "cask"           # Extension mechanism for Homebrew
+      "coreutils"      # GNU core utilities (ls, cat, etc)
+      "ffmpeg"         # Audio and video converter/processor
+      "gallery-dl"     # Command-line downloader for image galleries
+      "gettext"        # GNU internationalization (i18n) library
+      "gmp"            # GNU Multiple Precision Arithmetic Library
+      "gnutls"         # GNU Transport Layer Security Library
+      "htop"           # Interactive process viewer
+      "jansson"        # C library for encoding/decoding JSON
+      "libidn2"        # International domain name library
+      "lume"           # Command-line tool for local AI development
+      "nettle"         # Low-level cryptographic library
+      "openssl@3"      # Cryptography and SSL/TLS toolkit
+      "p11-kit"        # Library to load and share PKCS#11 modules
+      "syncthing"      # Open source continuous file synchronization tool
+      "tmux"           # Terminal multiplexer
+      "tree-sitter"    # Parser generator tool and library
+      "unbound"        # Validating, recursive, and caching DNS resolver
+      "yt-dlp"         # YouTube video downloader
     ];
 
     casks = [
-      "aural"  # audio player
-      "aerospace" # an i3-like tiling window manager for macOS
-      "blackhole-16ch"
-      "cyberduck"
-      "discord"
-      "firefox"
-      "ghostty" # terminal emulator
-      "google-chrome"
-      "ibkr"
-      "microsoft-edge"
-      "moonlight"
-      "lm-studio"
-      "logitech-options"
-      "obsidian"
-      "protonvpn"
-      "spotify"
-      "stats"
-      "transmission"
-      "vagrant"
-      "vagrant-vmware-utility"
-      "vox"
-      "visual-studio-code"
-      "vmware-fusion"
-      "whatsapp"
-      "yubico-authenticator"
-# Security Apps
-      "lulu"
-      "knockknock"
-      "oversight"
+      "aerospace"      # an i3-like tiling window manager for macOS
+      "aural"          # audio player
+      "blackhole-16ch" # Virtual audio driver for routing audio between applications
+      "cyberduck"      # FTP, SFTP, WebDAV, S3 file transfer client
+      "discord"        # Voice, video, and text chat app
+      "firefox"        # Web browser
+      "ghostty"        # terminal emulator
+      "google-chrome"  # Web browser
+      "ibkr"           # Interactive Brokers trading platform
+      "knockknock"     # Security tool to show persistent apps
+      "lm-studio"      # Local AI model runner and chat interface
+      "logitech-options" # Configuration tool for Logitech devices
+      "lulu"           # Open-source firewall for macOS
+      "microsoft-edge" # Web browser
+      "moonlight"      # Game streaming client
+      "obsidian"       # Markdown knowledge base and note-taking app
+      "oversight"      # Monitors and notifies when microphone or camera is activated
+      "protonvpn"      # VPN client
+      "spotify"        # Music streaming service
+      "stats"          # System monitor for the menu bar
+      "transmission"   # BitTorrent client
+      "vagrant"        # Tool for building and managing virtual machine environments
+      "vagrant-vmware-utility" # Vagrant plugin for VMware
+      "visual-studio-code" # Code editor
+      "vmware-fusion"  # Virtualization software
+      "vox"            # Music player for macOS
+      "whatsapp"       # Messaging app
+      "yubico-authenticator" # Authentication tool for YubiKey devices
     ];
   };
 }
