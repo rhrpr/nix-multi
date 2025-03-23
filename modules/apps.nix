@@ -18,7 +18,8 @@
     git
     ripgrep
     neovim
-    just # use Justfile to simplify nix-darwin's commands 
+    just # use Justfile to simplify nix-darwin's commands
+    devbox # a toolbox for developers
   ];
   environment.variables.EDITOR = "nano";
 
@@ -80,8 +81,9 @@
       "yt-dlp"         # YouTube video downloader
     ];
 
-    casks = [
+    casks = [ 
       "aerospace"      # an i3-like tiling window manager for macOS
+      "android-studio" # Android development environment
       "aural"          # audio player
       "blackhole-16ch" # Virtual audio driver for routing audio between applications
       "cyberduck"      # FTP, SFTP, WebDAV, S3 file transfer client
