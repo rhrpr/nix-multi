@@ -86,6 +86,7 @@
       "android-studio" # Android development environment
       "aural"          # audio player
       "blackhole-16ch" # Virtual audio driver for routing audio between applications
+      "cursor"        # Cursor AI code editor
       "cyberduck"      # FTP, SFTP, WebDAV, S3 file transfer client
       "discord"        # Voice, video, and text chat app
       "firefox"        # Web browser
