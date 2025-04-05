@@ -75,6 +75,7 @@
       "openssl@3"      # Cryptography and SSL/TLS toolkit
       "p11-kit"        # Library to load and share PKCS#11 modules
       "syncthing"      # Open source continuous file synchronization tool
+      "tfenv"          # Terraform version manager
       "tmux"           # Terminal multiplexer
       "tree-sitter"    # Parser generator tool and library
       "unbound"        # Validating, recursive, and caching DNS resolver
