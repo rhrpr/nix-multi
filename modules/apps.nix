@@ -55,6 +55,7 @@
       "nikitabobko/tap" # aerospace - an i3-like tiling window manager for macOS
       "FelixKratz/formulae" # janky borders - highlight active window borders
       "trycua/lume"
+      "hashicorp/tap/terraform-ls" # terraform language server
     ];
 
     brews = [
@@ -102,7 +103,7 @@
       "mixxx"          # DJ software
       "moonlight"      # Game streaming client
       "obsidian"       # Markdown knowledge base and note-taking app
-      "oversight"      # Monitors and notifies when microphone or camera is activated
+      # "oversight"      # Monitors and notifies when microphone or camera is activated
       "protonvpn"      # VPN client
       "spotify"        # Music streaming service
       "stats"          # System monitor for the menu bar
@@ -114,6 +115,7 @@
       "vox"            # Music player for macOS
       "whatsapp"       # Messaging app
       "yubico-authenticator" # Authentication tool for YubiKey devices
+      "vanilla"        # macOS app to hide menu bar icons
     ];
   };
 }

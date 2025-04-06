@@ -7,7 +7,13 @@
     extraConfig = ''
       set expandtab # Use spaces instead of tabs
       set tabstop=2 # Number of spaces to use for each tab
-      set shiftwidth=2 # Number of spaces to use for autoindent
+      set shiftwidth=2 # Number of spaces to use for autoindent\
+            local lspconfig = require("lspconfig")
+      lspconfig.terraformls.setup {
+        cmd = { "/custom/path/to/terraform-ls", "serve" },
+        filetypes = { "terraform", "terraform-vars" },
+        root_dir = lspconfig.util.root_pattern(".terraform", ".git")
+      }
     '';
     extraPackages = with pkgs; [
       nodePackages.bash-language-server
