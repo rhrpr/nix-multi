@@ -75,6 +75,7 @@
       "openssl@3"      # Cryptography and SSL/TLS toolkit
       "p11-kit"        # Library to load and share PKCS#11 modules
       "syncthing"      # Open source continuous file synchronization tool
+      "terraform-ls"   # Language server for Terraform
       "tfenv"          # Terraform version manager
       "tmux"           # Terminal multiplexer
       "tree-sitter"    # Parser generator tool and library
@@ -106,7 +107,6 @@
       "protonvpn"      # VPN client
       "spotify"        # Music streaming service
       "stats"          # System monitor for the menu bar
-      "terraform-ls"   # Language server for Terraform
       "transmission"   # BitTorrent client
       "vagrant"        # Tool for building and managing virtual machine environments
       "vagrant-vmware-utility" # Vagrant plugin for VMware
