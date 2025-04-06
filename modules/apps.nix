@@ -55,7 +55,6 @@
       "nikitabobko/tap" # aerospace - an i3-like tiling window manager for macOS
       "FelixKratz/formulae" # janky borders - highlight active window borders
       "trycua/lume"
-      "hashicorp/tap/terraform-ls" # terraform language server
     ];
 
     brews = [
@@ -107,6 +106,7 @@
       "protonvpn"      # VPN client
       "spotify"        # Music streaming service
       "stats"          # System monitor for the menu bar
+      "terraform-ls"   # Language server for Terraform
       "transmission"   # BitTorrent client
       "vagrant"        # Tool for building and managing virtual machine environments
       "vagrant-vmware-utility" # Vagrant plugin for VMware
