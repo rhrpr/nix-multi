@@ -3,6 +3,12 @@
   programs.neovim = {
     enable = true;
     package = inputs.nvchad4nix.packages.${inputs.system}.default;
+    # Add custom Neovim configuration
+    extraConfig = ''
+      set expandtab
+      set tabstop=2
+      set shiftwidth=2
+    '';
     extraPackages = with pkgs; [
       nodePackages.bash-language-server
       docker-compose-language-service
