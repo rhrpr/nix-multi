@@ -9,7 +9,6 @@
     # To get your current extensions, run: code --list-extensions
     extensions = with pkgs.vscode-extensions; [
       # Common extensions - uncomment or add your own
-      4ops.terraform
       bbenoist.nix
       davidanson.vscode-markdownlint
       github.copilot
@@ -19,8 +18,8 @@
       ms-python.vscode-pylance
       ms-vscode-remote.remote-ssh
       ms-vscode-remote.remote-ssh-edit
-      ms-vscode.remote-explorer
-    ] ++ pkgs.vscode-utils.extensionsFromVscodeMarketplace [
+    ] 
+    ++ pkgs.vscode-utils.extensionsFromVscodeMarketplace [
       # For extensions not in nixpkgs:
       # {
       #   name = "extension-name";
@@ -36,7 +35,7 @@
       "editor.fontSize" = 14;
       "editor.fontFamily" = "Menlo, Monaco, 'Courier New', monospace";
       "editor.tabSize" = 2;
-      "workbench.colorTheme" = "Default Dark+";
+      "workbench.colorTheme" = "Kimbie Dark";
       "files.autoSave" = "afterDelay";
       # Add your other settings here
     };
