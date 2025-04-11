@@ -21,11 +21,26 @@
       dockerfile-language-server-nodejs
       emmet-language-server
       nixd
+      terraform-ls
+      nodejs
       (python3.withPackages(ps: with ps; [
-        python-lsp-server
-        flake8
+      python-lsp-server
+      flake8
       ]))
     ];
+    
+    plugins = with pkgs.vimPlugins; [
+      coc-nvim
+    ];
+    
+    extraLuaConfig = ''
+      -- Configure coc.nvim
+      vim.g.coc_global_extensions = {
+      'coc-json',
+      'coc-tsserver',
+      'coc-terraform'
+      }
+    '';
     hm-activation = true;
     backup = true;
   };

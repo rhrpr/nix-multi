@@ -110,7 +110,6 @@
       "transmission"   # BitTorrent client
       "vagrant"        # Tool for building and managing virtual machine environments
       "vagrant-vmware-utility" # Vagrant plugin for VMware
-      "visual-studio-code" # Code editor
       "vmware-fusion"  # Virtualization software
       "vox"            # Music player for macOS
       "whatsapp"       # Messaging app

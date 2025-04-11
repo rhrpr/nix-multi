@@ -6,6 +6,7 @@
     ./shell.nix
     ./core.nix
     ./git.nix
+    ./vscode.nix
     ./starship.nix
     ./ghostty.nix
   ];
