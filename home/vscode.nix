@@ -18,6 +18,7 @@
       ms-python.vscode-pylance
       ms-vscode-remote.remote-ssh
       ms-vscode-remote.remote-ssh-edit
+      mechatroner.rainbow-csv
     ] 
     ++ pkgs.vscode-utils.extensionsFromVscodeMarketplace [
       # For extensions not in nixpkgs:

@@ -20,6 +20,7 @@
     neovim
     just # use Justfile to simplify nix-darwin's commands
     devbox # a toolbox for developers
+    nodejs_latest
   ];
   environment.variables.EDITOR = "nano";
 
@@ -87,6 +88,7 @@
       "aerospace"      # an i3-like tiling window manager for macOS
       "android-studio" # Android development environment
       "aural"          # audio player
+      "betterdisplay"  # Display scaling (hidpi)
       "blackhole-16ch" # Virtual audio driver for routing audio between applications
       "cursor"        # Cursor AI code editor
       "cyberduck"      # FTP, SFTP, WebDAV, S3 file transfer client
