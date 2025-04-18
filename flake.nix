@@ -24,7 +24,12 @@
       url = "github:nix-community/nix4nvchad";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+  primeagenInit = {
+    url = "github:ThePrimeagen/init.lua";
+    flake = false; # because it's not a flake repo
   };
+};
 
   outputs = inputs @ { self, nixpkgs, darwin, home-manager, nvchad4nix, ... }: 
     let
