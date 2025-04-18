@@ -50,17 +50,6 @@
       "iMovie" = 408981434;        # Apple's video editing software
     };
 
-    # Ensure masApps are only installed or updated if not already present or not at the same version as the mas store
-    onActivation = ''
-      for app in ${builtins.toJSON (builtins.attrNames masApps)}; do
-      current_version=$(mas list | grep "${masApps.${app}}" | awk '{print $NF}')
-      store_version=$(mas info "${masApps.${app}}" | grep "Version:" | awk '{print $2}')
-      if [ -z "$current_version" ] || [ "$current_version" != "$store_version" ]; then
-        mas install "${masApps.${app}}"
-      fi
-      done
-    '';
-
     taps = [
       "homebrew/services"
       "hashicorp/tap"
