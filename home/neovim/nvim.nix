@@ -1,8 +1,18 @@
 { config, pkgs, inputs, ... }: {
-  # 👉 1. Regular Neovim with Primeagen config
   programs.neovim = {
     enable = true;
-    package = pkgs.neovim;
+    package = inputs.nvchad4nix.packages.${pkgs.system}.default;
+
+    extraConfig = ''
+      set expandtab
+      set tabstop=2
+      set shiftwidth=2
+    '';
+
+    # Dynamically load Primeagen's LSP config from GitHub
+    extraLuaConfig = ''
+      require("theprimeagen.lsp")
+    '';
 
     extraPackages = with pkgs; [
       nodePackages.bash-language-server
@@ -18,48 +28,15 @@
       ]))
     ];
 
-    extraConfig = ''
-      set expandtab
-      set tabstop=2
-      set shiftwidth=2
-    '';
-
-    extraLuaConfig = ''
-      require("primeagen.lsp")
-    '';
-
     hm-activation = true;
     backup = true;
   };
 
-  ###############################
-  # 🧠 Primeagen Config (Shared)
-  ###############################
-
-  home.file.".config/nvim/lua/primeagen".source =
+  # Fetch Primeagen's Lua config and mount it inside ~/.config/nvim/lua/theprimeagen
+  home.file.".config/nvim/lua/theprimeagen".source =
     "${inputs.primeagenInit}/lua/theprimeagen";
 
+  # Your NvChad custom config (mapped from your repo)
   home.file.".config/nvim/lua/custom".source =
-    config.lib.file.mkOutOfStoreSymlink
-      "${config.home.homeDirectory}/.config/darwin/home/neovim/lua/custom";
-
-  ###############################
-  # 🎨 NvChad via `nv4chad` binary
-  ###############################
-
-  home.packages = [
-    # 🚀 Create a real nv4chad binary with separate config
-    (pkgs.writeShellScriptBin "nv4chad" ''
-      export NVIM_APPNAME=nv4chad
-      exec ${inputs.nvchad4nix.packages.${pkgs.system}.default}/bin/nvim "$@"
-    '')
-  ];
-
-  # Primeagen config for NvChad environment
-  home.file.".config/nv4chad/lua/primeagen".source =
-    "${inputs.primeagenInit}/lua/theprimeagen";
-
-  home.file.".config/nv4chad/lua/custom".source =
-    config.lib.file.mkOutOfStoreSymlink
-      "${config.home.homeDirectory}/.config/darwin/home/neovim/lua/custom";
+    config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/.config/darwin/home/neovim/lua/custom";
 }
