@@ -14,6 +14,9 @@ local plugins = {
     "tpope/vim-surround"
   },
   {
+    "christoomey/vim-tmux-navigator"
+  },  
+  {
     "nvim-treesitter/nvim-treesitter-context",
     config = function()
       require("treesitter-context").setup({})
