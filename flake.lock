@@ -95,12 +95,29 @@
         "type": "github"
       }
     },
+    "primeagenInit": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1744316441,
+        "narHash": "sha256-cwM/L+jwSUJiz59bch/kkvSd67x891ZExyQWQXyHkRg=",
+        "owner": "ThePrimeagen",
+        "repo": "init.lua",
+        "rev": "ec77b24e1c1b47d4a3f24dfa2b84384cd9e1332f",
+        "type": "github"
+      },
+      "original": {
+        "owner": "ThePrimeagen",
+        "repo": "init.lua",
+        "type": "github"
+      }
+    },
     "root": {
       "inputs": {
         "darwin": "darwin",
         "home-manager": "home-manager",
         "nixpkgs": "nixpkgs",
-        "nvchad4nix": "nvchad4nix"
+        "nvchad4nix": "nvchad4nix",
+        "primeagenInit": "primeagenInit"
       }
     }
   },
