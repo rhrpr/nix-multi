@@ -3,7 +3,7 @@
 {
   # import sub modules
   imports = [
-    ./shell.nix
+    ./zsh.nix
     ./core.nix
     ./git.nix
     ./vscode.nix
