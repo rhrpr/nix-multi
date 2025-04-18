@@ -1,5 +1,5 @@
 { config, pkgs, inputs, ... }: {
-  # 👉 Regular Neovim (nvim)
+  # 👉 1. Regular Neovim with Primeagen config
   programs.neovim = {
     enable = true;
     package = pkgs.neovim;
@@ -32,30 +32,34 @@
     backup = true;
   };
 
-  # 🔗 Primeagen repo used for both setups
+  ###############################
+  # 🧠 Primeagen Config (Shared)
+  ###############################
+
   home.file.".config/nvim/lua/primeagen".source =
     "${inputs.primeagenInit}/lua/theprimeagen";
 
-  # Your custom Prime-style config (shared)
   home.file.".config/nvim/lua/custom".source =
-    config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/.config/darwin/home/neovim/lua/custom";
+    config.lib.file.mkOutOfStoreSymlink
+      "${config.home.homeDirectory}/.config/darwin/home/neovim/lua/custom";
 
-  # 🌀 Add NvChad (as separate binary)
+  ###############################
+  # 🎨 NvChad via `nv4chad` binary
+  ###############################
+
   home.packages = [
-    (inputs.nvchad4nix.packages.${pkgs.system}.default.override {
-      pname = "nv4chad";
-    })
+    # 🚀 Create a real nv4chad binary with separate config
+    (pkgs.writeShellScriptBin "nv4chad" ''
+      export NVIM_APPNAME=nv4chad
+      exec ${inputs.nvchad4nix.packages.${pkgs.system}.default}/bin/nvim "$@"
+    '')
   ];
 
-  # 🌀 Set up NVIM_APPNAME for nv4chad
-  programs.zsh.initExtra = ''
-    alias nv4chad="NVIM_APPNAME=nv4chad nvim"
-  '';
-
-  # 🔗 Prime config for NvChad
+  # Primeagen config for NvChad environment
   home.file.".config/nv4chad/lua/primeagen".source =
     "${inputs.primeagenInit}/lua/theprimeagen";
 
   home.file.".config/nv4chad/lua/custom".source =
-    config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/.config/darwin/home/neovim/lua/custom";
+    config.lib.file.mkOutOfStoreSymlink
+      "${config.home.homeDirectory}/.config/darwin/home/neovim/lua/custom";
 }
