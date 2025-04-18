@@ -1,5 +1,5 @@
 { config, pkgs, inputs, ... }: {
-  # Regular Neovim setup (uses ~/.config/nvim)
+  # 👉 Regular Neovim (nvim)
   programs.neovim = {
     enable = true;
     package = pkgs.neovim;
@@ -24,7 +24,6 @@
       set shiftwidth=2
     '';
 
-    # Load Primeagen's shared LSP setup
     extraLuaConfig = ''
       require("primeagen.lsp")
     '';
@@ -33,42 +32,27 @@
     backup = true;
   };
 
-  #############################
-  ### File system linking
-  #############################
-
-  # Mount Primeagen repo contents into ~/.config/nvim/lua/primeagen
+  # 🔗 Primeagen repo used for both setups
   home.file.".config/nvim/lua/primeagen".source =
     "${inputs.primeagenInit}/lua/theprimeagen";
 
-  # Your personal custom Primeagen-style enhancements
+  # Your custom Prime-style config (shared)
   home.file.".config/nvim/lua/custom".source =
     config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/.config/darwin/home/neovim/lua/custom";
 
-  #############################
-  ### NvChad alternative binary
-  #############################
-
+  # 🌀 Add NvChad (as separate binary)
   home.packages = [
-    # Provide NvChad as a second binary (nv4chad)
     (inputs.nvchad4nix.packages.${pkgs.system}.default.override {
       pname = "nv4chad";
     })
   ];
 
-  #############################
-  ### ZSH alias for separate config
-  #############################
-
+  # 🌀 Set up NVIM_APPNAME for nv4chad
   programs.zsh.initExtra = ''
     alias nv4chad="NVIM_APPNAME=nv4chad nvim"
   '';
 
-  #############################
-  ### Primeagen code for NvChad too
-  #############################
-
-  # Make sure Primeagen’s config is available to NvChad as well
+  # 🔗 Prime config for NvChad
   home.file.".config/nv4chad/lua/primeagen".source =
     "${inputs.primeagenInit}/lua/theprimeagen";
 
