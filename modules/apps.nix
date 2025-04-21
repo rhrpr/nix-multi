@@ -4,8 +4,6 @@
   # 
   #  Install all apps and packages here.
   #
-  # TODO Fell free to modify this file to fit your needs.
-  #
   ##########################################################################
 
   # Install packages from nix's official package repository.
