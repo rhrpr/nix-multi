@@ -48,6 +48,7 @@
       "Ferromagnetic" = 1546537151; # Utility for managing magnet links
       "Magnet" = 441258766;        # Window management tool for arranging windows
       "iMovie" = 408981434;        # Apple's video editing software
+      "Xcode"  = 497799835;        # Apple xCode
     };
 
     taps = [
@@ -113,7 +114,9 @@
       "protonvpn"      # VPN client
       "spotify"        # Music streaming service
       "stats"          # System monitor for the menu bar
+      "steam"          # Gaming platform and store
       "transmission"   # BitTorrent client
+      "utm"            # Virtual machines UI using QEMU
       "vagrant"        # Tool for building and managing virtual machine environments
       "vagrant-vmware-utility" # Vagrant plugin for VMware
       "vmware-fusion"  # Virtualization software

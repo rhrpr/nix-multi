@@ -19,36 +19,23 @@
         mechatroner.rainbow-csv
         dbaeumer.vscode-eslint
         github.vscode-github-actions
-      ] ++ pkgs.vscode-utils.extensionsFromVscodeMarketplace [
+      ];
+
+      userSettings = {
+        "editor.fontSize" = 14;
+        "editor.fontFamily" = "Menlo, Monaco, 'Courier New', monospace";
+        "editor.tabSize" = 2;
+        "workbench.colorTheme" = "Kimbie Dark";
+        "files.autoSave" = "afterDelay";
+      };
+
+      keybindings = [
         {
-          name = "swift";
-          publisher = "sswg";
-          version = "2.2.0";
-          sha256 = "sha256-gHk2ydublBWuHqli11Dj5C9en2HtwTtwxhuayVHbcXs=";
+          key = "cmd+k cmd+i";
+          command = "editor.action.showHover";
+          when = "editorTextFocus";
         }
       ];
     };
   };
 }
-
-      # Somehow busted 21.04.2025 # Your settings
-      # # Copy from: ~/Library/Application Support/Code/User/settings.json
-      # userSettings = {
-      #   "editor.fontSize" = 14;
-      #   "editor.fontFamily" = "Menlo, Monaco, 'Courier New', monospace";
-      #   "editor.tabSize" = 2;
-      #   "workbench.colorTheme" = "Kimbie Dark";
-      #   "files.autoSave" = "afterDelay";
-      #   # Add your other settings here
-      # };
-
-      # # Your keybindings
-      # # Copy from: ~/Library/Application Support/Code/User/keybindings.json
-      # keybindings = [
-      #   # Example:
-      #   # {
-      #   #   key = "cmd+k cmd+i";
-      #   #   command = "editor.action.showHover";
-      #   #   when = "editorTextFocus";
-      #   # }
-      # ];
