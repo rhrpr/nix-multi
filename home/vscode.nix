@@ -20,16 +20,12 @@
         ms-vscode-remote.remote-ssh
         ms-vscode-remote.remote-ssh-edit
         mechatroner.rainbow-csv
-      ] 
-      ++ pkgs.vscode-utils.extensionsFromVscodeMarketplace [
-        # For extensions not in nixpkgs:
-        # {
-        #   name = "extension-name";
-        #   publisher = "publisher";
-        #   version = "version";
-        #   sha256 = "sha256-hash"; # Generate with nix-prefetch-url
-        # }
-      ];
+        # Added TypeScript support
+        dbaeumer.vscode-eslint
+        # Added GitHub Actions
+        github.vscode-github-actions
+        swiftlang.swift-vscode
+      ]
 
       # Your settings
       # Copy from: ~/Library/Application Support/Code/User/settings.json

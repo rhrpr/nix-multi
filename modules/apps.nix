@@ -63,6 +63,7 @@
       "ca-certificates" # Bundle of CA root certificates
       "cask"           # Extension mechanism for Homebrew
       "coreutils"      # GNU core utilities (ls, cat, etc)
+      "fastlane"       # Automate beta deployment and releases for your iOS and Android apps
       "ffmpeg"         # Audio and video converter/processor
       "gallery-dl"     # Command-line downloader for image galleries
       "gettext"        # GNU internationalization (i18n) library
@@ -83,6 +84,7 @@
       "tree-sitter"    # Parser generator tool and library
       "unbound"        # Validating, recursive, and caching DNS resolver
       "yt-dlp"         # YouTube video downloader
+      "xcodegen"       # Command line tool to generate Xcode project files
     ];
 
     casks = [ 
