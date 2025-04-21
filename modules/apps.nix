@@ -49,6 +49,9 @@
       "Magnet" = 441258766;        # Window management tool for arranging windows
       "iMovie" = 408981434;        # Apple's video editing software
       "Xcode"  = 497799835;        # Apple xCode
+      "Pages" = 409201541;        # Apple's word processing software
+      "Keynote" = 409183694;      # Apple's presentation software
+      "Numbers" = 409203825;      # Apple's spreadsheet software
     };
 
     taps = [
