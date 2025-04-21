@@ -19,6 +19,13 @@
         mechatroner.rainbow-csv
         dbaeumer.vscode-eslint
         github.vscode-github-actions
+      ] ++ pkgs.vscode-utils.extensionsFromVscodeMarketplace [
+        {
+          name = "swift";
+          publisher = "sswg";
+          version = "2.2.0";
+          sha256 = "sha256-gHk2ydublBWuHqli11Dj5C9en2HtwTtwxhuayVHbcXs=";
+        }
       ];
     };
   };
