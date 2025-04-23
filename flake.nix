@@ -1,12 +1,11 @@
 {
-  description = "Nix for macOS configuration";
+  description = "Nix for macOS and Linux configuration";
 
   nixConfig = {
     substituters = [ "https://cache.nixos.org" ];
   };
 
   inputs = {
-    # Use a consistent name for nixpkgs
     nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
     
     home-manager = {
@@ -19,49 +18,82 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # Add nix4nvchad as an input
     nvchad4nix = {
       url = "github:nix-community/nix4nvchad";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-  primeagenInit = {
-    url = "github:ThePrimeagen/init.lua";
-    flake = false; # because it's not a flake repo
+    primeagenInit = {
+      url = "github:ThePrimeagen/init.lua";
+      flake = false;
+    };
   };
-};
 
-  outputs = inputs @ { self, nixpkgs, darwin, home-manager, nvchad4nix, ... }: 
-    let
-      # User configuration
-      username = "hrpr";
-      useremail = "ryan@hrpr.dev";
-      system = "aarch64-darwin";
-      hostname = "Ryans-MacBook-Pro";
+outputs = inputs @ { self, nixpkgs, darwin ? null, home-manager, nvchad4nix, ... }:
+  let
+    # Define systems to support
+    supportedSystems = [ "x86_64-linux" "aarch64-darwin" ];
+    
+    # Helper function to generate outputs for each system
+    forAllSystems = nixpkgs.lib.genAttrs supportedSystems;
+    
+    # Determine if the current system is Darwin (macOS)
+    isDarwin = system: builtins.match ".*-darwin" system != null;
 
-      # Additional arguments to pass to modules
-      specialArgs = inputs // { inherit username useremail hostname; };
-    in {
-      darwinConfigurations.${hostname} = darwin.lib.darwinSystem {
+    username = "hrpr";
+    useremail = "ryan@hrpr.dev";
+    system = builtins.currentSystem;
+    hostname = if system == "aarch64-darwin" then "Ryans-MacBook-Pro" 
+               else if system == "x86_64-linux" then "nixos" 
+               else "default-hostname";
+
+    specialArgs = inputs // { inherit username useremail hostname; };
+  in
+  {
+    # Darwin configurations (macOS)
+    darwinConfigurations = nixpkgs.lib.optionalAttrs (isDarwin system && darwin != null) {
+      ${hostname} = darwin.lib.darwinSystem {
         inherit system specialArgs;
         modules = [
-          ./modules/nix-core.nix
-          ./modules/system.nix
-          ./modules/apps.nix
-          ./modules/host-users.nix
+          ./modules/darwin/nix-core.nix
+          ./modules/darwin/system.nix
+          ./modules/darwin/host-users.nix
+          ./modules/darwin/apps.nix
 
           home-manager.darwinModules.home-manager {
             home-manager = {
               useGlobalPkgs = true;
               useUserPackages = true;
               extraSpecialArgs = specialArgs;
-              users.${username} = import ./home;
+              users.${username} = import ./home.nix;
               backupFileExtension = "backup";
             };
           }
         ];
       };
-
-      formatter.${system} = nixpkgs.legacyPackages.${system}.alejandra;
     };
+
+    # NixOS configurations (Linux)
+    nixosConfigurations = nixpkgs.lib.optionalAttrs (!isDarwin system) {
+      ${hostname} = nixpkgs.lib.nixosSystem {
+        inherit system specialArgs;
+        modules = [
+          ./modules/nixos/hardware-configuration.nix
+          ./modules/nixos/system.nix
+          ./modules/nixos/host-users.nix
+          ./modules/nixos/apps.nix
+
+          home-manager.nixosModules.home-manager {
+            home-manager = {
+              useGlobalPkgs = true;
+              useUserPackages = true;
+              extraSpecialArgs = specialArgs;
+              users.${username} = import ./home.nix;
+              backupFileExtension = "backup";
+            };
+          }
+        ];
+      };
+    };
+  };
 }
