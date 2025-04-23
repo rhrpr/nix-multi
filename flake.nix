@@ -79,6 +79,7 @@ outputs = inputs @ { self, nixpkgs, darwin ? null, home-manager, nvchad4nix, ...
         inherit system specialArgs;
         modules = [
           ./modules/nixos/hardware-configuration.nix
+          ./modules/nixos/nix-core.nix
           ./modules/nixos/system.nix
           ./modules/nixos/host-users.nix
           ./modules/nixos/apps.nix
