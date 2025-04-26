@@ -108,7 +108,6 @@
       "iterm2"         # Terminal emulator
 #     "knockknock"    # Security tool to show persistent apps
       "lm-studio"      # Local AI model runner and chat interface
-      "logitech-g-hub" # Configuration tool for Logitech gaming devices
       "logitech-options" # Configuration tool for Logitech devices
 #     "lulu"           # Open-source firewall for macOS
 #     "microsoft-edge" # Web browser
