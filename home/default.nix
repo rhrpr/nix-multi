@@ -7,8 +7,8 @@
     ./core.nix
     ./git.nix
     ./vscode.nix
-    ./starship.nix
-    ./ghostty.nix
+#    ./starship.nix
+#    ./ghostty.nix
   ];
 
   # Home Manager needs a bit of information about you and the

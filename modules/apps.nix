@@ -53,7 +53,7 @@
     };
 
     taps = [
-      "homebrew/services"
+      # "homebrew/services"
       "hashicorp/tap"
       "nikitabobko/tap" # aerospace - an i3-like tiling window manager for macOS
       "FelixKratz/formulae" # janky borders - highlight active window borders
@@ -91,27 +91,29 @@
 
     casks = [ 
       "aerospace"      # an i3-like tiling window manager for macOS
-      "android-studio" # Android development environment
+      "ableton-live-standard" # Ableton Live
+#     "android-studio"# Android development environment
       "aural"          # audio player
+      "arturia-software-center" # Manager for Arturia VSTs
       "betterdisplay"  # Display scaling (hidpi)
       "blackhole-16ch" # Virtual audio driver for routing audio between applications
-      "cursor"        # Cursor AI code editor
+      "cursor"         # Cursor AI code editor
       "cyberduck"      # FTP, SFTP, WebDAV, S3 file transfer client
       "discord"        # Voice, video, and text chat app
       "firefox"        # Web browser
       "ghostty"        # terminal emulator
       "google-chrome"  # Web browser
       "ibkr"           # Interactive Brokers trading platform
-      "knockknock"     # Security tool to show persistent apps
+#     "knockknock"    # Security tool to show persistent apps
+      "league-of-legends" # League of legends
       "lm-studio"      # Local AI model runner and chat interface
       "logitech-options" # Configuration tool for Logitech devices
       "lulu"           # Open-source firewall for macOS
-      "microsoft-edge" # Web browser
+#     "microsoft-edge" # Web browser
       "mixxx"          # DJ software
       "moonlight"      # Game streaming client
       "obsidian"       # Markdown knowledge base and note-taking app
-      "oversight"      # Monitors and notifies when microphone or camera is activated
-      # "oversight"      # Monitors and notifies when microphone or camera is activated
+#     "oversight"      # Monitors and notifies when microphone or camera is activated
       "protonvpn"      # VPN client
       "spotify"        # Music streaming service
       "stats"          # System monitor for the menu bar
@@ -119,9 +121,8 @@
       "transmission"   # BitTorrent client
       "utm"            # Virtual machines UI using QEMU
       "vagrant"        # Tool for building and managing virtual machine environments
-      "vagrant-vmware-utility" # Vagrant plugin for VMware
-      "vmware-fusion"  # Virtualization software
-      "vox"            # Music player for macOS
+     # "vagrant-vmware-utility" # Vagrant plugin for VMware
+     # "vmware-fusion"  # Virtualization software - must now be installed w Broadcom account
       "whatsapp"       # Messaging app
       "yubico-authenticator" # Authentication tool for YubiKey devices
       "vanilla"        # macOS app to hide menu bar icons
