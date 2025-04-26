@@ -39,29 +39,6 @@
         wvous-tr-corner = 13;  # top-right - Lock Screen
         wvous-bl-corner = 3;  # bottom-left - Application Windows
         wvous-br-corner = 4;  # bottom-right - Desktop
-        # Add persistent apps to Dock
-        persistent-apps = let
-          mkAppEntry = name: {
-            app = "/Applications/${name}.app";
-          };
-        in map mkAppEntry [
-          "Finder"
-          "Launchpad"
-          "Firefox"
-          "iTerm"
-          "LM Studio"
-          "Home Manager Apps/Visual Studio Code"
-          "Ableton Live 12 Standard"
-          "Discord"
-          "Spotify"
-
-          "Keynote"
-          "Pages"
-          "Numbers"
-          "IBKR Desktop"
-          "System Preferences"
-          # Add more apps as needed
-        ];
       };
       # customize finder
       finder = {
