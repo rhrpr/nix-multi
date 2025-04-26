@@ -42,7 +42,7 @@
       # Additional arguments to pass to modules
       specialArgs = inputs // { inherit username useremail hostname; };
     in {
-      darwinConfigurations.${hostname} = darwin.lib.darwinSystem {
+      darwinConfigurations.${hostname} = nix-darwin.lib.darwinSystem {
         inherit system specialArgs;
         modules = [
           ./modules/nix-core.nix
