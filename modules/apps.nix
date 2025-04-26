@@ -97,6 +97,7 @@
       "arturia-software-center" # Manager for Arturia VSTs
       "betterdisplay"  # Display scaling (hidpi)
       "blackhole-16ch" # Virtual audio driver for routing audio between applications
+      "blitz-gg"       # Game assistant for League of Legends
       "cursor"         # Cursor AI code editor
       "cyberduck"      # FTP, SFTP, WebDAV, S3 file transfer client
       "discord"        # Voice, video, and text chat app
@@ -104,9 +105,10 @@
       "ghostty"        # terminal emulator
       "google-chrome"  # Web browser
       "ibkr"           # Interactive Brokers trading platform
+      "iterm2"         # Terminal emulator
 #     "knockknock"    # Security tool to show persistent apps
-      "league-of-legends" # League of legends
       "lm-studio"      # Local AI model runner and chat interface
+      "logitech-g-hub" # Configuration tool for Logitech gaming devices
       "logitech-options" # Configuration tool for Logitech devices
 #     "lulu"           # Open-source firewall for macOS
 #     "microsoft-edge" # Web browser

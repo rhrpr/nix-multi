@@ -39,8 +39,32 @@
         wvous-tr-corner = 13;  # top-right - Lock Screen
         wvous-bl-corner = 3;  # bottom-left - Application Windows
         wvous-br-corner = 4;  # bottom-right - Desktop
+        # Add persistent apps to Dock
+        persistent-apps = let
+          mkAppEntry = name: {
+            app = "/Applications/${name}.app";
+          };
+        in map mkAppEntry [
+          "Finder"
+          "Launchpad"
+          "iTerm"
+          "Firefox"
+          "Visual Studio Code"
+          "Discord"
+          "Spotify"
+          "LM Studio"
+          "Keynote"
+          "Pages"
+          "Numbers"
+          "Reminders"
+          "Calendar"
+          "Mail"
+          "Contacts"
+          "Notes"
+          "System Preferences"
+          # Add more apps as needed
+        ];
       };
-
       # customize finder
       finder = {
         _FXShowPosixPathInTitle = true;  # show full path in finder title
@@ -103,6 +127,8 @@
         ".GlobalPreferences" = {
           # automatically switch to a new space when switching to the application
           AppleSpacesSwitchOnActivate = true;
+          # Disable mouse acceleration
+          system.defaults."GlobalPreferences".com.apple.mouse.scaling = -1.0;
         };
         NSGlobalDomain = {
           # Add a context menu item for showing the Web Inspector in web views
