@@ -47,20 +47,18 @@
         in map mkAppEntry [
           "Finder"
           "Launchpad"
-          "iTerm"
           "Firefox"
-          "Visual Studio Code"
+          "iTerm"
+          "LM Studio"
+          "Home Manager Apps/Visual Studio Code"
+          "Ableton Live 12 Standard"
           "Discord"
           "Spotify"
-          "LM Studio"
+
           "Keynote"
           "Pages"
           "Numbers"
-          "Reminders"
-          "Calendar"
-          "Mail"
-          "Contacts"
-          "Notes"
+          "IBKR Desktop"
           "System Preferences"
           # Add more apps as needed
         ];
