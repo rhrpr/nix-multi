@@ -108,7 +108,7 @@
       "league-of-legends" # League of legends
       "lm-studio"      # Local AI model runner and chat interface
       "logitech-options" # Configuration tool for Logitech devices
-      "lulu"           # Open-source firewall for macOS
+#     "lulu"           # Open-source firewall for macOS
 #     "microsoft-edge" # Web browser
       "mixxx"          # DJ software
       "moonlight"      # Game streaming client

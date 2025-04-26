@@ -18,7 +18,6 @@
         ms-vscode-remote.remote-ssh-edit
         mechatroner.rainbow-csv
         dbaeumer.vscode-eslint
-        github.vscode-github-actions
       ];
 
       userSettings = {
@@ -29,13 +28,13 @@
         "files.autoSave" = "afterDelay";
       };
 
-      keybindings = [
-        {
-          key = "cmd+k cmd+i";
-          command = "editor.action.showHover";
-          when = "editorTextFocus";
-        }
-      ];
+     keybindings = [
+       {
+         key = "cmd+k cmd+i";
+         command = "editor.action.showHover";
+         when = "editorTextFocus";
+       }
+     ];
     };
   };
 }
