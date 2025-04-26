@@ -14,7 +14,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    darwin = {
+    nix-darwin = {
       url = "github:lnl7/nix-darwin";
       inputs.nixpkgs.follows = "nixpkgs";
     };
@@ -31,14 +31,14 @@
   };
 };
 
-  outputs = inputs @ { self, nixpkgs, darwin, home-manager, nvchad4nix, ... }: 
+  outputs = inputs @ { self, nixpkgs, nix-darwin, home-manager, nvchad4nix, ... }: 
     let
       # User configuration
       username = "hrpr";
       useremail = "ryan@hrpr.dev";
       system = "aarch64-darwin";
       hostname = "Ryans-MacBook-Pro";
-
+      nixpkgs.hostPlatform = "aarch64-darwin";
       # Additional arguments to pass to modules
       specialArgs = inputs // { inherit username useremail hostname; };
     in {

@@ -7,6 +7,9 @@
 
   # enable flakes globally
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
+ 
+  # Set platform for pkgs to darwin apple silicon
+  nixpkgs.hostPlatform = aarch64-darwin;
 
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
