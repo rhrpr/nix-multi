@@ -115,6 +115,7 @@
       "moonlight"      # Game streaming client
       "obsidian"       # Markdown knowledge base and note-taking app
 #     "oversight"      # Monitors and notifies when microphone or camera is activated
+      "proton-mail-bridge" # Bridge for ProtonMail
       "protonvpn"      # VPN client
       "spotify"        # Music streaming service
       "stats"          # System monitor for the menu bar
