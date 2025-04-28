@@ -7,7 +7,7 @@
     ./core.nix
     ./git.nix
     ./vscode.nix
-#    ./starship.nix
+    ./starship.nix
 #    ./ghostty.nix
   ];
 
