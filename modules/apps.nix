@@ -111,6 +111,7 @@
       "logitech-options" # Configuration tool for Logitech devices
 #     "lulu"           # Open-source firewall for macOS
 #     "microsoft-edge" # Web browser
+      "microsoft-teams" # Collaboration platform
       "mixxx"          # DJ software
       "moonlight"      # Game streaming client
       "obsidian"       # Markdown knowledge base and note-taking app
