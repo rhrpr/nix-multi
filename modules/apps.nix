@@ -20,6 +20,7 @@
     devbox # a toolbox for developers
     nodejs_latest
     nixfmt-rfc-style # Nix formatter
+    treefmt
   ];
   environment.variables.EDITOR = "nano";
 

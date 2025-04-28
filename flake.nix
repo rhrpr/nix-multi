@@ -13,6 +13,9 @@
       url = "github:nix-community/home-manager/master";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    
+    flake-utils.url = "github:numtide/flake-utils";
+    treefmt-nix.url = "github:numtide/treefmt-nix";
 
     nix-darwin = {
       url = "github:lnl7/nix-darwin";
@@ -31,7 +34,7 @@
   };
 };
 
-  outputs = inputs @ { self, nixpkgs, nix-darwin, home-manager, nvchad4nix, ... }: 
+  outputs = inputs @ { self, nixpkgs, nix-darwin, home-manager, nvchad4nix, treefmt-nix, ... }: 
     let
       # User configuration
       username = "hrpr";
@@ -41,6 +44,13 @@
       nixpkgs.hostPlatform = "aarch64-darwin";
       # Additional arguments to pass to modules
       specialArgs = inputs // { inherit username useremail hostname; };
+      
+      # Setup treefmt-nix
+      treefmtEval = treefmt-nix.lib.evalModule nixpkgs.legacyPackages.${system} {
+        projectRootFile = "flake.nix";
+        programs.nixfmt.enable = true;
+        programs.nixfmt.package = nixpkgs.legacyPackages.${system}.nixfmt-rfc-style;
+      };
     in {
       darwinConfigurations.${hostname} = nix-darwin.lib.darwinSystem {
         inherit system specialArgs;
@@ -62,6 +72,19 @@
         ];
       };
 
-      formatter.${system} = nixpkgs.legacyPackages.${system}.alejandra;
+      # Updated formatter configuration using treefmt-nix
+      formatter.${system} = treefmtEval.config.build.wrapper;
+      formatter.x86_64-linux = nixpkgs.legacyPackages.x86_64-linux.nixfmt-rfc-style;
+      
+      # Add checks
+      checks.${system}.formatting = treefmtEval.config.build.check self;
+      
+      # Add a devShell with treefmt
+      devShells.${system}.default = nixpkgs.legacyPackages.${system}.mkShell {
+        packages = [
+          # Include the treefmt wrapper
+          treefmtEval.config.build.wrapper
+        ];
+      };
     };
 }
