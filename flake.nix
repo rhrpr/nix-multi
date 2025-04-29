@@ -8,12 +8,12 @@
   inputs = {
     # Use a consistent name for nixpkgs
     nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
-    
+
     home-manager = {
       url = "github:nix-community/home-manager/master";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    
+
     flake-utils.url = "github:numtide/flake-utils";
     treefmt-nix.url = "github:numtide/treefmt-nix";
 
@@ -28,30 +28,48 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-  primeagenInit = {
-    url = "github:ThePrimeagen/init.lua";
-    flake = false; # because it's not a flake repo
+    primeagenInit = {
+      url = "github:ThePrimeagen/init.lua";
+      flake = false; # because it's not a flake repo
+    };
   };
-};
 
-  outputs = inputs @ { self, nixpkgs, nix-darwin, home-manager, nvchad4nix, treefmt-nix, ... }: 
+  outputs =
+    inputs@{
+      self,
+      nixpkgs,
+      nix-darwin,
+      home-manager,
+      nvchad4nix,
+      treefmt-nix,
+      ...
+    }:
     let
       # User configuration
       username = "hrpr";
       useremail = "ryan@hrpr.dev";
       system = "aarch64-darwin";
       hostname = "Ryans-MacBook-Pro";
-      nixpkgs.hostPlatform = "aarch64-darwin";
+
+      # Initialize pkgs properly
+      pkgs = import nixpkgs {
+        inherit system;
+        config.allowUnfree = true; # Optional, if you need unfree packages
+      };
+
       # Additional arguments to pass to modules
-      specialArgs = inputs // { inherit username useremail hostname; };
-      
-      # Setup treefmt-nix
-      treefmtEval = treefmt-nix.lib.evalModule nixpkgs.legacyPackages.${system} {
+      specialArgs = inputs // {
+        inherit username useremail hostname;
+      };
+
+      # Setup treefmt-nix with the properly instantiated pkgs
+      treefmtEval = treefmt-nix.lib.evalModule pkgs {
         projectRootFile = "flake.nix";
         programs.nixfmt.enable = true;
-        programs.nixfmt.package = nixpkgs.legacyPackages.${system}.nixfmt-rfc-style;
+        programs.nixfmt.package = pkgs.nixfmt-rfc-style;
       };
-    in {
+    in
+    {
       darwinConfigurations.${hostname} = nix-darwin.lib.darwinSystem {
         inherit system specialArgs;
         modules = [
@@ -60,7 +78,8 @@
           ./modules/apps.nix
           ./modules/host-users.nix
 
-          home-manager.darwinModules.home-manager {
+          home-manager.darwinModules.home-manager
+          {
             home-manager = {
               useGlobalPkgs = true;
               useUserPackages = true;
@@ -75,14 +94,13 @@
       # Updated formatter configuration using treefmt-nix
       formatter.${system} = treefmtEval.config.build.wrapper;
       formatter.x86_64-linux = nixpkgs.legacyPackages.x86_64-linux.nixfmt-rfc-style;
-      
+
       # Add checks
       checks.${system}.formatting = treefmtEval.config.build.check self;
-      
+
       # Add a devShell with treefmt
-      devShells.${system}.default = nixpkgs.legacyPackages.${system}.mkShell {
+      devShells.${system}.default = pkgs.mkShell {
         packages = [
-          # Include the treefmt wrapper
           treefmtEval.config.build.wrapper
         ];
       };

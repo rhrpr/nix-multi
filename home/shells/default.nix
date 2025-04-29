@@ -2,11 +2,13 @@
   config,
   pkgs,
   ...
-}: let
+}:
+let
   shellAliases = {
-      k = "kubectl";
+    k = "kubectl";
   };
-in {
+in
+{
   # only works in bash/zsh, not nushell
 
   home.shellAliases = shellAliases;
@@ -19,18 +21,18 @@ in {
   };
 
   programs.zsh = {
-      enable = true;
-      enableCompletion = true;
-      history = {
-        size = 10000;
-        save = 10000;
-        ignoreDups = true;
-        share = true;
-      };
-      initExtra = ''
+    enable = true;
+    enableCompletion = true;
+    history = {
+      size = 10000;
+      save = 10000;
+      ignoreDups = true;
+      share = true;
+    };
+    initExtra = ''
       gr() {
         ripgrep -rnIi "$1" ./
       };
-      '';
+    '';
   };
 }

@@ -1,4 +1,3 @@
-
 { pkgs, lib, ... }:
 
 {
@@ -6,8 +5,11 @@
   nix.enable = true;
 
   # enable flakes globally
-  nix.settings.experimental-features = [ "nix-command" "flakes" ];
- 
+  nix.settings.experimental-features = [
+    "nix-command"
+    "flakes"
+  ];
+
   # Set platform for pkgs to darwin apple silicon
   nixpkgs.hostPlatform = "aarch64-darwin";
 
@@ -15,7 +17,7 @@
   nixpkgs.config.allowUnfree = true;
 
   # Auto upgrade nix package and the daemon service.    nix-darwin now manages nix-daemon unconditionally when`nix.enable` is on
-  # The following lines are redundant. 
+  # The following lines are redundant.
   # services.nix-daemon.enable = true;
   # Use this instead of services.nix-daemon.enable if you
   # don't wan't the daemon service to be managed for you.

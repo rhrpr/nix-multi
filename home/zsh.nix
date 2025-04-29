@@ -1,4 +1,5 @@
-{...}: {
+{ ... }:
+{
   programs.zsh = {
     enable = true;
     enableCompletion = true;
@@ -8,7 +9,7 @@
       }
     '';
   };
-  
+
   home.shellAliases = {
     k = "kubectl";
     l = "ls -altr";

@@ -28,13 +28,13 @@
         "files.autoSave" = "afterDelay";
       };
 
-     keybindings = [
-       {
-         key = "cmd+k cmd+i";
-         command = "editor.action.showHover";
-         when = "editorTextFocus";
-       }
-     ];
+      keybindings = [
+        {
+          key = "cmd+k cmd+i";
+          command = "editor.action.showHover";
+          when = "editorTextFocus";
+        }
+      ];
     };
   };
 }
