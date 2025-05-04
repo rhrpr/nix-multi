@@ -95,7 +95,7 @@
     casks = [
       "aerospace" # an i3-like tiling window manager for macOS
       "ableton-live-standard" # Ableton Live
-      #     "android-studio"# Android development environment
+      "android-studio"# Android development environment
       "aural" # audio player
       "arturia-software-center" # Manager for Arturia VSTs
       "betterdisplay" # Display scaling (hidpi)
