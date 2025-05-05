@@ -16,9 +16,9 @@
         ms-python.vscode-pylance
         ms-vscode-remote.remote-ssh
         ms-vscode-remote.remote-ssh-edit
+        continue.continue
         mechatroner.rainbow-csv
         dbaeumer.vscode-eslint
-        Continue.continue
       ];
 
       userSettings = {
