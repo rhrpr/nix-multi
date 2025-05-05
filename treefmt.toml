@@ -1,3 +1,43 @@
+# Nix formatting
 [formatter.nix]
 command = "nixfmt-rfc-style"
 includes = ["*.nix"]
+
+# Python formatting
+[formatter.black]
+command = "black"
+includes = ["*.py"]
+
+[formatter.isort]
+command = "isort"
+includes = ["*.py"]
+
+# Web development formatting
+[formatter.prettier]
+command = "prettier"
+options = ["--write"]
+includes = [
+  "*.js",
+  "*.jsx",
+  "*.ts",
+  "*.tsx",
+  "*.html",
+  "*.css",
+  "*.scss",
+  "*.json",
+  "*.md",
+  "*.yaml",
+  "*.yml"
+]
+
+# Dart/Flutter formatting
+[formatter.dart]
+command = "dart"
+options = ["format"]
+includes = ["*.dart"]
+
+# Shell script formatting
+[formatter.shfmt]
+command = "shfmt"
+options = ["-i", "2", "-s", "-w"]
+includes = ["*.sh"]

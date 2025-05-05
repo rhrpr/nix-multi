@@ -68,6 +68,9 @@
         programs.nixfmt.enable = true;
         programs.nixfmt.package = pkgs.nixfmt-rfc-style;
       };
+
+      # treefmt wrapper from evaluation
+      treefmtWrapper = treefmtEval.config.build.wrapper;
     in
     {
       darwinConfigurations.${hostname} = nix-darwin.lib.darwinSystem {
@@ -98,11 +101,28 @@
       # Add checks
       checks.${system}.formatting = treefmtEval.config.build.check self;
 
-      # Add a devShell with treefmt
-      devShells.${system}.default = pkgs.mkShell {
-        packages = [
-          treefmtEval.config.build.wrapper
-        ];
+      # Add all the devshells with treefmt support
+      devShells.${system} = {
+        default = pkgs.mkShell {
+          packages = [
+            treefmtWrapper
+          ];
+        };
+        
+        flutter = import ./devshells/flutter.nix { 
+          inherit pkgs; 
+          inherit treefmtWrapper;
+        };
+        
+        web = import ./devshells/web.nix { 
+          inherit pkgs; 
+          inherit treefmtWrapper;
+        };
+        
+        python = import ./devshells/python.nix { 
+          inherit pkgs; 
+          inherit treefmtWrapper;
+        };
       };
     };
 }
