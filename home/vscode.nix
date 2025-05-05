@@ -18,6 +18,7 @@
         ms-vscode-remote.remote-ssh-edit
         mechatroner.rainbow-csv
         dbaeumer.vscode-eslint
+        Continue.continue
       ];
 
       userSettings = {
