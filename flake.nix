@@ -55,6 +55,7 @@
       pkgs = import nixpkgs {
         inherit system;
         config.allowUnfree = true; # Optional, if you need unfree packages
+        android_sdk.accept_license = true;
       };
 
       # Additional arguments to pass to modules

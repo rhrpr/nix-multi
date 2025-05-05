@@ -1,30 +1,41 @@
 { pkgs ? import <nixpkgs> {}, treefmtWrapper }:
 
-pkgs.mkShell {
+let
+  # Create a properly configured Android SDK
+  androidSdk = pkgs.androidenv.composeAndroidPackages {
+    toolsVersion = "26.1.1";
+    platformToolsVersion = "33.0.3";
+    buildToolsVersions = ["30.0.3"];
+    platformVersions = ["33"];
+    includeSources = false;
+    includeSystemImages = false;
+    includeEmulator = true;
+    emulatorVersion = "31.3.14";
+    includeNDK = true;
+    ndkVersion = "25.2.9519653";
+  };
+  
+  # Check if we're on macOS ARM64
+  isMacosArm = pkgs.stdenv.isDarwin && pkgs.stdenv.isAarch64;
+in pkgs.mkShell {
   name = "flutter-development";
   buildInputs = with pkgs; [
     # Flutter and Dart
     flutter
     dart
     
-    # Android development
-    androidStudioPackages.stable
-    androidenv.androidPkgs_9_0.platform-tools
-    jdk11 # Flutter recommends JDK 11 for Android development
+    # Android development - conditionally include Android Studio
+    (lib.optional (!isMacosArm) androidStudioPackages.stable)
+    androidSdk.platform-tools
+    jdk11
     
     # iOS development (macOS specific)
     cocoapods
-    xcodeenv.compilers.xcode_13_2
     
     # General development tools
     git
-    gh # GitHub CLI
-    rsync
+    gh
     wget
-    
-    # Debugging and analysis
-    clang # For native code
-    lldb # Debugger
     
     # Build utilities
     cmake
@@ -33,8 +44,7 @@ pkgs.mkShell {
     # Add treefmt and formatters
     treefmtWrapper
     nixfmt-rfc-style
-    shfmt
-    nodePackages.prettier # For formatting markdown and other files
+    nodePackages.prettier
   ];
   
   # Environment variables
@@ -43,30 +53,25 @@ pkgs.mkShell {
     export FLUTTER_ROOT=${pkgs.flutter}
     
     # Android environment setup
-    export ANDROID_HOME=${pkgs.androidenv.androidPkgs_9_0.androidsdk}/libexec/android-sdk
+    export ANDROID_HOME=${androidSdk.androidsdk}/libexec/android-sdk
     export ANDROID_SDK_ROOT=$ANDROID_HOME
     export PATH=$PATH:$ANDROID_HOME/tools:$ANDROID_HOME/platform-tools
     
     # iOS environment setup (macOS specific)
     export COCOAPODS_DISABLE_STATS=true
     
-    # Use a local pub cache to avoid permission issues
-    export PUB_CACHE=$(pwd)/.pub-cache
-    
-    # Display welcome message
     echo "🚀 Flutter development environment activated!"
     echo "Flutter SDK: ${pkgs.flutter.version}"
-    echo "Dart SDK: ${pkgs.dart.version}"
-    echo "treefmt available for code formatting"
+    
+    # Display message about Android Studio on ARM macOS
+    ${if isMacosArm then ''
+      echo ""
+      echo "⚠️  Note: Android Studio is not available from nixpkgs for Apple Silicon."
+      echo "Please install Android Studio manually from:"
+      echo "https://developer.android.com/studio"
+    '' else ""}
+    
     echo ""
     echo "Run 'flutter doctor' to verify your setup"
   '';
-  
-  # VS Code settings for Flutter development (if needed)
-  # These would need to be manually added to your VS Code settings
-  # but are here for reference
-  vscodeSettings = {
-    "dart.flutterSdkPath" = "${pkgs.flutter}";
-    "dart.sdkPath" = "${pkgs.dart}/lib/dart";
-  };
 }
