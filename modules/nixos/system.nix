@@ -30,11 +30,10 @@
   time.timeZone = "Europe/London";
 
   # Desktop environment
-  services.xserver = {
-    enable = true;
-    displayManager.sddm.enable = true;
-    desktopManager.plasma6.enable = true; # Using Plasma 6 as specified in configuration.nix
-    
+  services = {
+    xserver = {
+      enable = true;
+      displayManager.sddm.enable = true;
     # NVIDIA configuration
     videoDrivers = ["nvidia"];
     
@@ -45,6 +44,10 @@
       options = "caps:escape"; # Remap caps lock to escape for vim users
     };
   };
+  desktopManager.plasma6 = {
+    enable = true;
+  };
+};
 
   # NVIDIA hardware configuration
   hardware = {
@@ -82,14 +85,6 @@
 
   # System-wide KDE Plasma settings
   programs.kdeconnect.enable = true;
-
-  # KDE Plasma specific configurations
-  programs.plasma = {
-    enable = true;
-    # Configure appearance
-    configureKDE = true;
-    colorScheme = "BreezeDark";
-  };
 
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
@@ -177,11 +172,6 @@
 
   # Automatic screen locking
   services.xserver.displayManager.autoLogin.enable = false;
-  services.screenlocker = {
-    enable = true;
-    lockCmd = "${pkgs.kscreenlocker}/bin/kscreenlocker --forcelock";
-    inactiveInterval = 10; # Lock after 10 minutes of inactivity
-  };
 
   # Font configuration
   fonts = {
@@ -222,4 +212,14 @@
   services.fprintd.enable = true;
   security.pam.services.login.fprintAuth = true;
   security.pam.services.sudo.fprintAuth = true;
+
+  # KDE/Plasma specific configurations
+  environment.plasma6.excludePackages = with pkgs.kdePackages; [
+    # Optional: exclude packages you don't want
+    # oxygen
+  ];
+
+  # For the color scheme, we'll need to set it via home-manager
+  # or through the Plasma settings directly, as system-wide setting
+  # is typically done differently in Plasma 6
 }
