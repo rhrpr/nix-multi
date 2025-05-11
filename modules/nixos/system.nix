@@ -5,15 +5,34 @@
 #  NixOS Linux System configuration with KDE Plasma desktop
 #
 ###################################################################################
-{
-  system.stateVersion = "24.11"; # Use appropriate NixOS version
+{ config, pkgs, ... }:
 
-  # Networking
-  networking.hostName = "nixos"; # Define your hostname
+{
+  imports =
+    [ # Include the results of the hardware scan.
+      ./hardware-configuration.nix
+    ];
+
+  # Bootloader.
+  boot.loader.systemd-boot.enable = true;
+  boot.loader.efi.canTouchEfiVariables = true;
+
+  networking.hostName = "nixos"; # Define your hostname.
+  # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
+
+  # Configure network proxy if necessary
+  # networking.proxy.default = "http://user:password@proxy:port/";
+  # networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
+
+  # Enable networking
   networking.networkmanager.enable = true;
-  
-  # Locale settings
+
+  # Set your time zone.
+  time.timeZone = "Europe/London";
+
+  # Select internationalisation properties.
   i18n.defaultLocale = "en_GB.UTF-8";
+
   i18n.extraLocaleSettings = {
     LC_ADDRESS = "en_GB.UTF-8";
     LC_IDENTIFICATION = "en_GB.UTF-8";
@@ -26,44 +45,43 @@
     LC_TIME = "en_GB.UTF-8";
   };
 
-  # Time zone
-  time.timeZone = "Europe/London";
-
-  # Desktop environment
-  services = {
-    xserver = {
-      enable = true;
-      displayManager.sddm.enable = true;
-    # NVIDIA configuration
-    videoDrivers = ["nvidia"];
-    
-    # Keyboard settings
-    xkb = {
-      layout = "us";
-      variant = "";
-      options = "caps:escape"; # Remap caps lock to escape for vim users
+# Add flake support
+  nix = {
+    settings = {
+      experimental-features = [ "nix-command" "flakes" ];
     };
   };
-  desktopManager.plasma6 = {
-    enable = true;
-  };
-};
 
-  # NVIDIA hardware configuration
+# Start Nvidia Fix
   hardware = {
-    graphics.enable = true;
-    nvidia.modesetting.enable = true;
-    nvidia.powerManagement.enable = false;
-    nvidia.open = true; 
-    nvidia.package = config.boot.kernelPackages.nvidiaPackages.stable;
+        graphics.enable = true;
+        nvidia.modesetting.enable = true;
+        nvidia.powerManagement.enable = false;
+        nvidia.open = true; 
+        nvidia.package = config.boot.kernelPackages.nvidiaPackages.stable;
+  };
+  
+  services.xserver.videoDrivers = ["nvidia"];
+# End Nvidia Fix
+
+  # Enable the X11 windowing system.
+  # You can disable this if you're only using the Wayland session.
+  services.xserver.enable = true;
+
+  # Enable the KDE Plasma Desktop Environment.
+  services.displayManager.sddm.enable = true;
+  services.desktopManager.plasma6.enable = true;
+
+  # Configure keymap in X11
+  services.xserver.xkb = {
+    layout = "us";
+    variant = "";
   };
 
-  # Power management
-  services.power-profiles-daemon.enable = true;
-  powerManagement.enable = true;
+  # Enable CUPS to print documents.
+  services.printing.enable = true;
 
-  # Sound
-  sound.enable = true;
+  # Enable sound with pipewire.
   hardware.pulseaudio.enable = false;
   security.rtkit.enable = true;
   services.pipewire = {
@@ -73,153 +91,82 @@
     pulse.enable = true;
     # If you want to use JACK applications, uncomment this
     #jack.enable = true;
+
+    # use the example session manager (no others are packaged yet so this is enabled by default,
+    # no need to redefine it in your config for now)
+    #media-session.enable = true;
   };
 
-  # Printing support
-  services.printing.enable = true;
+  # Enable touchpad support (enabled default in most desktopManager).
+  # services.xserver.libinput.enable = true;
 
-  # Configure default shell
-  programs.zsh.enable = true;
-  users.defaultUserShell = pkgs.zsh;
-  environment.shells = [ pkgs.zsh ];
-
-  # System-wide KDE Plasma settings
-  programs.kdeconnect.enable = true;
+  # Define a user account. Don't forget to set a password with ‘passwd’.
+  users.users.hrpr = {
+    isNormalUser = true;
+    description = "Ryan Harper";
+    extraGroups = [ "networkmanager" "wheel" ];
+    packages = with pkgs; [
+      kdePackages.kate
+      git
+    ];
+   };
+  # Install firefox.
+  programs.firefox.enable = true;
 
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
 
-  # System packages
+  # List packages installed in system profile. To search, run:
+  # $ nix search wget
   environment.systemPackages = with pkgs; [
-    nano
-    nixfmt-rfc-style
-  #   (vscode-with-extensions.override {
-  #     vscodeExtensions = with vscode-extensions; [
-  #       bbenoist.nix
-  #       davidanson.vscode-markdownlint
-  #       ms-python.vscode-pylance
-  #       github.copilot
-  #       github.copilot-chat
-  #       ms-python.debugpy
-  #       ms-python.python
-  #       ms-python.vscode-pylance
-  #       ms-vscode-remote.remote-ssh
-  #       ms-vscode-remote.remote-ssh-edit
-  #       mechatroner.rainbow-csv
-  #       dbaeumer.vscode-eslint
-  #       github.vscode-github-actions
-  #       ms-azuretools.vscode-docker
-  #     ];
-  #   })
+  #  vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
+  #  wget
+      nano
+      nixfmt-rfc-style
+      (vscode-with-extensions.override {
+        vscodeExtensions = with vscode-extensions; [
+          bbenoist.nix
+          davidanson.vscode-markdownlint
+          ms-python.vscode-pylance
+          github.copilot
+          github.copilot-chat
+          ms-python.debugpy
+          ms-python.python
+          ms-python.vscode-pylance
+          ms-vscode-remote.remote-ssh
+          ms-vscode-remote.remote-ssh-edit
+          mechatroner.rainbow-csv
+          dbaeumer.vscode-eslint
+          github.vscode-github-actions
+          ms-azuretools.vscode-docker ];
+          })
   ];
 
-  # Configure global KDE settings
-  environment.etc = {
-    "xdg/kdeglobals".text = ''
-      [KDE]
-      SingleClick=false
-      
-      [General]
-      ColorScheme=BreezeDark
-      
-      [Icons]
-      Theme=breeze-dark
-      
-      [KFileDialog Settings]
-      ShowHidden=true
-      
-      [PreviewSettings]
-      MaximumSize=16777216
-    '';
-    
-    "xdg/kwinrc".text = ''
-      [Windows]
-      BorderlessMaximizedWindows=true
-      
-      [Compositing]
-      OpenGLIsUnsafe=false
-      
-      [Effect-DesktopGrid]
-      BorderActivate=9
-      
-      [Effect-PresentWindows]
-      BorderActivatePresentWindows=7
-      BorderActivateAll=5
-      
-      [Effect-Cube]
-      BorderActivate=7
-      
-      [Plugins]
-      blurEnabled=true
-      kwin4_effect_fadeEnabled=true
-      kwin4_effect_fadedesktopEnabled=true
-    '';
-    
-    "xdg/dolphinrc".text = ''
-      [General]
-      ShowFullPath=true
-      ShowSelectionToggle=true
-      
-      [PreviewSettings]
-      Plugins=appimagethumbnail,audiothumbnail,comicbookthumbnail,djvuthumbnail,ebookthumbnail,exrthumbnail,directorythumbnail,fontthumbnail,imagethumbnail,jpegthumbnail,kraorathumbnail,windowsexethumbnail,windowsimagethumbnail,mobithumbnail,opendocumentthumbnail,svgthumbnail,textthumbnail
-    '';
-  };
+  # Some programs need SUID wrappers, can be configured further or are
+  # started in user sessions.
+  # programs.mtr.enable = true;
+  # programs.gnupg.agent = {
+  #   enable = true;
+  #   enableSSHSupport = true;
+  # };
 
-  # Configure auto-mounting of drives
-  services.udisks2.enable = true;
-  services.gvfs.enable = true;
-  services.devmon.enable = true;
+  # List services that you want to enable:
 
-  # Automatic screen locking
-  services.xserver.displayManager.autoLogin.enable = false;
+  # Enable the OpenSSH daemon.
+  # services.openssh.enable = true;
 
-  # Font configuration
-  fonts = {
-    packages = with pkgs; [
-      # icon fonts
-      material-design-icons
-      font-awesome
-      nerd-fonts.fira-code
-      nerd-fonts.jetbrains-mono
-      nerd-fonts.iosevka
-    ];
-    fontconfig = {
-      defaultFonts = {
-        serif = [ "DejaVu Serif" ];
-        sansSerif = [ "DejaVu Sans" ];
-        monospace = [ "JetBrainsMono Nerd Font" ];
-      };
-      enable = true;
-    };
-    fontDir.enable = true;
-  };
+  # Open ports in the firewall.
+  # networking.firewall.allowedTCPPorts = [ ... ];
+  # networking.firewall.allowedUDPPorts = [ ... ];
+  # Or disable the firewall altogether.
+  # networking.firewall.enable = false;
 
-  # Enable automatic system upgrades
-  system.autoUpgrade = {
-    enable = false;
-    allowReboot = false;
-  };
+  # This value determines the NixOS release from which the default
+  # settings for stateful data, like file locations and database versions
+  # on your system were taken. It‘s perfectly fine and recommended to leave
+  # this value at the release version of the first install of this system.
+  # Before changing this value read the documentation for this option
+  # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
+  system.stateVersion = "24.11"; # Did you read the comment?
 
-  # Set default applications
-  xdg.mime.defaultApplications = {
-    "text/plain" = "org.kde.kate.desktop";
-    "application/pdf" = "org.kde.okular.desktop";
-    "image/png" = "org.kde.gwenview.desktop";
-    "image/jpeg" = "org.kde.gwenview.desktop";
-  };
-
-  # User authentication with fingerprint reader (if available)
-  services.fprintd.enable = true;
-  security.pam.services.login.fprintAuth = true;
-  security.pam.services.sudo.fprintAuth = true;
-
-  # KDE/Plasma specific configurations
-  environment.plasma6.excludePackages = with pkgs.kdePackages; [
-    # Optional: exclude packages you don't want
-    # oxygen
-  ];
-
-  # For the color scheme, we'll need to set it via home-manager
-  # or through the Plasma settings directly, as system-wide setting
-  # is typically done differently in Plasma 6
 }
