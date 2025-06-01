@@ -122,6 +122,7 @@
       #     "oversight"      # Monitors and notifies when microphone or camera is activated
       "proton-mail-bridge" # Bridge for ProtonMail
       "protonvpn" # VPN client
+      "rancher" # Kubernetes management platform
       "spotify" # Music streaming service
       "stats" # System monitor for the menu bar
       "steam" # Gaming platform and store
