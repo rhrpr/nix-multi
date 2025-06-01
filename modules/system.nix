@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, username, ... }:
 
 ###################################################################################
 #
@@ -13,11 +13,11 @@
 {
   system = {
     stateVersion = 6;
-    # activationScripts are executed every time you boot the system or run `nixos-rebuild` / `darwin-rebuild`.
-    activationScripts.postUserActivation.text = ''
-      # activateSettings -u will reload the settings from the database and apply them to the current session,
-      # so we do not need to logout and login again to make the changes take effect.
-      /System/Library/PrivateFrameworks/SystemAdministration.framework/Resources/activateSettings -u
+    # activationScripts now runs as root, so we use sudo to run as user
+    activationScripts.postActivation.text = ''
+      # Run this as the user using sudo
+      sudo -u ${username} /System/Library/PrivateFrameworks/SystemAdministration.framework/Resources/activateSettings -u
+      echo "Applied settings without requiring logout"
     '';
 
     defaults = {
