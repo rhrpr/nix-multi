@@ -133,6 +133,7 @@
       "whatsapp" # Messaging app
       "yubico-authenticator" # Authentication tool for YubiKey devices
       "vanilla" # macOS app to hide menu bar icons
+      "zed" # AI-powered code editor
     ];
   };
 }
