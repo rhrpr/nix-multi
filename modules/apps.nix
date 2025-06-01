@@ -76,6 +76,7 @@
       "gnutls" # GNU Transport Layer Security Library
       "htop" # Interactive process viewer
       "jansson" # C library for encoding/decoding JSON
+      "kubernetes-cli" # Command-line tool for Kubernetes
       "libidn2" # International domain name library
       "lume" # Command-line tool for virtual machines
       "mas" # Mac App Store command line interface
