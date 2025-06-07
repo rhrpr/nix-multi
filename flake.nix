@@ -74,9 +74,6 @@
       treefmtWrapper = treefmtEval.config.build.wrapper;
     in
     {
-      # Add VM packages
-      packages.${system}.vm-iso = import ./vms/nixos-vm/flake.nix;
-
       darwinConfigurations.${hostname} = nix-darwin.lib.darwinSystem {
         inherit system specialArgs;
         modules = [
@@ -133,16 +130,16 @@
       };
 
       packages.${system} = {
-        # Existing packages...
-        
-        # VM ISO builder
+        # VM ISO builder - fix the reference
         vm-iso = self.nixosConfigurations.vm.config.system.build.isoImage;
         
-        # VM management tools
+        # VM management tools - fix the reference
         vm-tools = pkgs.symlinkJoin {
           name = "vm-tools";
-          paths = [
-            (import ./vms/utm-manager.nix { inherit pkgs; }).environment.systemPackages
+          paths = with pkgs; [
+            qemu
+            openssh
+            rsync
           ];
         };
       };
@@ -152,7 +149,12 @@
         system = "aarch64-linux";
         modules = [
           ./vms/nixos-vm/configuration.nix
-          # Other VM modules...
+          home-manager.nixosModules.home-manager
+          {
+            home-manager.useGlobalPkgs = true;
+            home-manager.useUserPackages = true;
+            home-manager.users.nixos = import ./vms/nixos-vm/home.nix;
+          }
         ];
       };
     };
