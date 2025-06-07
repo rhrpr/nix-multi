@@ -5,74 +5,54 @@ set -e
 
 VM_NAME="nixos-development"
 ISO_PATH="$HOME/Downloads/nixos-minimal.iso"
-DISK_SIZE="50" # GB
-RAM_SIZE="8192" # MB (8GB)
-CPU_CORES="4"
 
-# Colors for output
+# Colors
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
-BLUE='\033[0;34m'
-NC='\033[0m' # No Color
+NC='\033[0m'
 
-log() {
-    echo -e "${GREEN}[INFO]${NC} $1"
-}
+log() { echo -e "${GREEN}[INFO]${NC} $1"; }
+warn() { echo -e "${YELLOW}[WARN]${NC} $1"; }
+error() { echo -e "${RED}[ERROR]${NC} $1"; }
 
-warn() {
-    echo -e "${YELLOW}[WARN]${NC} $1"
-}
-
-error() {
-    echo -e "${RED}[ERROR]${NC} $1"
-}
-
-debug() {
-    echo -e "${BLUE}[DEBUG]${NC} $1"
-}
-
-# Check if UTM is installed and running
+# Check UTM
 check_utm() {
     if ! command -v utmctl &> /dev/null; then
-        error "UTM command line tools not found."
-        error "Please install UTM from the Mac App Store or https://mac.getutm.app/"
+        error "UTM CLI not found. Install UTM from Mac App Store."
         exit 1
     fi
     
-    # Start UTM if not running
     if ! pgrep -x "UTM" > /dev/null; then
-        log "Starting UTM application..."
+        log "Starting UTM..."
         open -a "UTM"
         sleep 3
     fi
     
-    log "UTM is running with CLI tools available"
+    log "UTM is ready"
 }
 
-# Download NixOS ISO if not present
-download_nixos_iso() {
+# Download ISO
+download_iso() {
     if [ ! -f "$ISO_PATH" ]; then
-        log "Downloading NixOS minimal ISO..."
+        log "Downloading NixOS ISO..."
         curl -L "https://channels.nixos.org/nixos-unstable/latest-nixos-minimal-aarch64-linux.iso" -o "$ISO_PATH"
     else
-        log "NixOS ISO already exists at $ISO_PATH"
+        log "NixOS ISO exists at $ISO_PATH"
     fi
 }
 
-# Check if VM already exists
-check_existing_vm() {
+# Check existing VM
+check_existing() {
     if utmctl list 2>/dev/null | grep -q "^$VM_NAME"; then
         warn "VM '$VM_NAME' already exists!"
-        utmctl status "$VM_NAME"
-        read -p "Do you want to delete it and recreate? (y/N): " -n 1 -r
+        read -p "Delete and recreate? (y/N): " -n 1 -r
         echo
         if [[ $REPLY =~ ^[Yy]$ ]]; then
-            log "Stopping and deleting existing VM..."
             utmctl stop "$VM_NAME" 2>/dev/null || true
-            sleep 2
+            sleep 1
             utmctl delete "$VM_NAME"
-            log "Existing VM deleted"
+            log "Deleted existing VM"
         else
             log "Keeping existing VM. Use 'vm start' to start it."
             exit 0
@@ -80,350 +60,180 @@ check_existing_vm() {
     fi
 }
 
-# Create VM using corrected UTM AppleScript API
-create_vm_applescript() {
-    log "Creating VM using UTM AppleScript API..."
+# Simple GUI automation - just open the dialog
+open_create_dialog() {
+    log "Opening VM creation dialog..."
     
-    # Calculate disk size in bytes
-    local disk_size_bytes=$((DISK_SIZE * 1024 * 1024 * 1024))
-    
-    cat > /tmp/create_utm_vm.applescript << APPLESCRIPT_EOF
-on run
-    try
-        tell application "UTM"
-            -- Create a new virtual machine configuration
-            set newVM to make new virtual machine with properties {name:"$VM_NAME", notes:"NixOS Development VM with Hyprland"}
-            
-            -- Configure the virtual machine
-            tell configuration of newVM
-                -- Set basic system properties
-                set architecture to "aarch64"
-                set machine to "virt"
-                set memory to $RAM_SIZE
-                set cores to $CPU_CORES
-                
-                -- Add a disk drive (main system disk)
-                make new drive with properties {interface:"virtio", image file:missing value, size:$disk_size_bytes, removable:false}
-                
-                -- Add CD/DVD drive with ISO
-                set isoFile to POSIX file "$ISO_PATH"
-                make new drive with properties {interface:"usb", image file:isoFile, removable:true}
-                
-                -- Configure network
-                make new network with properties {mode:"shared"}
-                
-                -- Configure display
-                make new display with properties {hardware:"virtio-gpu-pci", width:1920, height:1080}
-                
-                -- Configure audio
-                make new sound with properties {hardware:"intel-hda"}
-                
-                -- Configure USB
-                set usb support to true
-            end tell
-            
-            -- Save the configuration
-            save newVM
-            
-            return name of newVM
-        end tell
-        
-    on error errMsg number errNum
-        return "Error " & errNum & ": " & errMsg
-    end try
-end run
-APPLESCRIPT_EOF
-
-    # Run the AppleScript
-    if VM_RESULT=$(osascript /tmp/create_utm_vm.applescript 2>&1); then
-        if [[ "$VM_RESULT" == *"Error"* ]]; then
-            warn "AppleScript reported error: $VM_RESULT"
-            rm /tmp/create_utm_vm.applescript
-            return 1
-        else
-            log "VM created successfully via AppleScript: $VM_RESULT"
-            rm /tmp/create_utm_vm.applescript
-            return 0
-        fi
-    else
-        warn "AppleScript execution failed: $VM_RESULT"
-        rm /tmp/create_utm_vm.applescript
-        return 1
-    fi
-}
-
-# Simplified AppleScript approach (fallback)
-create_vm_simple_applescript() {
-    log "Trying simplified AppleScript approach..."
-    
-    cat > /tmp/create_utm_simple.applescript << 'APPLESCRIPT_EOF'
-tell application "UTM"
-    try
-        -- Create basic VM
-        set newVM to make new virtual machine with properties {name:"nixos-development"}
-        
-        -- Basic configuration
-        tell configuration of newVM
-            set architecture to "aarch64"
-            set memory to 8192
-            set cores to 4
-        end tell
-        
-        save newVM
-        return "VM created successfully"
-        
-    on error errMsg
-        return "Error: " & errMsg
-    end try
-end tell
-APPLESCRIPT_EOF
-
-    if VM_RESULT=$(osascript /tmp/create_utm_simple.applescript 2>&1); then
-        log "Simple AppleScript result: $VM_RESULT"
-        rm /tmp/create_utm_simple.applescript
-        
-        if [[ "$VM_RESULT" == *"Error"* ]]; then
-            return 1
-        else
-            return 0
-        fi
-    else
-        warn "Simple AppleScript failed: $VM_RESULT"
-        rm /tmp/create_utm_simple.applescript
-        return 1
-    fi
-}
-
-# GUI automation approach (more reliable fallback)
-create_vm_gui_automation() {
-    log "Using GUI automation approach..."
-    
-    cat > /tmp/create_utm_gui.applescript << 'APPLESCRIPT_EOF'
+    cat > /tmp/open_create.applescript << 'EOF'
 tell application "UTM"
     activate
-    delay 2
+    delay 1
 end tell
 
 tell application "System Events"
     tell process "UTM"
-        -- Wait for UTM window to appear
-        repeat 20 times
+        repeat 10 times
             if exists window 1 then exit repeat
             delay 0.5
         end repeat
         
         if not (exists window 1) then
-            error "UTM window not found"
+            return "No UTM window found"
         end if
         
-        -- Try to find and click the create VM button
-        set buttonFound to false
-        
-        -- Method 1: Look for specific button text
+        -- Try to click create button
         try
             click button "Create a New Virtual Machine" of window 1
-            set buttonFound to true
+            delay 1
+            if exists sheet 1 of window 1 then
+                click button "Virtualize" of sheet 1 of window 1
+                delay 1
+                click button "Linux" of sheet 1 of window 1
+            end if
+            return "Dialog opened"
         on error
-            -- Method 2: Try the first button (usually the + or create button)
             try
                 click button 1 of window 1
-                set buttonFound to true
+                return "First button clicked"
             on error
-                -- Method 3: Look through all buttons for one with "Create" or "New"
-                try
-                    repeat with btn in buttons of window 1
-                        set btnName to name of btn as string
-                        if btnName contains "Create" or btnName contains "New" or btnName contains "+" then
-                            click btn
-                            set buttonFound to true
-                            exit repeat
-                        end if
-                    end repeat
-                end try
+                return "Could not find create button"
             end try
         end try
-        
-        if not buttonFound then
-            error "Could not find create VM button"
-        end if
-        
-        delay 2
-        
-        -- Wait for and interact with the creation dialog
-        repeat 10 times
-            if exists sheet 1 of window 1 then exit repeat
-            delay 0.5
-        end repeat
-        
-        if not (exists sheet 1 of window 1) then
-            error "VM creation dialog did not appear"
-        end if
-        
-        -- Select Virtualize
-        try
-            click button "Virtualize" of sheet 1 of window 1
-            delay 1
-        on error
-            error "Could not select Virtualize option"
-        end try
-        
-        -- Select Linux
-        try
-            click button "Linux" of sheet 1 of window 1
-            delay 1
-        on error
-            error "Could not select Linux option"
-        end try
-        
-        return "GUI automation completed - manual configuration needed"
     end tell
 end tell
-APPLESCRIPT_EOF
+EOF
 
-    if GUI_RESULT=$(osascript /tmp/create_utm_gui.applescript 2>&1); then
-        log "GUI automation result: $GUI_RESULT"
-        rm /tmp/create_utm_gui.applescript
+    local result
+    if result=$(osascript /tmp/open_create.applescript 2>&1); then
+        log "Automation result: $result"
+        rm /tmp/open_create.applescript
         return 0
     else
-        warn "GUI automation failed: $GUI_RESULT"
-        rm /tmp/create_utm_gui.applescript
+        warn "Automation failed: $result"
+        rm /tmp/open_create.applescript
         return 1
     fi
 }
 
-# Manual configuration guide
-show_manual_configuration() {
+# Manual setup guide
+show_setup_guide() {
     echo ""
-    echo "╔════════════════════════════════════════════════════════════╗"
-    echo "║              MANUAL VM CONFIGURATION GUIDE                ║"
-    echo "╚════════════════════════════════════════════════════════════╝"
+    echo "╔══════════════════════════════════════════════════════════════╗"
+    echo "║                 MANUAL VM SETUP GUIDE                       ║"
+    echo "╚══════════════════════════════════════════════════════════════╝"
     echo ""
-    echo "Complete the VM configuration with these EXACT settings:"
+    echo "Please configure the VM with these EXACT settings:"
     echo ""
-    echo "📋 INFORMATION TAB:"
+    echo "📋 INFORMATION:"
     echo "   • Name: $VM_NAME"
-    echo "   • Notes: NixOS Development VM with Hyprland"
     echo ""
-    echo "⚙️  SYSTEM TAB:"
-    echo "   • Architecture: ARM64 (aarch64)"
-    echo "   • System: virt-4.0"
-    echo "   • Memory: $RAM_SIZE MB"
-    echo "   • CPU: $CPU_CORES cores"
-    echo "   • Boot Order: CD/DVD, then Hard Disk"
+    echo "⚙️  SYSTEM:"
+    echo "   • Architecture: ARM64"
+    echo "   • Memory: 8192 MB (8GB)"
+    echo "   • CPU Cores: 4"
     echo ""
-    echo "💾 DRIVES TAB:"
-    echo "   Remove default drives and add:"
-    echo "   Drive 1:"
-    echo "   • Interface: VirtIO"
-    echo "   • Size: ${DISK_SIZE}GB"
-    echo "   • Image Type: Disk Image"
-    echo "   • Create new blank disk"
+    echo "💾 DRIVES:"
+    echo "   1. VirtIO Drive - 50GB (new disk image)"
+    echo "   2. USB Drive - CD/DVD - $ISO_PATH"
     echo ""
-    echo "   Drive 2:"
-    echo "   • Interface: USB"
-    echo "   • Image Type: CD/DVD"
-    echo "   • Image File: $ISO_PATH"
-    echo "   • Removable: ✓"
+    echo "🌐 NETWORK:"
+    echo "   • Mode: Shared"
     echo ""
-    echo "🌐 NETWORK TAB:"
-    echo "   • Network Mode: Shared"
+    echo "🖼️  DISPLAY:"
+    echo "   • Hardware: virtio-gpu-pci"
     echo ""
-    echo "🖼️  DISPLAY TAB:"
-    echo "   • Emulated Display Card: virtio-gpu-pci"
-    echo "   • Resolution: 1920x1080"
+    echo "💾 SAVE the VM when done!"
     echo ""
-    echo "🔊 AUDIO TAB:"
-    echo "   • Emulated Audio Card: Intel HD Audio"
-    echo ""
-    echo "🔌 INPUT TAB:"
-    echo "   • USB Support: ✓"
-    echo ""
-    echo "After configuration, click 'Save' to create the VM."
+    echo "⚠️  VM name MUST be exactly: $VM_NAME"
     echo ""
     
-    read -p "Press Enter after completing the manual configuration..."
+    read -p "Press Enter when you've created and saved the VM..."
 }
 
-# Verify VM was created
-verify_vm_creation() {
-    log "Verifying VM creation..."
+# Wait for VM to be created
+wait_for_vm() {
+    log "Waiting for VM to be created..."
     
-    local max_attempts=30
-    local attempt=1
+    local attempts=0
+    local max_attempts=60
     
-    while [ $attempt -le $max_attempts ]; do
+    while [ $attempts -lt $max_attempts ]; do
         if utmctl list 2>/dev/null | grep -q "^$VM_NAME"; then
-            log "✅ VM '$VM_NAME' found!"
+            log "✅ VM '$VM_NAME' detected!"
             utmctl status "$VM_NAME"
             return 0
         fi
         
-        if [ $((attempt % 5)) -eq 0 ]; then
-            echo "⏳ Attempt $attempt/$max_attempts: Still waiting for VM..."
+        if [ $((attempts % 10)) -eq 0 ] && [ $attempts -gt 0 ]; then
+            echo "⏳ Still waiting... ($attempts/$max_attempts)"
         fi
+        
         sleep 1
-        attempt=$((attempt + 1))
+        attempts=$((attempts + 1))
     done
     
-    error "❌ VM '$VM_NAME' not found after verification."
+    error "❌ VM not found after $max_attempts seconds"
+    error "Make sure VM name is exactly: $VM_NAME"
     return 1
 }
 
-# Show next steps
-show_next_steps() {
+# Show completion message
+show_completion() {
     echo ""
-    echo "🎉 VM Creation Successful!"
+    echo "🎉 VM Setup Complete!"
     echo ""
-    echo "Next Steps:"
-    echo "1. 🚀 Start the VM: vm start"
-    echo "2. 🔧 Install NixOS from the ISO"
-    echo "3. 🌐 Configure SSH access"
-    echo "4. 📦 Deploy configuration: vm deploy"
+    echo "Next steps:"
+    echo "1. vm start     - Start the VM"
+    echo "2. Install NixOS from the ISO"
+    echo "3. vm ssh       - SSH after install"
+    echo "4. vm deploy    - Deploy full config"
     echo ""
-    echo "Available Commands:"
-    echo "   vm start/stop/status    - VM lifecycle"
-    echo "   vm ssh                  - SSH into VM"
-    echo "   vm deploy               - Deploy NixOS config"
+    echo "Available commands:"
+    echo "  vm start/stop/status"
+    echo "  vm ssh/ip/console"
+    echo "  vm deploy/rebuild"
     echo ""
 }
 
-# Main execution
+# Main function
 main() {
-    log "🚀 Setting up NixOS VM for development..."
+    log "🚀 Creating NixOS Development VM..."
     
     check_utm
-    download_nixos_iso
-    check_existing_vm
+    download_iso
+    check_existing
     
-    # Try multiple approaches in order of reliability
-    if create_vm_applescript; then
-        log "✅ VM created using full AppleScript API"
-    elif create_vm_simple_applescript; then
-        log "✅ VM created using simplified AppleScript"
-        echo "You'll need to configure drives and other settings manually."
-        show_manual_configuration
-    elif create_vm_gui_automation; then
-        log "✅ VM creation initiated using GUI automation"
-        show_manual_configuration
+    # Try to open create dialog, fallback to manual
+    if open_create_dialog; then
+        log "✅ Creation dialog opened automatically"
     else
-        warn "❌ All automation methods failed"
-        log "Opening UTM for completely manual creation..."
+        warn "❌ Automation failed - opening UTM manually"
         open -a "UTM"
-        show_manual_configuration
     fi
     
-    if verify_vm_creation; then
-        show_next_steps
+    show_setup_guide
+    
+    if wait_for_vm; then
+        show_completion
         
-        read -p "Would you like to start the VM now? (y/N): " -n 1 -r
+        echo ""
+        read -p "Start the VM now? (y/N): " -n 1 -r
         echo
         if [[ $REPLY =~ ^[Yy]$ ]]; then
             log "🚀 Starting VM..."
-            utmctl start "$VM_NAME"
+            if utmctl start "$VM_NAME"; then
+                log "✅ VM started! Install NixOS from the ISO."
+            else
+                error "❌ Failed to start VM"
+            fi
         fi
     else
-        error "❌ VM verification failed"
-        echo "Please ensure the VM was created with the exact name: $VM_NAME"
+        error "❌ VM creation failed"
+        echo ""
+        echo "Manual steps:"
+        echo "1. Open UTM"
+        echo "2. Create VM named exactly: $VM_NAME"
+        echo "3. Run: vm start"
     fi
 }
 
