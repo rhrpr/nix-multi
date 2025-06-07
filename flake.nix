@@ -74,6 +74,9 @@
       treefmtWrapper = treefmtEval.config.build.wrapper;
     in
     {
+      # Add VM packages
+      packages.${system}.vm-iso = import ./vms/nixos-vm/flake.nix;
+
       darwinConfigurations.${hostname} = nix-darwin.lib.darwinSystem {
         inherit system specialArgs;
         modules = [
@@ -92,6 +95,9 @@
               backupFileExtension = "backup";
             };
           }
+
+          # Add VM management tools to your Darwin configuration
+          ./vms/utm-manager.nix
         ];
       };
 
@@ -124,6 +130,30 @@
           inherit pkgs; 
           inherit treefmtWrapper;
         };
+      };
+
+      packages.${system} = {
+        # Existing packages...
+        
+        # VM ISO builder
+        vm-iso = self.nixosConfigurations.vm.config.system.build.isoImage;
+        
+        # VM management tools
+        vm-tools = pkgs.symlinkJoin {
+          name = "vm-tools";
+          paths = [
+            (import ./vms/utm-manager.nix { inherit pkgs; }).environment.systemPackages
+          ];
+        };
+      };
+
+      # Add VM configuration
+      nixosConfigurations.vm = nixpkgs.lib.nixosSystem {
+        system = "aarch64-linux";
+        modules = [
+          ./vms/nixos-vm/configuration.nix
+          # Other VM modules...
+        ];
       };
     };
 }
