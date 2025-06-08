@@ -49,7 +49,7 @@
     protonvpn-gui
     spotify
     steam
-    transmission
+    transmission_4
     whatsapp-for-linux
     
     # Additional tools
