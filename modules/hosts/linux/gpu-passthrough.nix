@@ -221,27 +221,22 @@ in
       };
     };
 
-    # System configuration
-    system = {
-      # Ensure proper permissions for devices
-      activationScripts.vfio = ''
-        # Create necessary directories
-        mkdir -p /var/lib/libvirt/images
-        chown root:libvirt /var/lib/libvirt/images
-        chmod 775 /var/lib/libvirt/images
-        
-        # Set up NVIDIA persistenced directories
-        mkdir -p /var/run/nvidia-persistenced
-        chown nvidia-persistenced:nvidia-persistenced /var/run/nvidia-persistenced
-      '';
+    # Users and groups needed for GPU passthrough
+    users = {
+      users.nvidia-persistenced = {
+        isSystemUser = true;
+        group = "nvidia-persistenced";
+      };
+      groups.nvidia-persistenced = {};
     };
 
     # Systemd configuration
     systemd = {
-      # Ensure proper tmpfiles creation
+      # Tmpfiles for GPU passthrough
       tmpfiles.rules = [
         "d /var/lib/libvirt/images 0755 root root -"
         "d /var/run/nvidia-persistenced 0755 nvidia-persistenced nvidia-persistenced -"
+        "f /dev/shm/looking-glass 0660 ${username} kvm -"
       ];
 
       # Systemd services configuration

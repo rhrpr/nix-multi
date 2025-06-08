@@ -179,14 +179,6 @@
     };
   };
 
-  # Create nvidia-persistenced user
-  users.users.nvidia-persistenced = {
-    isSystemUser = true;
-    group = "nvidia-persistenced";
-  };
-  
-  users.groups.nvidia-persistenced = {};
-
   # Add users to required groups
   users.users.hrpr = {
     extraGroups = [ 
@@ -240,13 +232,6 @@
     # LibVirt default URI
     LIBVIRT_DEFAULT_URI = "qemu:///system";
   };
-
-  # Tmpfiles for GPU sharing and Looking Glass
-  systemd.tmpfiles.rules = [
-    "f /dev/shm/looking-glass 0660 hrpr kvm -"
-    "d /var/lib/libvirt/images 0755 root root -"
-    "d /var/run/nvidia-persistenced 0755 nvidia-persistenced nvidia-persistenced -"
-  ];
 
   # Systemd services configuration
   systemd.services = {

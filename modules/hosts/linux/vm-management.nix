@@ -88,9 +88,4 @@
     LOOKING_GLASS_SHARED_MEM = "/dev/shm/looking-glass";
   };
 
-  # Tmpfiles for VM management (complementary to gpu-passthrough.nix)
-  systemd.tmpfiles.rules = [
-    "f /dev/shm/looking-glass 0660 ${username} kvm -"
-    "d /var/lib/libvirt/images 0755 root root -"
-  ];
 }
