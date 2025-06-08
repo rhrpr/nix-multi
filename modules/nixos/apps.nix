@@ -42,6 +42,7 @@
     
     # GUI applications that have Nix equivalents
     android-studio
+    code-cursor
     discord
     firefox
     ghostty
