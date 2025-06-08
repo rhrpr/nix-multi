@@ -65,7 +65,7 @@ in {
       share = true;
     };
     
-    initExtra = ''
+    initContent = ''
       # Custom functions
       gr() {
         rg -rnIi --colour "$1" ./

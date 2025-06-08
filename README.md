@@ -32,8 +32,13 @@ sudo nixos-rebuild switch --flake .#nixos-plasma
 
 ### 3. VM Configuration (NixOS Hyprland)
 
+### Quick Start Commands
+
 ```bash
-# Interactive VM manager
+# Validate entire setup
+./validate-setup.sh                 # Comprehensive validation test
+
+# Interactive VM manager (recommended)
 ./vm-manager.sh
 
 # Or direct commands
@@ -44,6 +49,9 @@ sudo nixos-rebuild switch --flake .#nixos-plasma
 # Specific architecture
 ./vm-build.sh x86_64 build   # For Intel/AMD systems
 ./vm-build.sh aarch64 build  # For ARM64/Apple Silicon
+
+# Run built VM directly
+./result/bin/run-nixos-vm-hyprland-vm
 ```
 
 ## 📁 Repository Structure
@@ -54,6 +62,7 @@ nix-multi/
 ├── flake.lock             # Flake lock file
 ├── vm-build.sh            # VM build and management script
 ├── vm-manager.sh          # Interactive VM management
+├── validate-setup.sh      # Comprehensive setup validation
 ├── nix-rebuild.sh         # Helper for rebuilding configs
 │
 ├── home/                  # Home Manager configurations
@@ -166,6 +175,39 @@ Edit `modules/vm/apps.nix` and Hyprland configs in `home/linux/hyprland.nix`
 - VM has passwordless sudo enabled for convenience
 - SSH is enabled by default in VM
 - Change default passwords after first login
+
+## 🧪 Testing & Validation
+
+### Build Validation
+All configurations have been tested and validated:
+
+```bash
+# Test all configurations build successfully
+nix flake check                    # Validate flake structure
+nix build .#nixosConfigurations.nixos-plasma.config.system.build.toplevel --dry-run
+nix build .#nixosConfigurations.nixos-vm-hyprland.config.system.build.toplevel --dry-run
+
+# Test VM image builds
+nix build .#vmImages.hyprland-vm-x86_64 --dry-run    # Intel/AMD VM
+nix build .#vmImages.hyprland-vm-aarch64 --dry-run   # ARM64/Apple Silicon VM
+```
+
+### VM Testing
+```bash
+# Build and test VM execution
+./vm-build.sh x86_64 build          # Creates result symlink
+./result/bin/run-nixos-vm-hyprland-vm  # Runs the VM
+
+# Verify VM networking and SSH access
+ssh hrpr@localhost -p 22000         # Default VM SSH (password: nixos)
+```
+
+### Current Status (June 2025)
+✅ **All configurations building successfully**  
+✅ **Cross-platform VM support (x86_64 + aarch64)**  
+✅ **Deprecation warnings resolved**  
+✅ **VM networking and guest tools working**  
+✅ **Interactive VM management scripts functional**  
 
 ## 📖 Learning Resources
 

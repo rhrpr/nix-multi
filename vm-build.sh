@@ -104,7 +104,7 @@ build_vm() {
     
     if [[ "$arch" == "x86_64" ]]; then
         log_info "Building x86_64 VM..."
-        nix build .#nixosConfigurations.nixos-vm-hyprland.config.system.build.vm
+        nix build .#vmImages.hyprland-vm-x86_64
         log_success "x86_64 VM built successfully!"
         echo "VM script location: ./result/bin/run-nixos-vm"
     elif [[ "$arch" == "aarch64" ]]; then
@@ -118,6 +118,7 @@ build_vm() {
             nix build .#vmImages.hyprland-vm-aarch64
         fi
         log_success "aarch64 VM built successfully!"
+        echo "VM script location: ./result/bin/run-nixos-vm"
     fi
 }
 
