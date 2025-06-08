@@ -23,7 +23,7 @@
     # Hyprland-specific applications (lightweight for VM)
     kitty          # Terminal
     firefox        # Web browser  
-    thunar         # File manager
+    xfce.thunar         # File manager
     pavucontrol    # Audio control
     networkmanagerapplet  # Network management
     
