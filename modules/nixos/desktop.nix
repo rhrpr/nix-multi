@@ -81,7 +81,7 @@ in
   };
 
   # Audio configuration
-  hardware.pulseaudio.enable = false;
+  services.pulseaudio.enable = false;
   services.pipewire = {
     enable = true;
     alsa.enable = true;
@@ -108,11 +108,11 @@ in
     wayland-utils
     
     # Screen sharing and remote desktop
-    xwaylandvideobridge
+    kdePackages.xwaylandvideobridge
     
     # Font packages
     noto-fonts
-    noto-fonts-cjk
+    noto-fonts-cjk-sans
     noto-fonts-emoji
     liberation_ttf
     fira-code
@@ -155,17 +155,16 @@ in
   xdg.portal = {
     enable = true;
     extraPortals = with pkgs; [
-      (lib.mkIf isPlasma kdePackages.xdg-desktop-portal-kde)
-      (lib.mkIf isHyprland xdg-desktop-portal-hyprland)
+    ] ++ lib.optionals isPlasma [
+      kdePackages.xdg-desktop-portal-kde
+    ] ++ lib.optionals isHyprland [
+      xdg-desktop-portal-hyprland
+    ] ++ [
       xdg-desktop-portal-gtk
     ];
     config = {
       common = {
-        default = [
-          (lib.mkIf isPlasma "kde")
-          (lib.mkIf isHyprland "hyprland")
-          "gtk"
-        ];
+        default = if isPlasma then ["kde"] else if isHyprland then ["hyprland"] else ["gtk"];
       };
     };
   };
@@ -174,7 +173,7 @@ in
   fonts = {
     packages = with pkgs; [
       noto-fonts
-      noto-fonts-cjk
+      noto-fonts-cjk-sans
       noto-fonts-emoji
       liberation_ttf
       fira-code
@@ -208,7 +207,7 @@ in
   # Printing support
   services.printing = {
     enable = true;
-    drivers = with pkgs; [ cups-pdf ];
+    drivers = with pkgs; [ cups-pdf-to-pdf ];
   };
   services.avahi = {
     enable = true;

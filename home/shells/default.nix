@@ -7,7 +7,6 @@
     k = "kubectl";
     l = "ls -altr";
     ll = "ls -altr";
-    ls = "ls --color=auto";
     latr = "ls -altr";
     
     # System rebuild aliases

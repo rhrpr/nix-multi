@@ -17,7 +17,7 @@
     # Core utilities
     btop
     bitwarden-desktop
-    ca-certificates
+    cacert
     coreutils
     fastlane
     ffmpeg
@@ -33,7 +33,7 @@
     p11-kit
     syncthing
     terraform-ls
-    tfenv
+    terraform
     tmux
     tree-sitter
     unbound
@@ -50,7 +50,7 @@
     spotify
     steam
     transmission
-    whatsapp
+    whatsapp-for-linux
     
     # Additional tools
     qemu # Alternative to VMware/UTM

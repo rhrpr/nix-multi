@@ -11,8 +11,8 @@
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
 
-  # Configure Nix daemon
-  services.nix-daemon.enable = true;
+  # Configure Nix daemon - NixOS manages this automatically
+  # systemd.services.nix-daemon.enable = true; # Not needed in NixOS
 
   nix.package = pkgs.nix;
 

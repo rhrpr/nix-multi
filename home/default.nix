@@ -3,6 +3,8 @@
   pkgs, 
   lib,
   desktopManager ? "plasma",
+  isDarwin ? false,
+  isLinux ? false,
   ... 
 }:
 
@@ -14,10 +16,10 @@
     ./starship.nix
     ./shells
     ./terminals
-  ] ++ lib.optionals pkgs.stdenv.isDarwin [
+  ] ++ lib.optionals isDarwin [
     # macOS-specific modules
     ./macos
-  ] ++ lib.optionals pkgs.stdenv.isLinux [
+  ] ++ lib.optionals isLinux [
     # Linux-specific modules
     ./linux
   ];
@@ -25,7 +27,7 @@
   # Home Manager needs a bit of information about you and the paths it should manage.
   home = {
     username = username;
-    homeDirectory = if pkgs.stdenv.isDarwin 
+    homeDirectory = if isDarwin 
       then "/Users/${username}" 
       else "/home/${username}";
 
@@ -37,5 +39,5 @@
   programs.home-manager.enable = true;
 
   # XDG directories
-  xdg.enable = pkgs.stdenv.isLinux;
+  xdg.enable = isLinux;
 }
