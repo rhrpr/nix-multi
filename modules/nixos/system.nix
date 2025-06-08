@@ -50,7 +50,7 @@
     dconf.enable = true; # Required for some GUI applications
   };
 
-  NVIDIA configuration (optional - uncomment if you have NVIDIA GPU)
+  # NVIDIA configuration (optional - uncomment if you have NVIDIA GPU)
   hardware = {
     graphics.enable = true;
     nvidia = {

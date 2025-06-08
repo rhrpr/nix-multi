@@ -68,85 +68,56 @@
     username = "hrpr";
     useremail = "ryan@hrpr.dev";
     
-    # System-specific configurations
-    systems = {
-      "aarch64-darwin" = {
-        hostname = "Ryans-MacBook-Pro";
-        isDarwin = true;
-      };
-      "x86_64-linux" = {
-        hostname = "nixos";
-        isDarwin = false;
-      };
+    # Common special arguments for all configurations
+    specialArgs = inputs // {
+      inherit username useremail;
+      # Desktop manager selection (plasma/hyprland for Linux)
+      desktopManager = "plasma"; # Change this to "hyprland" for Hyprland
     };
 
-    # Helper function to create system configurations
-    mkSystem = system: config:
-      let
-        pkgs = nixpkgs.legacyPackages.${system};
-        systemConfig = systems.${system};
-        
-        # Common special arguments for all configurations
-        specialArgs = inputs // {
-          inherit username useremail;
-          inherit (systemConfig) hostname;
-          # Desktop manager selection (plasma/hyprland for Linux)
-          desktopManager = "plasma"; # Change this to "hyprland" for Hyprland
-        };
-
-        # Common home-manager configuration
-        homeManagerConfig = {
-          useGlobalPkgs = true;
-          useUserPackages = true;
-          extraSpecialArgs = specialArgs;
-          users.${username} = import ./home;
-          backupFileExtension = "backup";
-        };
-
-      in {
-        inherit system specialArgs;
-        modules = if systemConfig.isDarwin then [
-          # macOS modules
-          ./modules/darwin/nix-core.nix
-          ./modules/darwin/system.nix
-          ./modules/darwin/host-users.nix
-          ./modules/darwin/apps.nix
-          home-manager.darwinModules.home-manager {
-            home-manager = homeManagerConfig;
-          }
-        ] else [
-          # Linux modules
-          ./modules/nixos/hardware-configuration.nix
-          ./modules/nixos/nix-core.nix
-          ./modules/nixos/system.nix
-          ./modules/nixos/host-users.nix
-          ./modules/nixos/apps.nix
-          ./modules/nixos/desktop.nix
-          home-manager.nixosModules.home-manager {
-            home-manager = homeManagerConfig // {
-              sharedModules = [ plasma-manager.homeManagerModules.plasma-manager ];
-            };
-          }
-        ];
-      };
-
-    # Generate configurations for all supported systems
-    darwinConfigurations = nixpkgs.lib.mapAttrs (system: config:
-      if config.isDarwin then
-        darwin.lib.darwinSystem (mkSystem system config)
-      else null
-    ) systems;
-
-    nixosConfigurations = nixpkgs.lib.mapAttrs (system: config:
-      if !config.isDarwin then
-        nixpkgs.lib.nixosSystem (mkSystem system config)
-      else null
-    ) systems;
+    # Common home-manager configuration
+    homeManagerConfig = {
+      useGlobalPkgs = true;
+      useUserPackages = true;
+      extraSpecialArgs = specialArgs;
+      users.${username} = import ./home;
+      backupFileExtension = "backup";
+    };
 
   in {
-    # Filter out null configurations
-    darwinConfigurations = nixpkgs.lib.filterAttrs (_: v: v != null) darwinConfigurations;
-    nixosConfigurations = nixpkgs.lib.filterAttrs (_: v: v != null) nixosConfigurations;
+    # macOS configuration
+    darwinConfigurations."Ryans-MacBook-Pro" = darwin.lib.darwinSystem {
+      system = "aarch64-darwin";
+      specialArgs = specialArgs // { hostname = "Ryans-MacBook-Pro"; };
+      modules = [
+        ./modules/darwin/nix-core.nix
+        ./modules/darwin/system.nix
+        ./modules/darwin/host-users.nix
+        ./modules/darwin/apps.nix
+        home-manager.darwinModules.home-manager {
+          home-manager = homeManagerConfig;
+        }
+      ];
+    };
+
+    # NixOS configuration
+    nixosConfigurations."nixos" = nixpkgs.lib.nixosSystem {
+      system = "x86_64-linux";
+      specialArgs = specialArgs // { hostname = "nixos"; };
+      modules = [
+        ./modules/nixos/hardware-configuration.nix
+        ./modules/nixos/nix-core.nix
+        ./modules/nixos/system.nix
+        ./modules/nixos/host-users.nix
+        ./modules/nixos/apps.nix
+        ./modules/nixos/desktop.nix
+        home-manager.nixosModules.home-manager {
+          home-manager = homeManagerConfig // {
+            sharedModules = [ plasma-manager.homeManagerModules.plasma-manager ];
+          };
+        }
+      ];
+    };
 
     # Development shells and formatting
     devShells = nixpkgs.lib.genAttrs [ "x86_64-linux" "aarch64-darwin" ] (system:
