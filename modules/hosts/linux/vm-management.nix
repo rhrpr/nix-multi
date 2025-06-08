@@ -11,7 +11,6 @@
     libvirt          # Virtualization management daemon
     virt-manager     # GUI for managing VMs
     virt-viewer      # Viewer for VMs
-    virt-install     # VM installation tool
 
     # QEMU utilities
     qemu             # QEMU user tools
@@ -33,42 +32,17 @@
     
     # NVIDIA tools for monitoring and management
     nvidia-system-monitor-qt # GUI for NVIDIA monitoring
-    nvtop            # Terminal-based GPU monitoring
+    nvtopPackages.nvidia # Terminal-based GPU monitoring
     
     # VFIO tools
     pciutils         # For lspci to identify devices
     usbutils         # For lsusb
   ];
 
-  # Enable virtualization services
-  virtualisation = {
-    libvirtd = {
-      enable = true;
-      qemu = {
-        package = pkgs.qemu_kvm;
-        runAsRoot = true;
-        swtpm.enable = true;
-        ovmf = {
-          enable = true;
-          packages = [ pkgs.OVMFFull.fd ];
-        };
-        verbatimConfig = ''
-          # GPU passthrough device permissions
-          cgroup_device_acl = [
-            "/dev/null", "/dev/full", "/dev/zero",
-            "/dev/random", "/dev/urandom",
-            "/dev/ptmx", "/dev/kvm", "/dev/kqemu",
-            "/dev/rtc","/dev/hpet", "/dev/vfio/vfio",
-            "/dev/nvidia0", "/dev/nvidiactl", "/dev/nvidia-modeset",
-            "/dev/nvidia-uvm", "/dev/nvidia-uvm-tools"
-          ]
-        '';
-      };
-    };
-    spiceUSBRedirection.enable = true;
-  };
+  # Note: virtualization.libvirtd configuration is handled by gpu-passthrough.nix
+  # to avoid conflicts and ensure proper GPU passthrough setup
 
-  # Add users to required groups
+  # Add users to required groups (complementary to gpu-passthrough.nix)
   users.users.${username} = {
     extraGroups = [ 
       "libvirtd" 
@@ -114,18 +88,9 @@
     LOOKING_GLASS_SHARED_MEM = "/dev/shm/looking-glass";
   };
 
-  # Tmpfiles for VM management
+  # Tmpfiles for VM management (complementary to gpu-passthrough.nix)
   systemd.tmpfiles.rules = [
     "f /dev/shm/looking-glass 0660 ${username} kvm -"
     "d /var/lib/libvirt/images 0755 root root -"
   ];
-
-  # Systemd services configuration
-  systemd.services = {
-    # Ensure libvirtd starts after network
-    libvirtd = {
-      after = [ "network.target" "systemd-udev-settle.service" ];
-      wants = [ "systemd-udev-settle.service" ];
-    };
-  };
 }

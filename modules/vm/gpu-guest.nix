@@ -10,16 +10,14 @@ in
   config = lib.mkIf (isNvidia && enablePassthrough) {
     # NVIDIA driver configuration for VM guest
     services.xserver.videoDrivers = [ "nvidia" ];
-    
     hardware = {
-      # Enable OpenGL for guest
-      opengl = {
-        enable = true;
-        driSupport = true;
-        driSupport32Bit = true;
-        extraPackages = with pkgs; [
-          vaapiVdpau
-          libvdpau-va-gl
+      # Enable OpenGL for guest (updated options)
+      graphics = {
+      enable = true;
+      enable32Bit = true;
+      extraPackages = with pkgs; [
+        vaapiVdpau
+        libvdpau-va-gl
         ];
       };
 
@@ -65,7 +63,7 @@ in
     # Install GPU monitoring tools
     environment.systemPackages = with pkgs; [
       nvidia-system-monitor-qt
-      nvtop
+      nvtopPackages.nvidia
       glxinfo
       vulkan-tools
     ];

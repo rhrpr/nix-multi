@@ -1,5 +1,6 @@
 { 
   config, 
+  lib,
   pkgs, 
   hostname,
   username,
@@ -55,8 +56,8 @@
     graphics.enable = true;
     nvidia = {
       modesetting.enable = true;
-      powerManagement.enable = false;
-      open = true; 
+      powerManagement.enable = lib.mkDefault false;  # Can be overridden by GPU passthrough module
+      open = lib.mkDefault true;  # Can be overridden by GPU passthrough module 
       package = config.boot.kernelPackages.nvidiaPackages.stable;
     };
   };
