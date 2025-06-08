@@ -65,56 +65,39 @@ in
   };
 
   # Ensure clean switching between desktop environments
+  # Explicitly disable conflicting services to prevent systemd service collisions
   systemd.user.services = lib.mkMerge [
-    # Disable Hyprland portal services when using Plasma
+    # Disable Hyprland services when using Plasma
     (lib.mkIf isPlasma {
       xdg-desktop-portal-hyprland = {
-        enable = false;
+        enable = lib.mkForce false;
+        wantedBy = lib.mkForce [];
+        after = lib.mkForce [];
+        wants = lib.mkForce [];
       };
     })
-    # Disable KDE portal services when using Hyprland
+    
+    # Disable KDE services when using Hyprland
     (lib.mkIf isHyprland {
       xdg-desktop-portal-kde = {
-        enable = false;
+        enable = lib.mkForce false;
+        wantedBy = lib.mkForce [];
+        after = lib.mkForce [];
+        wants = lib.mkForce [];
+      };
+      
+      # Also disable wlr portal service to prevent conflicts
+      xdg-desktop-portal-wlr = {
+        enable = lib.mkForce false;
+        wantedBy = lib.mkForce [];
+        after = lib.mkForce [];
+        wants = lib.mkForce [];
       };
     })
   ];
 
-  # Wayland support
-  environment.sessionVariables = lib.mkIf (isPlasma || isHyprland) {
-    NIXOS_OZONE_WL = "1"; # Enable Wayland support in Chromium/Electron apps
-    MOZ_ENABLE_WAYLAND = "1"; # Enable Wayland support in Firefox
-  };
-
-  # Security and authentication
-  security = {
-    polkit.enable = true;
-    rtkit.enable = true;
-    pam.services = {
-      gdm.enableGnomeKeyring = lib.mkIf isHyprland true;
-      login.enableGnomeKeyring = lib.mkIf isHyprland true;
-    };
-  };
-
-  # Audio configuration
-  services.pulseaudio.enable = false;
-  services.pipewire = {
-    enable = true;
-    alsa.enable = true;
-    alsa.support32Bit = true;
-    pulse.enable = true;
-    jack.enable = true;
-    wireplumber.enable = true;
-  };
-
-  # Graphics and hardware acceleration
-  hardware.graphics = {
-    enable = true;
-    enable32Bit = true;
-  };
-
-  # Essential packages for desktop environments
-  environment.systemPackages = with pkgs; [
+  # Disable conflicting packages at the system level
+  environment.systemPackages = lib.mkForce (with pkgs; [
     # Common desktop packages
     xdg-utils
     xdg-user-dirs
@@ -156,6 +139,7 @@ in
     gnome-calendar
     gnome-clocks
     gnome-weather
+    # Don't include portal packages here to avoid conflicts
   ] ++ lib.optionals isPlasma [
     # Additional Plasma packages
     kdePackages.kate
@@ -165,19 +149,57 @@ in
     kdePackages.dolphin
     kdePackages.konsole
     kdePackages.spectacle
-  ];
+    # Don't include portal packages here to avoid conflicts
+  ]);
+
+  # Wayland support
+  environment.sessionVariables = lib.mkIf (isPlasma || isHyprland) {
+    NIXOS_OZONE_WL = "1"; # Enable Wayland support in Chromium/Electron apps
+    MOZ_ENABLE_WAYLAND = "1"; # Enable Wayland support in Firefox
+  };
+
+  # Security and authentication
+  security = {
+    polkit.enable = true;
+    rtkit.enable = true;
+    pam.services = {
+      gdm.enableGnomeKeyring = lib.mkIf isHyprland true;
+      login.enableGnomeKeyring = lib.mkIf isHyprland true;
+    };
+  };
+
+  # Audio configuration
+  services.pulseaudio.enable = false;
+  services.pipewire = {
+    enable = true;
+    alsa.enable = true;
+    alsa.support32Bit = true;
+    pulse.enable = true;
+    jack.enable = true;
+    wireplumber.enable = true;
+  };
+
+  # Graphics and hardware acceleration
+  hardware.graphics = {
+    enable = true;
+    enable32Bit = true;
+  };
 
   # XDG portal configuration - configured to handle switching between desktop environments
   xdg.portal = {
     enable = true;
-    extraPortals = with pkgs; [
-      xdg-desktop-portal-gtk # Always include GTK portal as fallback
-    ] ++ lib.optionals isPlasma [
-      kdePackages.xdg-desktop-portal-kde
-    ] ++ lib.optionals isHyprland [
-      xdg-desktop-portal-hyprland
-      xdg-desktop-portal-wlr # Additional Wayland support
-    ];
+    # Only include the portals we actually need for the current desktop
+    extraPortals = with pkgs; 
+      if isPlasma then [
+        kdePackages.xdg-desktop-portal-kde
+        xdg-desktop-portal-gtk
+      ] else if isHyprland then [
+        # Use the portal from Hyprland flake instead of nixpkgs to avoid conflicts
+        hyprland.packages.${pkgs.system}.xdg-desktop-portal-hyprland
+        xdg-desktop-portal-gtk
+      ] else [
+        xdg-desktop-portal-gtk
+      ];
     
     # Explicit configuration to prevent conflicts
     config = if isPlasma then {
@@ -193,6 +215,8 @@ in
         default = ["hyprland"];
         "org.freedesktop.impl.portal.FileChooser" = ["gtk"];
         "org.freedesktop.impl.portal.AppChooser" = ["gtk"];
+        "org.freedesktop.impl.portal.Print" = ["gtk"];
+        "org.freedesktop.impl.portal.Screenshot" = ["hyprland"];
       };
       hyprland = {
         default = ["hyprland" "gtk"];
@@ -203,8 +227,8 @@ in
       };
     };
     
-    # Force wlr to be disabled when not using Hyprland
-    wlr.enable = isHyprland;
+    # Disable wlr portal to avoid conflicts with hyprland portal
+    wlr.enable = false;
   };
 
   # Fonts configuration
