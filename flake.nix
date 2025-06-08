@@ -191,12 +191,14 @@
     # Development shells and formatting
     devShells = nixpkgs.lib.genAttrs [ "x86_64-linux" "aarch64-darwin" ] (system:
       let pkgs = nixpkgs.legacyPackages.${system}; in
-      pkgs.mkShell {
-        buildInputs = with pkgs; [
-          nixfmt-rfc-style
-          nil
-          statix
-        ];
+      {
+        default = pkgs.mkShell {
+          buildInputs = with pkgs; [
+            nixfmt-rfc-style
+            nil
+            statix
+          ];
+        };
       }
     );
 
