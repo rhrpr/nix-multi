@@ -13,7 +13,7 @@ in
 {
   # Only enable if GPU passthrough is requested
   config = lib.mkIf (isNvidia && enablePassthrough) {
-  virtualisation = {
+    virtualisation = {
     libvirtd = {
       enable = true;
       qemu = {
