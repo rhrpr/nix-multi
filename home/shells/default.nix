@@ -10,9 +10,16 @@
     latr = "ls -altr";
     
     # System rebuild aliases
-    rebuild = "sudo nixos-rebuild switch --flake ~/.config/nix-multi#nixos";
+    rebuild = "sudo nixos-rebuild switch --flake ~/.config/nix-multi#nixos-plasma";
     rebuild-darwin = "darwin-rebuild switch --flake ~/.config/nix-multi#Ryans-MacBook-Pro";
-    rebuild-test = "sudo nixos-rebuild test --flake ~/.config/nix-multi#nixos";
+    rebuild-test = "sudo nixos-rebuild test --flake ~/.config/nix-multi#nixos-plasma";
+    rebuild-vm = "nix build ~/.config/nix-multi#nixosConfigurations.nixos-vm-hyprland.config.system.build.vm";
+    
+    # VM management aliases
+    vm-build = "~/.config/nix-multi/vm-build.sh build";
+    vm-run = "~/.config/nix-multi/vm-build.sh run"; 
+    vm-clean = "~/.config/nix-multi/vm-build.sh clean";
+    vm-manager = "~/.config/nix-multi/vm-manager.sh";
     
     # Nix utilities
     nix-gc = "sudo nix-collect-garbage -d";
