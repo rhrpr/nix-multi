@@ -26,6 +26,7 @@
     gmp
     gnutls
     htop
+    lspci
     jansson
     libidn2
     nettle
