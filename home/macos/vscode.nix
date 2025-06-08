@@ -26,7 +26,7 @@
         "editor.fontSize" = 14;
         "editor.fontFamily" = "Menlo, Monaco, 'Courier New', monospace";
         "editor.tabSize" = 2;
-        "workbench.colorTheme" = "Kimbie Dark";
+        "workbench.colorTheme" = "Shades of Purple (Super Dark)"; # Kimbie Dark
         "files.autoSave" = "afterDelay";
       };
 

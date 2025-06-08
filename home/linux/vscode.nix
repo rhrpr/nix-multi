@@ -27,7 +27,7 @@
         "editor.fontFamily" = "FiraCode Nerd Font, monospace";
         "editor.fontLigatures" = true;
         "editor.tabSize" = 2;
-        "workbench.colorTheme" = "Kimbie Dark";
+        "workbench.colorTheme" = "Shades of Purple (Super Dark)"; # Kimbie Dark
         "files.autoSave" = "afterDelay";
         "terminal.integrated.fontFamily" = "FiraCode Nerd Font";
         "editor.formatOnSave" = true;
