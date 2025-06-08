@@ -94,6 +94,7 @@ nix-multi/
 ## ⚙️ Configuration Details
 
 ### macOS (Nix-Darwin)
+
 - **Desktop Manager**: None (native macOS)
 - **Package Manager**: Nix + Homebrew integration
 - **Window Manager**: Aerospace (i3-like tiling)
@@ -101,6 +102,7 @@ nix-multi/
 - **VM Support**: QEMU, UTM, VMware Fusion for creating VMs
 
 ### Linux NixOS (KDE Plasma)
+
 - **Desktop Manager**: KDE Plasma
 - **Package Manager**: Nix (pure)
 - **Display Server**: Wayland/X11
@@ -108,6 +110,7 @@ nix-multi/
 - **VM Support**: libvirt, virt-manager, QEMU for VM creation
 
 ### VM NixOS (Hyprland)
+
 - **Desktop Manager**: Hyprland (Wayland compositor)
 - **Target**: Runs on both macOS and Linux hosts
 - **Optimization**: VM-specific performance tuning
@@ -117,11 +120,13 @@ nix-multi/
 ## 🛠️ VM Features
 
 ### Cross-Platform Compatibility
+
 - **Intel/AMD (x86_64)**: Full support on both macOS and Linux
 - **Apple Silicon (aarch64)**: UTM/QEMU support on macOS
 - **Performance**: Optimized virtio drivers and guest tools
 
 ### VM Optimizations
+
 - SPICE guest agent for display integration
 - Virtio drivers for better I/O performance
 - Shared clipboard and file transfer
@@ -129,6 +134,7 @@ nix-multi/
 - Optimized memory and CPU usage
 
 ### Quick VM Access
+
 ```bash
 # SSH into running VM (default setup)
 ssh hrpr@localhost -p 22000
@@ -162,16 +168,19 @@ Edit `modules/vm/apps.nix` and Hyprland configs in `home/linux/hyprland.nix`
 ## 🚨 Important Notes
 
 ### First-Time Setup
+
 - **macOS**: Requires manual nix-darwin installation first
 - **Linux**: Requires existing NixOS installation
 - **VM**: Can be built on any host with Nix installed
 
 ### VM Networking
+
 - Default VM SSH port: 22000
 - Default user: hrpr (configurable in flake.nix)
 - Default password: nixos (change immediately)
 
 ### Security Considerations
+
 - VM has passwordless sudo enabled for convenience
 - SSH is enabled by default in VM
 - Change default passwords after first login
@@ -179,6 +188,7 @@ Edit `modules/vm/apps.nix` and Hyprland configs in `home/linux/hyprland.nix`
 ## 🧪 Testing & Validation
 
 ### Build Validation
+
 All configurations have been tested and validated:
 
 ```bash
@@ -193,6 +203,7 @@ nix build .#vmImages.hyprland-vm-aarch64 --dry-run   # ARM64/Apple Silicon VM
 ```
 
 ### VM Testing
+
 ```bash
 # Build and test VM execution
 ./vm-build.sh x86_64 build          # Creates result symlink
@@ -203,6 +214,7 @@ ssh hrpr@localhost -p 22000         # Default VM SSH (password: nixos)
 ```
 
 ### Current Status (June 2025)
+
 ✅ **All configurations building successfully**  
 ✅ **Cross-platform VM support (x86_64 + aarch64)**  
 ✅ **Deprecation warnings resolved**  
