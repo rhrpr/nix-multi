@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/run/current-system/sw/bin/bash
 
 read -p "Enter files to add (leave empty to skip): " files_to_add
 if [ -n "$files_to_add" ]; then
@@ -32,7 +32,7 @@ if [ "$OS" = "Darwin" ]; then
 elif [ "$OS" = "Linux" ]; then
   echo "Detected Linux"
   # NixOS-specific rebuild
-  nix flake update --flake ~/.config/nixos-multi/
+  nix flake update --flake ~/.config/nix-multi/
   sudo nixos-rebuild switch --flake ~/.config/nix-multi#$(hostname) --show-trace
 else
   echo "Unsupported operating system: $OS"
