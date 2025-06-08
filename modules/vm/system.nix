@@ -114,7 +114,7 @@
 
   # Enable automatic login for convenience in VM
   services.displayManager.autoLogin = {
-    enable = true;
+    enable = lib.mkForce true;
     user = username;
   };
 
