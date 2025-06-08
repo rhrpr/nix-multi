@@ -51,10 +51,6 @@
     steam
     transmission_4
     whatsapp-for-linux
-    
-    # Additional tools
-    qemu # Alternative to VMware/UTM
-    virt-manager # For VM management
   ];
   environment.variables.EDITOR = "nano";
 

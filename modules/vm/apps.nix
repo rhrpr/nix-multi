@@ -16,10 +16,6 @@
     htop
     neofetch
     
-    # VM-specific tools
-    spice-vdagent
-    qemu-utils
-    
     # Hyprland-specific applications (lightweight for VM)
     kitty          # Terminal
     firefox        # Web browser  
