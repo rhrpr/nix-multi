@@ -1,0 +1,43 @@
+{ config, pkgs, lib, ... }:
+
+{
+  programs.vscode = {
+    enable = true;
+    package = pkgs.vscode;
+
+    extensions = with pkgs.vscode-extensions; [
+      bbenoist.nix
+      davidanson.vscode-markdownlint
+      github.copilot
+      github.copilot-chat
+      ms-python.debugpy
+      ms-python.python
+      ms-python.vscode-pylance
+      ms-vscode-remote.remote-ssh
+      ms-vscode-remote.remote-ssh-edit
+      mechatroner.rainbow-csv
+      dbaeumer.vscode-eslint
+      github.vscode-github-actions
+      ms-azuretools.vscode-docker
+    ];
+
+    userSettings = {
+      "editor.fontSize" = 14;
+      "editor.fontFamily" = "FiraCode Nerd Font, monospace";
+      "editor.fontLigatures" = true;
+      "editor.tabSize" = 2;
+      "workbench.colorTheme" = "Kimbie Dark";
+      "files.autoSave" = "afterDelay";
+      "terminal.integrated.fontFamily" = "FiraCode Nerd Font";
+      "editor.formatOnSave" = true;
+    };
+
+    keybindings = [
+      {
+        key = "ctrl+k ctrl+i";
+        command = "editor.action.showHover";
+        when = "editorTextFocus";
+      }
+    ];
+  };
+}

@@ -1,34 +1,41 @@
-{ username, ... }:
+{ 
+  username, 
+  pkgs, 
+  lib,
+  desktopManager ? "plasma",
+  ... 
+}:
 
 {
   # import sub modules
   imports = [
-    ./zsh.nix
     ./core.nix
     ./git.nix
-    ./vscode.nix
     ./starship.nix
-    ./ghostty.nix
-    ./plasma.nix
+    ./shells
+    ./terminals
+  ] ++ lib.optionals pkgs.stdenv.isDarwin [
+    # macOS-specific modules
+    ./macos
+  ] ++ lib.optionals pkgs.stdenv.isLinux [
+    # Linux-specific modules
+    ./linux
   ];
 
-  # Home Manager needs a bit of information about you and the
-  # paths it should manage.
+  # Home Manager needs a bit of information about you and the paths it should manage.
   home = {
     username = username;
-    homeDirectory = "/Users/${username}";
+    homeDirectory = if pkgs.stdenv.isDarwin 
+      then "/Users/${username}" 
+      else "/home/${username}";
 
-    # This value determines the Home Manager release that your
-    # configuration is compatible with. This helps avoid breakage
-    # when a new Home Manager release introduces backwards
-    # incompatible changes.
-    #
-    # You can update Home Manager without changing this value. See
-    # the Home Manager release notes for a list of state version
-    # changes in each release.
+    # This value determines the Home Manager release that your configuration is compatible with.
     stateVersion = "24.11";
   };
 
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;
+
+  # XDG directories
+  xdg.enable = pkgs.stdenv.isLinux;
 }

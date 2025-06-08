@@ -1,1 +1,1 @@
-sudo nixos-rebuild switch
+--flake ~/.config/nix-multi#$(hostname) --show-trace

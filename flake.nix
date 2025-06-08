@@ -1,29 +1,46 @@
 {
-  description = "Nix for macOS and Linux configuration";
+  description = "Unified Nix configuration for macOS (nix-darwin) and Linux (NixOS) with desktop manager switching";
 
   nixConfig = {
-    substituters = [ "https://cache.nixos.org" ];
+    substituters = [ 
+      "https://cache.nixos.org"
+      "https://hyprland.cachix.org"
+    ];
+    trusted-public-keys = [
+      "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
+      "hyprland.cachix.org-1:a7pgxzMz7+chwVL3/pzj6jIBMioiJM7ypFP8PwtkuGc="
+    ];
   };
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
 
+    # macOS support
     darwin = {
       url = "github:lnl7/nix-darwin";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    # Home Manager for dotfiles management
     home-manager = {
       url = "github:nix-community/home-manager/master";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    # KDE Plasma configuration
     plasma-manager = {
       url = "github:nix-community/plasma-manager";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.home-manager.follows = "home-manager";
     };
 
+    # Hyprland support
+    hyprland = {
+      url = "github:hyprwm/Hyprland";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    # Neovim configuration
     nvchad4nix = {
       url = "github:nix-community/nix4nvchad";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -35,80 +52,117 @@
     };
   };
 
-outputs = inputs @ { self, nixpkgs, home-manager, darwin ? null, plasma-manager ? null, nvchad4nix, primeagenInit ... }:
+  outputs = inputs @ { 
+    self, 
+    nixpkgs, 
+    home-manager, 
+    darwin, 
+    plasma-manager, 
+    hyprland,
+    nvchad4nix, 
+    primeagenInit,
+    ... 
+  }:
   let
-    # Define systems to support
-    supportedSystems = [ "x86_64-linux" "aarch64-darwin" ];
-    
-    # Get current system or default to x86_64-linux if not available
-    system = builtins.currentSystem or "x86_64-linux";
-
-    # Determine if the current system is Darwin (macOS)
-    isDarwin = builtins.match ".*-darwin" system != null;
-
-    # User configuration
+    # User configuration - customize these
     username = "hrpr";
     useremail = "ryan@hrpr.dev";
     
-    # Set hostname based on system
-    hostname = if system == "aarch64-darwin" then "Ryans-MacBook-Pro" 
-               else if system == "x86_64-linux" then "nixos" 
-               else "default-hostname";
-
-    # Common special arguments to pass to all configurations
-    specialArgs = inputs // { inherit username useremail hostname; };
-
-    # Define home-manager configurations
-    homeManagerCommonConfig = {
-      useGlobalPkgs = true;
-      useUserPackages = true;
-      extraSpecialArgs = specialArgs;
-      users.${username} = import ./home;
-      backupFileExtension = "backup";
+    # System-specific configurations
+    systems = {
+      "aarch64-darwin" = {
+        hostname = "Ryans-MacBook-Pro";
+        isDarwin = true;
+      };
+      "x86_64-linux" = {
+        hostname = "nixos";
+        isDarwin = false;
+      };
     };
-    
-    # Define module paths for each system type
-    darwinModules = [
-      ./modules/darwin/nix-core.nix
-      ./modules/darwin/system.nix
-      ./modules/darwin/host-users.nix
-      ./modules/darwin/apps.nix
-      home-manager.darwinModules.home-manager {
-        home-manager = homeManagerCommonConfig // {
-          # Darwin-specific home-manager settings
-        };
-      }
-    ];
-    
-    nixosModules = [
-      ./modules/nixos/hardware-configuration.nix
-      ./modules/nixos/nix-core.nix
-      ./modules/nixos/system.nix
-      ./modules/nixos/host-users.nix
-      ./modules/nixos/apps.nix
-      home-manager.nixosModules.home-manager {
-        home-manager = homeManagerCommonConfig // {
-          # NixOS-specific home-manager settings
-        };
-      }
-    ];
 
-  in
-  {
-    # Darwin configurations (macOS)
-    darwinConfigurations = if isDarwin && darwin != null then {
-      ${hostname} = darwin.lib.darwinSystem {
-        inherit system specialArgs;
-        modules = darwinModules;
-      };
-    } else {};
+    # Helper function to create system configurations
+    mkSystem = system: config:
+      let
+        pkgs = nixpkgs.legacyPackages.${system};
+        systemConfig = systems.${system};
+        
+        # Common special arguments for all configurations
+        specialArgs = inputs // {
+          inherit username useremail;
+          inherit (systemConfig) hostname;
+          # Desktop manager selection (plasma/hyprland for Linux)
+          desktopManager = "plasma"; # Change this to "hyprland" for Hyprland
+        };
 
-    # NixOS configurations (Linux)
-    nixosConfigurations = if !isDarwin then {
-      ${hostname} = nixpkgs.lib.nixosSystem {
+        # Common home-manager configuration
+        homeManagerConfig = {
+          useGlobalPkgs = true;
+          useUserPackages = true;
+          extraSpecialArgs = specialArgs;
+          users.${username} = import ./home;
+          backupFileExtension = "backup";
+        };
+
+      in {
         inherit system specialArgs;
-        modules = nixosModules;
+        modules = if systemConfig.isDarwin then [
+          # macOS modules
+          ./modules/darwin/nix-core.nix
+          ./modules/darwin/system.nix
+          ./modules/darwin/host-users.nix
+          ./modules/darwin/apps.nix
+          home-manager.darwinModules.home-manager {
+            home-manager = homeManagerConfig;
+          }
+        ] else [
+          # Linux modules
+          ./modules/nixos/hardware-configuration.nix
+          ./modules/nixos/nix-core.nix
+          ./modules/nixos/system.nix
+          ./modules/nixos/host-users.nix
+          ./modules/nixos/apps.nix
+          ./modules/nixos/desktop.nix
+          home-manager.nixosModules.home-manager {
+            home-manager = homeManagerConfig // {
+              sharedModules = [ plasma-manager.homeManagerModules.plasma-manager ];
+            };
+          }
+        ];
       };
-    } else {};
+
+    # Generate configurations for all supported systems
+    darwinConfigurations = nixpkgs.lib.mapAttrs (system: config:
+      if config.isDarwin then
+        darwin.lib.darwinSystem (mkSystem system config)
+      else null
+    ) systems;
+
+    nixosConfigurations = nixpkgs.lib.mapAttrs (system: config:
+      if !config.isDarwin then
+        nixpkgs.lib.nixosSystem (mkSystem system config)
+      else null
+    ) systems;
+
+  in {
+    # Filter out null configurations
+    darwinConfigurations = nixpkgs.lib.filterAttrs (_: v: v != null) darwinConfigurations;
+    nixosConfigurations = nixpkgs.lib.filterAttrs (_: v: v != null) nixosConfigurations;
+
+    # Development shells and formatting
+    devShells = nixpkgs.lib.genAttrs [ "x86_64-linux" "aarch64-darwin" ] (system:
+      let pkgs = nixpkgs.legacyPackages.${system}; in
+      pkgs.mkShell {
+        buildInputs = with pkgs; [
+          nixfmt-rfc-style
+          nil
+          statix
+        ];
+      }
+    );
+
+    # Formatter for `nix fmt`
+    formatter = nixpkgs.lib.genAttrs [ "x86_64-linux" "aarch64-darwin" ] (system:
+      nixpkgs.legacyPackages.${system}.nixfmt-rfc-style
+    );
   };
 }
