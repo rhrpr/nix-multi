@@ -72,7 +72,7 @@
     baseSpecialArgs = inputs // {
       inherit username useremail;
       # Desktop manager selection (plasma/hyprland for Linux)
-      desktopManager = "hyprland"; # Change this to "hyprland" for Hyprland
+      desktopManager = "plasma"; # Change this to "hyprland" for Hyprland
     };
 
     # Common home-manager configuration function

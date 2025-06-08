@@ -64,6 +64,22 @@ in
     package = hyprland.packages.${pkgs.system}.hyprland;
   };
 
+  # Ensure clean switching between desktop environments
+  systemd.user.services = lib.mkMerge [
+    # Disable Hyprland portal services when using Plasma
+    (lib.mkIf isPlasma {
+      xdg-desktop-portal-hyprland = {
+        enable = false;
+      };
+    })
+    # Disable KDE portal services when using Hyprland
+    (lib.mkIf isHyprland {
+      xdg-desktop-portal-kde = {
+        enable = false;
+      };
+    })
+  ];
+
   # Wayland support
   environment.sessionVariables = lib.mkIf (isPlasma || isHyprland) {
     NIXOS_OZONE_WL = "1"; # Enable Wayland support in Chromium/Electron apps
@@ -151,22 +167,44 @@ in
     kdePackages.spectacle
   ];
 
-  # XDG portal configuration
+  # XDG portal configuration - configured to handle switching between desktop environments
   xdg.portal = {
     enable = true;
     extraPortals = with pkgs; [
+      xdg-desktop-portal-gtk # Always include GTK portal as fallback
     ] ++ lib.optionals isPlasma [
       kdePackages.xdg-desktop-portal-kde
     ] ++ lib.optionals isHyprland [
       xdg-desktop-portal-hyprland
-    ] ++ [
-      xdg-desktop-portal-gtk
+      xdg-desktop-portal-wlr # Additional Wayland support
     ];
-    config = {
+    
+    # Explicit configuration to prevent conflicts
+    config = if isPlasma then {
       common = {
-        default = if isPlasma then ["kde"] else if isHyprland then ["hyprland"] else ["gtk"];
+        default = ["kde"];
+        "org.freedesktop.impl.portal.FileChooser" = ["kde"];
+        "org.freedesktop.impl.portal.AppChooser" = ["kde"];
+        "org.freedesktop.impl.portal.Print" = ["kde"];
+        "org.freedesktop.impl.portal.Screenshot" = ["kde"];
+      };
+    } else if isHyprland then {
+      common = {
+        default = ["hyprland"];
+        "org.freedesktop.impl.portal.FileChooser" = ["gtk"];
+        "org.freedesktop.impl.portal.AppChooser" = ["gtk"];
+      };
+      hyprland = {
+        default = ["hyprland" "gtk"];
+      };
+    } else {
+      common = {
+        default = ["gtk"];
       };
     };
+    
+    # Force wlr to be disabled when not using Hyprland
+    wlr.enable = isHyprland;
   };
 
   # Fonts configuration
