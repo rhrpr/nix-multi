@@ -129,4 +129,13 @@
 
   # System state version for VM
   system.stateVersion = "24.11";
+
+  # Virtualization settings for ultrawide resolution support
+  virtualisation = {
+    memorySize = 8192;  # 8GB memory for high resolution
+    diskSize = 32768;   # 32GB disk space
+    cores = 4;          # 4 CPU cores for better performance
+    graphics = true;    # Enable graphics acceleration
+    resolution = { x = 3440; y = 1440; };  # Ultrawide resolution
+  };
 }

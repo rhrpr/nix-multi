@@ -139,8 +139,8 @@ run_vm() {
             log_warn "VM will start with default settings. Use Ctrl+Alt+G to release mouse."
             log_warn "SSH access available on localhost:22000 (user: hrpr, password: nixos)"
             
-            # Set memory and CPU for better performance
-            export QEMU_OPTS="-m 4G -smp 4 -enable-kvm"
+            # Set memory and CPU for better performance with ultrawide resolution support
+            export QEMU_OPTS="-m 6G -smp 4 -enable-kvm -device virtio-gpu-pci,xres=3440,yres=1440 -display gtk,gl=on"
             
             ./result/bin/run-nixos-vm
         else

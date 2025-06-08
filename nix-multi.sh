@@ -209,8 +209,8 @@ run_vm() {
         log_info "Starting VM with GPU passthrough support..."
         log_warn "Use Ctrl+Alt+G to release mouse from VM"
         
-        # Set optimal VM settings for Linux host
-        export QEMU_OPTS="-m 8G -smp 4 -enable-kvm -device virtio-gpu-pci"
+        # Set optimal VM settings for Linux host with ultrawide resolution support
+        export QEMU_OPTS="-m 8G -smp 4 -enable-kvm -device virtio-gpu-pci,xres=3440,yres=1440 -display gtk,gl=on"
         
         # Check for GPU passthrough
         if lspci | grep -i nvidia &>/dev/null; then
@@ -221,8 +221,8 @@ run_vm() {
         log_info "Starting VM on macOS..."
         log_warn "Note: GPU passthrough not available on macOS"
         
-        # Set VM settings for macOS host
-        export QEMU_OPTS="-m 4G -smp 2"
+        # Set VM settings for macOS host with ultrawide resolution support
+        export QEMU_OPTS="-m 6G -smp 2 -device virtio-gpu-pci,xres=3440,yres=1440 -display cocoa"
     fi
     
     ./result/bin/run-nixos-vm
