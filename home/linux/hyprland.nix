@@ -80,7 +80,7 @@
       };
 
       # Keybindings
-      "$mainMod" = "SUPER";
+      "$mainMod" = "CTRL+ALT";
 
       bind = [
         "$mainMod, Q, exec, kitty"

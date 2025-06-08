@@ -190,7 +190,7 @@ build_vm() {
         return 1
     fi
     
-    echo "VM executable: ./result/bin/run-nixos-vm"
+    echo "VM executable: ./result/bin/run-nixos-vm-hyprland-vm"
 }
 
 # Run VM
@@ -200,7 +200,7 @@ run_vm() {
     
     log_section "Running Hyprland VM"
     
-    if [[ ! -L "./result" ]] || [[ ! -e "./result/bin/run-nixos-vm" ]]; then
+    if [[ ! -L "./result" ]] || [[ ! -e "./result/bin/run-nixos-vm-hyprland-vm" ]]; then
         log_warn "VM not found. Building VM first..."
         build_vm
     fi
@@ -225,7 +225,7 @@ run_vm() {
         export QEMU_OPTS="-m 6G -smp 2 -device virtio-gpu-pci,xres=3440,yres=1440 -display cocoa"
     fi
     
-    ./result/bin/run-nixos-vm
+    ./result/bin/run-nixos-vm-hyprland-vm
 }
 
 # Test GPU setup (Linux only)
