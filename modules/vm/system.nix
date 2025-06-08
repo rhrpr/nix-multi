@@ -8,13 +8,47 @@
 }:
 
 {
-  # VM-optimized system configuration
-  imports = [
-    ../nixos/system.nix  # Inherit base system config
-  ];
+  # VM-optimized system configuration - standalone without importing base system
+  
+  # Basic system configuration for VM
+  boot.loader.systemd-boot.enable = true;
+  boot.loader.efi.canTouchEfiVariables = true;
+  
+  # Networking
+  networking.hostName = hostname;
+  networking.networkmanager.enable = true;
 
-  # VM-specific overrides
-  networking.hostName = lib.mkForce hostname;
+  # Localization
+  time.timeZone = "Europe/London";
+  i18n.defaultLocale = "en_GB.UTF-8";
+  i18n.extraLocaleSettings = {
+    LC_ADDRESS = "en_GB.UTF-8";
+    LC_IDENTIFICATION = "en_GB.UTF-8";
+    LC_MEASUREMENT = "en_GB.UTF-8";
+    LC_MONETARY = "en_GB.UTF-8";
+    LC_NAME = "en_GB.UTF-8";
+    LC_NUMERIC = "en_GB.UTF-8";
+    LC_PAPER = "en_GB.UTF-8";
+    LC_TELEPHONE = "en_GB.UTF-8";
+    LC_TIME = "en_GB.UTF-8";
+  };
+
+  # Enable essential programs for VM
+  programs = {
+    firefox.enable = true;
+    zsh.enable = true;
+    dconf.enable = true; # Required for some GUI applications
+  };
+
+  # VM-specific user configuration
+  users.users.${username} = {
+    isNormalUser = true;
+    description = "Ryan Harper";
+    extraGroups = [ "wheel" "networkmanager" "video" "audio" "storage" ];
+    shell = pkgs.zsh;
+    # Set a default password for VM (change after first login)
+    password = "nixos";
+  };
 
   # Optimize for VM environment
   services = {
@@ -69,13 +103,6 @@
   zramSwap = {
     enable = true;
     memoryPercent = 25;
-  };
-
-  # VM-specific user configuration
-  users.users.${username} = {
-    extraGroups = [ "wheel" "networkmanager" "video" "audio" ];
-    # Set a default password for VM (change after first login)
-    password = "nixos";
   };
 
   # Enable automatic login for convenience in VM
