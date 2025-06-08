@@ -15,8 +15,15 @@
   boot.loader.efi.canTouchEfiVariables = true;
   
   # Networking
-  networking.hostName = hostname;
-  networking.networkmanager.enable = true;
+  networking = {
+    hostName = hostname;
+    networkmanager.enable = true;
+    firewall = {
+      enable = true;
+      # Open ports for potential VM services  
+      allowedTCPPorts = [ 22 ];  # SSH
+    };
+  };
 
   # Localization
   time.timeZone = "Europe/London";
@@ -109,16 +116,6 @@
   services.displayManager.autoLogin = {
     enable = true;
     user = username;
-  };
-
-  # VM-specific networking
-  networking = {
-    networkmanager.enable = true;
-    firewall = {
-      enable = true;
-      # Open ports for potential VM services
-      allowedTCPPorts = [ 22 ];  # SSH
-    };
   };
 
   # Enable SSH for remote access
