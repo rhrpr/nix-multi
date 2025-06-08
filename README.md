@@ -1,10 +1,10 @@
-# Unified Nix Configuration
+# Nix-Multi: Unified Nix Configuration
 
-A comprehensive Nix configuration supporting three distinct environments:
+A comprehensive Nix configuration that supports:
 
-1. **macOS** - Nix-Darwin configuration with Homebrew integration
-2. **Linux NixOS** - Native Linux with KDE Plasma desktop
-3. **VM NixOS** - Hyprland VM for both macOS and Linux hosts using QEMU
+- **macOS hosts** with nix-darwin (VM creation and management)
+- **Linux hosts** with NixOS + Plasma + RTX 3080 partial GPU passthrough  
+- **Hyprland VMs** that run on both macOS and Linux hosts with shared userland configuration
 
 ## 🚀 Quick Start
 
@@ -13,7 +13,29 @@ A comprehensive Nix configuration supporting three distinct environments:
 - [Nix package manager](https://nixos.org/download.html) installed
 - [Flakes enabled](https://nixos.wiki/wiki/Flakes#Enable_flakes) in your Nix configuration
 
-### 1. macOS Configuration (Nix-Darwin)
+### One-Command Setup
+
+```bash
+# Auto-setup for your current OS
+./nix-multi.sh setup
+
+# Or OS-specific setup  
+./nix-multi.sh setup-macos              # macOS with nix-darwin
+./nix-multi.sh setup-linux              # Linux with NixOS + GPU passthrough
+```
+
+### VM Quick Start
+
+```bash
+./nix-multi.sh vm-build                 # Build Hyprland VM
+./nix-multi.sh vm-run                   # Run VM  
+./nix-multi.sh vm-manage                # Interactive management
+./nix-multi.sh validate                 # Test entire setup
+```
+
+## 📋 Manual Setup (Advanced)
+
+### 1. macOS Configuration (VM Host)
 
 ```bash
 # First time setup (requires nix-darwin)
@@ -23,21 +45,16 @@ nix run nix-darwin -- switch --flake .#Ryans-MacBook-Pro
 darwin-rebuild switch --flake .#Ryans-MacBook-Pro
 ```
 
-### 2. Linux NixOS Configuration (KDE Plasma)
+### 2. Linux NixOS Configuration (GPU Passthrough Host)
 
 ```bash
-# Build and switch to NixOS configuration
+# Build and switch to NixOS configuration with RTX 3080 support
 sudo nixos-rebuild switch --flake .#nixos-plasma
 ```
 
-### 3. VM Configuration (NixOS Hyprland)
-
-### Quick Start Commands
+### 3. VM Configuration (Hyprland Guest)
 
 ```bash
-# Validate entire setup
-./validate-setup.sh                 # Comprehensive validation test
-
 # Interactive VM manager (recommended)
 ./vm-manager.sh
 
@@ -51,19 +68,18 @@ sudo nixos-rebuild switch --flake .#nixos-plasma
 ./vm-build.sh aarch64 build  # For ARM64/Apple Silicon
 
 # Run built VM directly
-./result/bin/run-nixos-vm-hyprland-vm
+./result/bin/run-nixos-vm
 ```
 
 ## 📁 Repository Structure
 
-```
+```text
 nix-multi/
 ├── flake.nix              # Main flake configuration
-├── flake.lock             # Flake lock file
+├── nix-multi.sh           # Main setup and management script  
 ├── vm-build.sh            # VM build and management script
 ├── vm-manager.sh          # Interactive VM management
 ├── validate-setup.sh      # Comprehensive setup validation
-├── nix-rebuild.sh         # Helper for rebuilding configs
 │
 ├── home/                  # Home Manager configurations
 │   ├── default.nix        # Entry point for home configurations
@@ -72,50 +88,137 @@ nix-multi/
 │   ├── macos/            # macOS-specific home config
 │   └── neovim/           # Neovim configuration
 │
-└── modules/              # System-level modules
-    ├── darwin/           # macOS nix-darwin modules
-    │   ├── system.nix    # macOS system configuration
-    │   ├── apps.nix      # macOS applications
-    │   └── host-users.nix
-    ├── nixos/            # NixOS modules (shared)
-    │   ├── system.nix    # Base NixOS system config
-    │   ├── desktop.nix   # Desktop environment config
-    │   ├── apps.nix      # Linux applications
-    │   └── hardware-configuration.nix
-    ├── vm/               # VM-specific modules
-    │   ├── system.nix    # VM system optimizations
-    │   ├── apps.nix      # VM application selection
-    │   ├── hardware-configuration.nix  # VM hardware config
-    │   └── vm-guest.nix  # VM guest utilities
-    └── shared/           # Cross-platform modules
-        └── vm-tools.nix  # QEMU and virtualization tools
+├── modules/              # System-level modules
+│   ├── darwin/           # macOS nix-darwin modules
+│   ├── nixos/            # NixOS modules (shared)
+│   ├── vm/               # VM-specific modules
+│   └── hosts/            # Host-specific modules
+│       ├── linux/        # Linux host modules
+│       │   ├── gpu-passthrough.nix    # RTX 3080 partial passthrough
+│       │   └── vm-management.nix      # VM tools for Linux
+│       └── macos/        # macOS host modules
+│           └── vm-management.nix      # VM tools for macOS
+│
+├── scripts/              # Utility scripts
+│   └── rtx3080-setup.sh  # RTX 3080 testing and validation
+│
+└── templates/            # VM templates
+    └── partial-gpu-passthrough-vm.xml
 ```
 
-## ⚙️ Configuration Details
+## ⚙️ Configuration Overview
 
-### macOS (Nix-Darwin)
+### Host Configurations
 
-- **Desktop Manager**: None (native macOS)
-- **Package Manager**: Nix + Homebrew integration
-- **Window Manager**: Aerospace (i3-like tiling)
-- **Applications**: Full suite including development tools, media apps
-- **VM Support**: QEMU, UTM, VMware Fusion for creating VMs
+**macOS (nix-darwin)**:
 
-### Linux NixOS (KDE Plasma)
+- **Purpose**: VM host and development environment
+- **Desktop**: Native macOS with Aerospace window manager
+- **Package Management**: Nix + Homebrew integration
+- **VM Support**: QEMU for creating Hyprland VMs
 
-- **Desktop Manager**: KDE Plasma
-- **Package Manager**: Nix (pure)
-- **Display Server**: Wayland/X11
-- **Applications**: Linux-native development and productivity tools
-- **VM Support**: libvirt, virt-manager, QEMU for VM creation
+**Linux (NixOS + Plasma)**:
 
-### VM NixOS (Hyprland)
+- **Purpose**: GPU passthrough host and development environment
+- **Desktop**: KDE Plasma with Wayland/X11
+- **GPU**: RTX 3080 partial passthrough (host + VM sharing)
+- **VM Support**: libvirt + KVM for high-performance VMs
 
-- **Desktop Manager**: Hyprland (Wayland compositor)
-- **Target**: Runs on both macOS and Linux hosts
+### Guest Configuration
+
+**Hyprland VM**:
+
+- **Purpose**: Cross-platform guest system
+- **Desktop**: Hyprland (Wayland tiling compositor)
 - **Optimization**: VM-specific performance tuning
-- **Applications**: Lightweight selection optimized for VM usage
-- **Integration**: SPICE/QEMU guest tools for seamless experience
+- **GPU Support**: Passthrough capable (when run on Linux host)
+
+## 🎮 RTX 3080 Partial GPU Passthrough
+
+### What is Partial GPU Passthrough?
+
+Unlike full passthrough (which dedicates the entire GPU to a VM), partial passthrough allows:
+
+- ✅ **Host keeps GPU access** for desktop, gaming, development
+- ✅ **VMs can access GPU** for Windows gaming, GPU compute
+- ✅ **Containers can use GPU** for AI/ML workloads  
+- ✅ **Dynamic sharing** based on workload demands
+
+### Your RTX 3080 Configuration
+
+**Detected Hardware**:
+
+- GPU: NVIDIA GA102 [GeForce RTX 3080 Lite Hash Rate] (01:00.0)
+- Audio: NVIDIA GA102 High Definition Audio Controller (01:00.1)
+
+**Automatic Configuration**:
+
+- PCI IDs: 10de:2206 (GPU), 10de:1aef (Audio)
+- PCI Addresses: 0000:01:00.0 (GPU), 0000:01:00.1 (Audio)
+- Driver: NVIDIA proprietary (host), VFIO (VM access)
+
+### Setup Steps
+
+1. **Check Current Setup**:
+
+```bash
+# RTX 3080 specific setup checker
+./scripts/rtx3080-setup.sh
+
+# Check individual components
+./scripts/rtx3080-setup.sh status     # GPU status
+./scripts/rtx3080-setup.sh iommu      # IOMMU groups
+./scripts/rtx3080-setup.sh container  # Container GPU access
+```
+
+2. **Rebuild System (Everything Automatic)**:
+
+```bash
+sudo nixos-rebuild switch --flake .#nixos-plasma
+sudo reboot
+```
+
+**That's it!** The configuration automatically handles:
+
+- ✅ NVIDIA drivers for host
+- ✅ VFIO modules for VM access
+- ✅ Docker NVIDIA runtime for containers
+- ✅ IOMMU and virtualization settings
+- ✅ User permissions and groups
+
+3. **Verify Setup**:
+
+```bash
+# After reboot, verify everything works
+./scripts/rtx3080-setup.sh
+```
+
+### GPU Sharing Usage
+
+**Host Usage (Always Available)**:
+
+```bash
+nvidia-smi                    # Check GPU status
+nvtop                        # Monitor GPU usage
+games                        # Native Linux gaming
+blender                      # GPU rendering
+```
+
+**Container Usage**:
+
+```bash
+# Run AI/ML workloads
+docker run --rm --gpus all nvidia/cuda:11.0-base nvidia-smi
+```
+
+**VM Usage**:
+
+```bash
+# Create Windows gaming VM
+./scripts/rtx3080-setup.sh generate     # Generate VM config
+virsh define rtx3080-vm-config.xml      # Import VM
+virsh start RTX3080-Gaming-VM           # Start VM
+```
 
 ## 🛠️ VM Features
 
@@ -146,17 +249,21 @@ ssh hrpr@localhost -p 22000
 ### Adding Applications
 
 **macOS (homebrew)**:
+
 Edit `modules/darwin/apps.nix` - add to `brews` or `casks` arrays
 
 **Linux/VM (nix)**:
+
 Edit `modules/nixos/apps.nix` or `modules/vm/apps.nix` - add to `environment.systemPackages`
 
 ### Desktop Environment Changes
 
 **Switching Linux Desktop**:
+
 Modify `desktopManager` in flake.nix `linuxSpecialArgs`
 
 **VM Desktop Customization**:
+
 Edit `modules/vm/apps.nix` and Hyprland configs in `home/linux/hyprland.nix`
 
 ### User Configuration
@@ -165,61 +272,16 @@ Edit `modules/vm/apps.nix` and Hyprland configs in `home/linux/hyprland.nix`
 2. Modify hostname in the respective configuration calls
 3. Customize home-manager settings in `home/` directory
 
-## 🚨 Important Notes
-
-### First-Time Setup
-
-- **macOS**: Requires manual nix-darwin installation first
-- **Linux**: Requires existing NixOS installation
-- **VM**: Can be built on any host with Nix installed
-
-### VM Networking
-
-- Default VM SSH port: 22000
-- Default user: hrpr (configurable in flake.nix)
-- Default password: nixos (change immediately)
-
-### Security Considerations
-
-- VM has passwordless sudo enabled for convenience
-- SSH is enabled by default in VM
-- Change default passwords after first login
-
 ## 🧪 Testing & Validation
 
-### Build Validation
-
-All configurations have been tested and validated:
-
 ```bash
-# Test all configurations build successfully
-nix flake check                    # Validate flake structure
-nix build .#nixosConfigurations.nixos-plasma.config.system.build.toplevel --dry-run
-nix build .#nixosConfigurations.nixos-vm-hyprland.config.system.build.toplevel --dry-run
+# Comprehensive validation
+./nix-multi.sh validate
 
-# Test VM image builds
-nix build .#vmImages.hyprland-vm-x86_64 --dry-run    # Intel/AMD VM
-nix build .#vmImages.hyprland-vm-aarch64 --dry-run   # ARM64/Apple Silicon VM
+# Test specific components
+./nix-multi.sh gpu-test         # GPU passthrough (Linux only)
+nix flake check                 # Validate flake structure
 ```
-
-### VM Testing
-
-```bash
-# Build and test VM execution
-./vm-build.sh x86_64 build          # Creates result symlink
-./result/bin/run-nixos-vm-hyprland-vm  # Runs the VM
-
-# Verify VM networking and SSH access
-ssh hrpr@localhost -p 22000         # Default VM SSH (password: nixos)
-```
-
-### Current Status (June 2025)
-
-✅ **All configurations building successfully**  
-✅ **Cross-platform VM support (x86_64 + aarch64)**  
-✅ **Deprecation warnings resolved**  
-✅ **VM networking and guest tools working**  
-✅ **Interactive VM management scripts functional**  
 
 ## 📖 Learning Resources
 
@@ -227,13 +289,6 @@ ssh hrpr@localhost -p 22000         # Default VM SSH (password: nixos)
 - [NixOS Manual](https://nixos.org/manual/nixos/stable/) - Official NixOS documentation
 - [Home Manager Manual](https://nix-community.github.io/home-manager/) - Home Manager configuration guide
 - [Nix-Darwin](https://github.com/LnL7/nix-darwin) - macOS Nix configuration
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create your feature branch
-3. Test your changes on the relevant platform(s)
-4. Submit a pull request
 
 ## 📄 License
 

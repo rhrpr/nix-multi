@@ -1,0 +1,135 @@
+<!--
+Partial GPU Passthrough VM Template for RTX 3080 (GA102)
+This template allows the host to use the GPU while also providing VM access
+
+Replace the following placeholders:
+- VM_NAME: Name of your VM
+- DISK_PATH: Path to your VM disk image  
+- ISO_PATH: Path to installation ISO (for initial setup)
+- RAM_SIZE: Memory allocation (e.g., 8388608 for 8GB)
+- CPU_CORES: Number of CPU cores (e.g., 4)
+
+PCI IDs for your RTX 3080:
+- GPU: 10de:2206 (GA102 GeForce RTX 3080 Lite Hash Rate)
+- Audio: 10de:1aef (GA102 High Definition Audio Controller)
+-->
+
+<domain type='kvm'>
+  <name>VM_NAME</name>
+  <uuid>UUID_PLACEHOLDER</uuid>
+  <memory unit='KiB'>8388608</memory> <!-- 8GB RAM -->
+  <currentMemory unit='KiB'>8388608</currentMemory>
+  <vcpu placement='static'>4</vcpu>
+  
+  <features>
+    <acpi/>
+    <apic/>
+    <hyperv>
+      <relaxed state='on'/>
+      <vapic state='on'/>
+      <spinlocks state='on' retries='8191'/>
+      <vendor_id state='on' value='KVM Hv'/>
+    </hyperv>
+    <kvm>
+      <hidden state='on'/>
+    </kvm>
+    <vmport state='off'/>
+  </features>
+  
+  <cpu mode='host-passthrough' check='none'>
+    <topology sockets='1' cores='4' threads='1'/>
+  </cpu>
+  
+  <clock offset='localtime'>
+    <timer name='rtc' tickpolicy='catchup'/>
+    <timer name='pit' tickpolicy='delay'/>
+    <timer name='hpet' present='no'/>
+    <timer name='hypervclock' present='yes'/>
+  </clock>
+  
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>destroy</on_crash>
+  
+  <pm>
+    <suspend-to-mem enabled='no'/>
+    <suspend-to-disk enabled='no'/>
+  </pm>
+  
+  <devices>
+    <emulator>/run/libvirt/nix-emulators/qemu-kvm</emulator>
+    
+    <!-- Disk -->
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='qcow2'/>
+      <source file='DISK_PATH'/>
+      <target dev='vda' bus='virtio'/>
+      <boot order='1'/>
+    </disk>
+    
+    <!-- CD-ROM for installation -->
+    <disk type='file' device='cdrom'>
+      <driver name='qemu' type='raw'/>
+      <source file='ISO_PATH'/>
+      <target dev='sda' bus='sata'/>
+      <readonly/>
+      <boot order='2'/>
+    </disk>
+    
+    <!-- Network -->
+    <interface type='network'>
+      <mac address='52:54:00:XX:XX:XX'/> <!-- Generate random MAC -->
+      <source network='default'/>
+      <model type='virtio'/>
+    </interface>
+    
+    <!-- RTX 3080 GPU (01:00.0) - PARTIAL PASSTHROUGH -->
+    <hostdev mode='subsystem' type='pci' managed='yes'>
+      <source>
+        <address domain='0x0000' bus='0x01' slot='0x00' function='0x0'/>
+      </source>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x02' function='0x0'/>
+    </hostdev>
+    
+    <!-- RTX 3080 Audio (01:00.1) -->
+    <hostdev mode='subsystem' type='pci' managed='yes'>
+      <source>
+        <address domain='0x0000' bus='0x01' slot='0x00' function='0x1'/>
+      </source>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x03' function='0x0'/>
+    </hostdev>
+    
+    <!-- USB Controller for peripherals -->
+    <controller type='usb' index='0' model='ich9-ehci1'/>
+    <controller type='usb' index='0' model='ich9-uhci1'>
+      <master startport='0'/>
+    </controller>
+    <controller type='usb' index='0' model='ich9-uhci2'>
+      <master startport='2'/>
+    </controller>
+    <controller type='usb' index='0' model='ich9-uhci3'>
+      <master startport='4'/>
+    </controller>
+    
+    <!-- Looking Glass shared memory for seamless display -->
+    <shmem name='looking-glass'>
+      <model type='ivshmem-plain'/>
+      <size unit='M'>32</size>
+    </shmem>
+    
+    <!-- Temporary video for initial setup (disable after GPU drivers installed) -->
+    <video>
+      <model type='qxl' ram='65536' vram='65536' vgamem='16384' heads='1'/>
+    </video>
+    
+    <!-- Console access -->
+    <console type='pty'>
+      <target type='serial' port='0'/>
+    </console>
+    
+    <!-- Spice display for remote access -->
+    <graphics type='spice' autoport='yes'>
+      <listen type='address'/>
+    </graphics>
+  </devices>
+</domain>

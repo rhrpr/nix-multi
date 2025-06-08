@@ -1,14 +1,16 @@
 {
-  description = "Unified Nix configuration for macOS (nix-darwin) and Linux (NixOS) with desktop manager switching";
+  description = "Unified Nix configuration for macOS (nix-darwin) and Linux (NixOS) with GPU passthrough and VM support";
 
   nixConfig = {
     substituters = [ 
       "https://cache.nixos.org"
       "https://hyprland.cachix.org"
+      "https://nix-community.cachix.org"
     ];
     trusted-public-keys = [
       "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
       "hyprland.cachix.org-1:a7pgxzMz7+chwVL3/pzj6jIBMioiJM7ypFP8PwtkuGc="
+      "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
     ];
   };
 
@@ -68,32 +70,44 @@
     username = "hrpr";
     useremail = "ryan@hrpr.dev";
     
-    # Configuration modes - all are available simultaneously
-    # 1. "macos" - macOS with nix-darwin
-    # 2. "linux-plasma" - NixOS with Plasma desktop (native Linux)
-    # 3. "vm-hyprland" - NixOS Hyprland VM (runnable on both macOS and Linux)
+    # System types
+    # - "macos" - macOS with nix-darwin (VM host)
+    # - "linux-plasma" - NixOS with Plasma desktop + RTX 3080 partial passthrough (VM host)
+    # - "vm-hyprland" - NixOS Hyprland VM (guest system)
+    
+    # GPU configuration (customize for your hardware)
+    gpuConfig = {
+      vendor = "nvidia";          # nvidia or amd
+      deviceId = "10de:2206";     # RTX 3080 GPU PCI ID
+      audioId = "10de:1aef";      # RTX 3080 Audio PCI ID
+      pciAddress = "01:00";       # PCI bus address (without function)
+      enablePartialPassthrough = true;  # Enable sharing between host and VMs
+    };
     
     # Common special arguments for all configurations
     baseSpecialArgs = inputs // {
-      inherit username useremail;
+      inherit username useremail gpuConfig;
     };
     
-    # VM-specific configuration
+    # VM-specific configuration (guest system)
     vmSpecialArgs = baseSpecialArgs // {
       desktopManager = "hyprland";
       isVM = true;
+      hostType = "guest";
     };
     
-    # Regular Linux configuration  
+    # Linux host configuration (with GPU passthrough capability)
     linuxSpecialArgs = baseSpecialArgs // {
       desktopManager = "plasma";
       isVM = false;
+      hostType = "linux-host";
     };
     
-    # macOS configuration
+    # macOS host configuration (VM creation only)
     macosSpecialArgs = baseSpecialArgs // {
       desktopManager = "none";
       isVM = false;
+      hostType = "macos-host";
     };
 
     # Common home-manager configuration function
@@ -110,7 +124,7 @@
     };
 
   in {
-    # 1. macOS configuration with nix-darwin
+    # 1. macOS host configuration (VM creation and management)
     darwinConfigurations."Ryans-MacBook-Pro" = darwin.lib.darwinSystem {
       system = "aarch64-darwin";
       specialArgs = macosSpecialArgs // { hostname = "Ryans-MacBook-Pro"; };
@@ -119,14 +133,14 @@
         ./modules/darwin/system.nix
         ./modules/darwin/host-users.nix
         ./modules/darwin/apps.nix
-        ./modules/shared/vm-tools.nix  # VM tools for creating VMs on macOS
+        ./modules/hosts/macos/vm-management.nix  # VM creation tools for macOS
         home-manager.darwinModules.home-manager {
           home-manager = mkHomeManagerConfig "aarch64-darwin" macosSpecialArgs;
         }
       ];
     };
 
-    # 2. NixOS configuration for native Linux with Plasma
+    # 2. Linux host configuration with RTX 3080 partial GPU passthrough
     nixosConfigurations."nixos-plasma" = nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
       specialArgs = linuxSpecialArgs // { hostname = "nixos-plasma"; };
@@ -137,7 +151,8 @@
         ./modules/nixos/host-users.nix
         ./modules/nixos/apps.nix
         ./modules/nixos/desktop.nix
-        ./modules/shared/vm-tools.nix  # VM tools for creating VMs on Linux
+        ./modules/hosts/linux/gpu-passthrough.nix  # RTX 3080 partial passthrough
+        ./modules/hosts/linux/vm-management.nix    # VM management on Linux
         home-manager.nixosModules.home-manager {
           home-manager = (mkHomeManagerConfig "x86_64-linux" linuxSpecialArgs) // {
             sharedModules = [ plasma-manager.homeManagerModules.plasma-manager ];
@@ -146,18 +161,19 @@
       ];
     };
 
-    # 3. NixOS VM configuration for Hyprland (runnable on both macOS and Linux)
+    # 3. Hyprland VM guest configuration (runs on both macOS and Linux hosts)
     nixosConfigurations."nixos-vm-hyprland" = nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
       specialArgs = vmSpecialArgs // { hostname = "nixos-vm-hyprland"; };
       modules = [
-        ./modules/vm/hardware-configuration.nix  # VM-specific hardware config
+        ./modules/vm/hardware-configuration.nix  # VM-optimized hardware config
         ./modules/nixos/nix-core.nix
-        ./modules/vm/system.nix  # VM-specific system config
+        ./modules/vm/system.nix                  # VM-specific system config
         ./modules/nixos/host-users.nix
-        ./modules/vm/apps.nix    # VM-specific apps
-        ./modules/nixos/desktop.nix
-        ./modules/vm/vm-guest.nix  # VM guest utilities and optimizations
+        ./modules/vm/apps.nix                    # VM-optimized apps
+        ./modules/nixos/desktop.nix              # Hyprland desktop environment
+        ./modules/vm/vm-guest.nix                # Guest additions and optimizations
+        ./modules/vm/gpu-guest.nix               # GPU passthrough guest configuration
         home-manager.nixosModules.home-manager {
           home-manager = mkHomeManagerConfig "x86_64-linux" vmSpecialArgs;
         }
