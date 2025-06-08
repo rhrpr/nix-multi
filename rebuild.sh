@@ -1,1 +1,0 @@
---flake ~/.config/nix-multi#$(hostname) --show-trace
