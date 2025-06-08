@@ -97,7 +97,7 @@ in
   ];
 
   # Disable conflicting packages at the system level
-  environment.systemPackages = lib.mkForce (with pkgs; [
+  environment.systemPackages = with pkgs; [
     # Common desktop packages
     xdg-utils
     xdg-user-dirs
@@ -139,7 +139,6 @@ in
     gnome-calendar
     gnome-clocks
     gnome-weather
-    # Don't include portal packages here to avoid conflicts
   ] ++ lib.optionals isPlasma [
     # Additional Plasma packages
     kdePackages.kate
@@ -149,8 +148,7 @@ in
     kdePackages.dolphin
     kdePackages.konsole
     kdePackages.spectacle
-    # Don't include portal packages here to avoid conflicts
-  ]);
+  ];
 
   # Wayland support
   environment.sessionVariables = lib.mkIf (isPlasma || isHyprland) {
