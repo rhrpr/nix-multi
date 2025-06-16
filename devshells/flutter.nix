@@ -1,16 +1,16 @@
-{ pkgs ? import <nixpkgs> {}, treefmtWrapper }:
+{ pkgs, treefmtWrapper }:
 
 let
   # Create a properly configured Android SDK
   androidSdk = pkgs.androidenv.composeAndroidPackages {
     toolsVersion = "26.1.1";
-    platformToolsVersion = "33.0.3";
+    platformToolsVersion = "35.0.2";
     buildToolsVersions = ["30.0.3"];
     platformVersions = ["33"];
     includeSources = false;
     includeSystemImages = false;
     includeEmulator = true;
-    emulatorVersion = "31.3.14";
+    emulatorVersion = "35.6.9";
     includeNDK = true;
     ndkVersion = "25.2.9519653";
   };
@@ -56,6 +56,9 @@ in pkgs.mkShell {
     export ANDROID_HOME=${androidSdk.androidsdk}/libexec/android-sdk
     export ANDROID_SDK_ROOT=$ANDROID_HOME
     export PATH=$PATH:$ANDROID_HOME/tools:$ANDROID_HOME/platform-tools
+    
+    # Accept Android SDK licenses automatically
+    yes | $ANDROID_HOME/tools/bin/sdkmanager --licenses &>/dev/null || true
     
     # iOS environment setup (macOS specific)
     export COCOAPODS_DISABLE_STATS=true

@@ -82,6 +82,7 @@
       "mas" # Mac App Store command line interface
       "nettle" # Low-level cryptographic library
       "openssl@3" # Cryptography and SSL/TLS toolkit
+      "pandoc" # Universal document converter
       "p11-kit" # Library to load and share PKCS#11 modules
       "syncthing" # Open source continuous file synchronization tool
       "terraform-ls" # Language server for Terraform
