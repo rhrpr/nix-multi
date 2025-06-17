@@ -91,10 +91,12 @@
       "xcodegen"       # Command line tool to generate Xcode project files
     ];
 
-    casks = [ 
+    casks = [
+      "ableton-live-standard" # Digital audio workstation for music production
       "aerospace"      # an i3-like tiling window manager for macOS
       "android-studio" # Android development environment
       "aural"          # audio player
+      "arturia-software-center" # Arturia software management tool
       "betterdisplay"  # Display scaling (hidpi)
       "blackhole-16ch" # Virtual audio driver for routing audio between applications
       "cursor"        # Cursor AI code editor
@@ -121,7 +123,6 @@
       "utm"            # Virtual machines UI using QEMU
       "vagrant"        # Tool for building and managing virtual machine environments
       "vagrant-vmware-utility" # Vagrant plugin for VMware
-      "vmware-fusion"  # Virtualization software
       "vox"            # Music player for macOS
       "whatsapp"       # Messaging app
       "yubico-authenticator" # Authentication tool for YubiKey devices
