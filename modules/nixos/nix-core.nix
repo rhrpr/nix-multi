@@ -6,7 +6,8 @@
   nix.enable = true;
 
   # Enable flakes globally
-  nix.settings.experimental-features = [ "nix-command" "flakes" ];
+  nix.settings.experimental-features = [ "flakes" ];
+  nix.settings.extra-experimental-features = [ "nix-command" ];
 
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
