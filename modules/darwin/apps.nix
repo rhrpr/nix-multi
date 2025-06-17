@@ -1,4 +1,4 @@
-{ pkgs, ... }: {
+{ pkgs, username, ... }: {
 
   ##########################################################################
   # 
@@ -21,6 +21,9 @@
     nodejs_latest
   ];
   environment.variables.EDITOR = "nano";
+
+  # Set the primary user for homebrew and user-specific settings
+  system.primaryUser = username;
 
   # TODO To make this work, homebrew need to be installed manually, see https://brew.sh
   # 

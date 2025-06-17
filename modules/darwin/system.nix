@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, username, ... }:
 
   ###################################################################################
   #
@@ -13,12 +13,12 @@
 {
   system = {
     stateVersion = 5;
-    # activationScripts are executed every time you boot the system or run `nixos-rebuild` / `darwin-rebuild`.
-    activationScripts.postUserActivation.text = ''
-      # activateSettings -u will reload the settings from the database and apply them to the current session,
-      # so we do not need to logout and login again to make the changes take effect.
-      /System/Library/PrivateFrameworks/SystemAdministration.framework/Resources/activateSettings -u
-    '';
+    
+    # Set the primary user for user-specific settings
+    primaryUser = username;  # This uses the username from flake.nix
+    
+    # Remove the deprecated postUserActivation script as it's no longer supported
+    # The activateSettings command will now be handled automatically by the system
 
     defaults = {
       # menuExtraClock.Show24Hour = true;  # show 24 hour clock
