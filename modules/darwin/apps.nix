@@ -106,6 +106,7 @@
       "firefox"        # Web browser
       "ghostty"        # terminal emulator
       "google-chrome"  # Web browser
+      "github-copilot-for-xcode" # Github Copilot for xCode
       "ibkr"           # Interactive Brokers trading platform
       "iterm2"         # MacOS Terminal emulator
       "knockknock"     # Security tool to show persistent apps
