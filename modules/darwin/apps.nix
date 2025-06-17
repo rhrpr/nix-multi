@@ -110,7 +110,7 @@
       "knockknock"     # Security tool to show persistent apps
       "lm-studio"      # Local AI model runner and chat interface
       "logitech-options" # Configuration tool for Logitech devices
-      "libre-office"   # Open-source office software
+      "libreoffice"   # Open-source office software
       "lulu"           # Open-source firewall for macOS
       # "microsoft-edge" # Web browser
       "mixxx"          # DJ software
