@@ -216,6 +216,35 @@
         ];
       }).config.system.build.vm;
     };
+    
+    # Add all the devshells with treefmt support
+    devShells = nixpkgs.lib.genAttrs [ "x86_64-linux" "aarch64-darwin" ] (system:
+      let
+      pkgs = nixpkgs.legacyPackages.${system};
+      treefmtWrapper = pkgs.treefmt;
+      in {
+      default = pkgs.mkShell {
+        packages = [
+        treefmtWrapper
+        ];
+      };
+
+      flutter = import ./devshells/flutter.nix {
+        inherit pkgs;
+        inherit treefmtWrapper;
+      };
+
+      web = import ./devshells/web.nix {
+        inherit pkgs;
+        inherit treefmtWrapper;
+      };
+
+      python = import ./devshells/python.nix {
+        inherit pkgs;
+        inherit treefmtWrapper;
+      };
+      }
+    );
 
     # Development shells and formatting
     devShells = nixpkgs.lib.genAttrs [ "x86_64-linux" "aarch64-darwin" ] (system:
