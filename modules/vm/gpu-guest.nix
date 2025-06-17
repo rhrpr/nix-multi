@@ -15,7 +15,7 @@ in
       # Enable OpenGL for guest (updated options)
       graphics = {
       enable = true;
-      enable32Bit = true;
+      enable32Bit = lib.mkIf isX86_64 true;
       extraPackages = with pkgs; [
         vaapiVdpau
         libvdpau-va-gl
