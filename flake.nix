@@ -85,6 +85,12 @@
     };
     
     # Common special arguments for all configurations
+
+    # Allow unfree packages globally
+    nixpkgsConfig = {
+      allowUnfree = true;
+    };
+    
     baseSpecialArgs = inputs // {
       inherit username useremail gpuConfig;
     };
