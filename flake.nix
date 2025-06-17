@@ -204,6 +204,17 @@
           }
         ];
       }).config.system.build.vm;
+      
+      # Minimal ARM64 VM optimized for Apple Silicon and UTM
+      minimal-vm-aarch64 = (nixpkgs.lib.nixosSystem {
+        system = "aarch64-linux";
+        specialArgs = vmSpecialArgs // { hostname = "nixos-minimal-arm"; };
+        modules = [
+          ./modules/vm/minimal-arm64.nix
+          ./modules/vm/hardware-configuration.nix
+          ./modules/nixos/nix-core.nix
+        ];
+      }).config.system.build.vm;
     };
 
     # Development shells and formatting

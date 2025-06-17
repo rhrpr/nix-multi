@@ -277,6 +277,7 @@ main() {
             ;;
         test)
             test_qemu "${2:-x86_64}"
+            exit $?
             ;;
         opts|options)
             generate_qemu_opts "${2:-x86_64}" "$(detect_host_os)" "${3:-6G}" "${4:-4}" "${5:-3440x1440}"

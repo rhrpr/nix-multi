@@ -91,6 +91,31 @@ normalize_arch() {
     esac
 }
 
+# Check if UTM is available (Apple Silicon specific)
+check_utm() {
+    if command -v utmctl &> /dev/null; then
+        echo "true"
+    else
+        echo "false"
+    fi
+}
+
+# Detect host architecture
+detect_host_arch() {
+    case "$(uname -m)" in
+        x86_64|amd64)
+            echo "x86_64"
+            ;;
+        arm64|aarch64)
+            echo "aarch64"
+            ;;
+        *)
+            log_error "Unsupported host architecture: $(uname -m)"
+            exit 1
+            ;;
+    esac
+}
+
 # Build the VM
 build_vm() {
     local arch="$1"
@@ -110,11 +135,19 @@ build_vm() {
     elif [[ "$arch" == "aarch64" ]]; then
         log_info "Building aarch64 VM..."
         if [[ "$host_os" == "macos" ]]; then
-            # On macOS, we might need to use cross-compilation or UTM
-            log_warn "Building ARM64 VM on macOS - this may require UTM or cross-compilation"
-            nix --extra-experimental-features 'nix-command flakes' build .#vmImages.hyprland-vm-aarch64 --system aarch64-linux
+            # On Apple Silicon Mac, build minimal VM optimized for UTM
+            log_info "Detected Apple Silicon Mac - building minimal VM optimized for UTM"
+            log_warn "For full Hyprland experience, consider using UTM with Ubuntu ARM64"
+            
+            if check_utm; then
+                log_info "UTM detected - you can also use: ./scripts/utm-vm-setup.sh"
+            fi
+            
+            # Build minimal ARM64 VM that's more likely to work
+            log_info "Building lightweight ARM64 VM..."
+            nix --extra-experimental-features 'nix-command flakes' build .#vmImages.minimal-vm-aarch64
         else
-            # On Linux, try to build natively or cross-compile
+            # On Linux, try to build full Hyprland VM
             nix --extra-experimental-features 'nix-command flakes' build .#vmImages.hyprland-vm-aarch64
         fi
         log_success "aarch64 VM built successfully!"
