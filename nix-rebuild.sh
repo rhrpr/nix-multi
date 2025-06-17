@@ -25,12 +25,12 @@ OS=$(uname -s)
 
 if [ "$OS" = "Darwin" ]; then
   echo "Detected macOS"
-  # macOS-specific rebuild
-  darwin-rebuild switch --flake ~/.config/nix-multi#Ryans-MacBook-Pro --show-trace
+  # macOS-specific rebuild with sudo
+  sudo darwin-rebuild switch --flake ~/.config/nix-multi#Ryans-MacBook-Pro --show-trace
 elif [ "$OS" = "Linux" ]; then
   echo "Detected Linux"
   # NixOS-specific rebuild
-  sudo nixos-rebuild switch --flake ~/.config/nix-multi#nixos-plasma --show-trace
+  nixos-rebuild switch --flake ~/.config/nix-multi#nixos-plasma --show-trace
 else
   echo "Unsupported operating system: $OS"
   exit 1
