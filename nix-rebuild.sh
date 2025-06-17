@@ -1,4 +1,4 @@
-#!/etc/profiles/per-user/hrpr/bin/bash
+#!/bin/bash
 
 read -p "Enter files to add (leave empty to skip): " files_to_add
 if [ -n "$files_to_add" ]; then
