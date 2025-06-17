@@ -115,7 +115,7 @@ in
       # Enable graphics for host (replaces deprecated opengl)
       graphics = {
         enable = true;
-        enable32Bit = true;  # Replaces driSupport32Bit
+        enable32Bit = lib.mkIf (pkgs.stdenv.hostPlatform.system == "x86_64-linux") true;  # Replaces driSupport32Bit
         extraPackages = with pkgs; [
           intel-media-driver # For Intel integrated graphics (if available)
           vaapiIntel         # Hardware acceleration

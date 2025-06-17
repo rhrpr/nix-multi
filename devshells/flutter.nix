@@ -37,6 +37,9 @@ in pkgs.mkShell {
     gh
     wget
     
+    # Firebase tools for Flutter development
+    nodePackages.firebase-tools
+    
     # Build utilities
     cmake
     ninja

@@ -180,7 +180,7 @@ in
   # Graphics and hardware acceleration
   hardware.graphics = {
     enable = true;
-    enable32Bit = true;
+    enable32Bit = lib.mkIf (pkgs.stdenv.hostPlatform.system == "x86_64-linux") true;
   };
 
   # XDG portal configuration - configured to handle switching between desktop environments

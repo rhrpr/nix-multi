@@ -99,7 +99,7 @@
     # Enable hardware acceleration for VMs
     graphics = {
       enable = true;
-      enable32Bit = true;
+      enable32Bit = lib.mkIf (pkgs.stdenv.hostPlatform.system == "x86_64-linux") true;
     };
     
     # VM doesn't need bluetooth typically

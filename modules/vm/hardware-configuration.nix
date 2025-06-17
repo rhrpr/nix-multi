@@ -1,5 +1,5 @@
 # VM-specific hardware configuration for NixOS Hyprland VM
-# This is optimized for QEMU/KVM virtualization
+# This is optimized for QEMU/KVM virtualization on both x86_64 and aarch64
 { config, lib, pkgs, modulesPath, ... }:
 
 {
@@ -58,10 +58,7 @@
     };
   };
 
-  # VM-specific hardware platform
-  nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
-  
-  # Enable microcode updates for better VM performance
-  hardware.cpu.intel.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
-  hardware.cpu.amd.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
+  # Enable microcode updates for better VM performance (x86_64 only)
+  hardware.cpu.intel.updateMicrocode = lib.mkDefault (config.nixpkgs.hostPlatform == "x86_64-linux" && config.hardware.enableRedistributableFirmware);
+  hardware.cpu.amd.updateMicrocode = lib.mkDefault (config.nixpkgs.hostPlatform == "x86_64-linux" && config.hardware.enableRedistributableFirmware);
 }

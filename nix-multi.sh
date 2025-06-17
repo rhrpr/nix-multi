@@ -125,8 +125,8 @@ setup_macos() {
     log_success "macOS host setup complete!"
     echo ""
     echo "Available commands:"
-    echo "  ./nix-multi.sh vm-build          # Build Hyprland VM"
-    echo "  ./nix-multi.sh vm-run            # Run Hyprland VM"
+    echo "  ./nix-multi.sh vm-build          # Build NixOS Hyprland VM"
+    echo "  ./nix-multi.sh vm-run            # Run NixOS Hyprland VM"
     echo "  ./nix-multi.sh vm-manage         # Interactive VM management"
 }
 
@@ -166,8 +166,8 @@ setup_linux() {
     echo ""
     echo "Available commands:"
     echo "  ./nix-multi.sh gpu-test          # Test GPU passthrough setup"
-    echo "  ./nix-multi.sh vm-build          # Build Hyprland VM"
-    echo "  ./nix-multi.sh vm-run            # Run Hyprland VM with GPU passthrough"
+    echo "  ./nix-multi.sh vm-build          # Build NixOS Hyprland VM"
+    echo "  ./nix-multi.sh vm-run            # Run NixOS Hyprland VM with GPU passthrough"
     echo "  ./nix-multi.sh vm-manage         # Interactive VM management"
 }
 
@@ -175,16 +175,17 @@ setup_linux() {
 build_vm() {
     local arch="${1:-$(detect_arch)}"
     
-    log_section "Building Hyprland VM for architecture: $arch"
+    log_section "Building NixOS Hyprland VM for architecture: $arch"
     
     if [[ "$arch" == "x86_64" ]]; then
-        log_info "Building x86_64 VM..."
+        log_info "Building x86_64 NixOS Hyprland VM..."
         nix --extra-experimental-features 'nix-command flakes' build ".#vmImages.hyprland-vm-x86_64"
-        log_success "x86_64 VM built successfully!"
+        log_success "x86_64 NixOS Hyprland VM built successfully!"
     elif [[ "$arch" == "aarch64" ]]; then
-        log_info "Building aarch64 VM..."
+        log_info "Building aarch64 NixOS Hyprland VM..."
+        log_warn "Note: Cross-compilation may require significant build time and resources"
         nix --extra-experimental-features 'nix-command flakes' build ".#vmImages.hyprland-vm-aarch64"
-        log_success "aarch64 VM built successfully!"
+        log_success "aarch64 NixOS Hyprland VM built successfully!"
     else
         log_error "Unsupported architecture: $arch"
         return 1
@@ -198,7 +199,7 @@ run_vm() {
     local host_os
     host_os=$(detect_host_os)
     
-    log_section "Running Hyprland VM"
+    log_section "Running NixOS Hyprland VM"
     
     if [[ ! -L "./result" ]] || [[ ! -e "./result/bin/run-nixos-vm" ]]; then
         log_warn "VM not found. Building VM first..."
@@ -305,8 +306,8 @@ COMMANDS:
     setup-macos         Setup macOS host with nix-darwin
     setup-linux [HOST]  Setup Linux host with NixOS (default: nixos-plasma)
     
-    vm-build [ARCH]     Build Hyprland VM (x86_64 or aarch64)
-    vm-run              Run Hyprland VM
+    vm-build [ARCH]     Build NixOS Hyprland VM (x86_64 or aarch64)
+    vm-run              Run NixOS Hyprland VM
     vm-manage           Interactive VM management
     
 EOF

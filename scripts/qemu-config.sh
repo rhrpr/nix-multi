@@ -117,6 +117,96 @@ get_audio_driver() {
     esac
 }
 
+# Detect host display resolution
+detect_host_resolution() {
+    local host_os="$1"
+    
+    case "$host_os" in
+        macos)
+            # Get primary display resolution on macOS
+            if command -v system_profiler &> /dev/null; then
+                local resolution
+                resolution=$(system_profiler SPDisplaysDataType | grep -E "Resolution:" | head -1 | sed 's/.*Resolution: //' | sed 's/ x /x/' | sed 's/ Retina//' | sed 's/ [A-Za-z].*//')
+                if [[ -n "$resolution" && "$resolution" =~ ^[0-9]+x[0-9]+$ ]]; then
+                    echo "$resolution"
+                    return
+                fi
+            fi
+            
+            # Fallback: try osascript
+            if command -v osascript &> /dev/null; then
+                local width height
+                width=$(osascript -e 'tell application "Finder" to get bounds of window of desktop' | cut -d',' -f3 | tr -d ' ')
+                height=$(osascript -e 'tell application "Finder" to get bounds of window of desktop' | cut -d',' -f4 | tr -d ' ')
+                if [[ -n "$width" && -n "$height" ]]; then
+                    echo "${width}x${height}"
+                    return
+                fi
+            fi
+            ;;
+        linux)
+            # Try various methods to get display resolution on Linux
+            
+            # Method 1: xrandr (X11)
+            if command -v xrandr &> /dev/null && [[ -n "${DISPLAY:-}" ]]; then
+                local resolution
+                resolution=$(xrandr --current | grep -E "^\s+[0-9]+x[0-9]+" | head -1 | awk '{print $1}')
+                if [[ -n "$resolution" ]]; then
+                    echo "$resolution"
+                    return
+                fi
+            fi
+            
+            # Method 2: wlr-randr (Wayland)
+            if command -v wlr-randr &> /dev/null && [[ -n "${WAYLAND_DISPLAY:-}" ]]; then
+                local resolution
+                resolution=$(wlr-randr | grep -E "^\s+[0-9]+x[0-9]+" | head -1 | awk '{print $1}')
+                if [[ -n "$resolution" ]]; then
+                    echo "$resolution"
+                    return
+                fi
+            fi
+            
+            # Method 3: swaymsg (Sway/Wayland)
+            if command -v swaymsg &> /dev/null; then
+                local resolution
+                resolution=$(swaymsg -t get_outputs | grep -oE '"current_mode":\{"width":[0-9]+,"height":[0-9]+' | head -1 | sed 's/"current_mode":{"width"://; s/,"height":/x/')
+                if [[ -n "$resolution" ]]; then
+                    echo "$resolution"
+                    return
+                fi
+            fi
+            
+            # Method 4: hyprctl (Hyprland)
+            if command -v hyprctl &> /dev/null; then
+                local resolution
+                resolution=$(hyprctl monitors | grep -E "^\s+[0-9]+x[0-9]+" | head -1 | awk '{print $1}')
+                if [[ -n "$resolution" ]]; then
+                    echo "$resolution"
+                    return
+                fi
+            fi
+            
+            # Method 5: parse /sys/class/drm (fallback)
+            if [[ -d "/sys/class/drm" ]]; then
+                for mode_file in /sys/class/drm/*/modes; do
+                    if [[ -r "$mode_file" ]]; then
+                        local resolution
+                        resolution=$(head -1 "$mode_file" 2>/dev/null)
+                        if [[ -n "$resolution" && "$resolution" =~ ^[0-9]+x[0-9]+$ ]]; then
+                            echo "$resolution"
+                            return
+                        fi
+                    fi
+                done
+            fi
+            ;;
+    esac
+    
+    # Fallback to common ultrawide resolution
+    echo "3440x1440"
+}
+
 # Get platform-specific display options
 get_display_options() {
     local host_os="$1"
@@ -147,7 +237,7 @@ generate_qemu_opts() {
     local host_os="$2"
     local memory="${3:-6G}"
     local cpus="${4:-4}"
-    local resolution="${5:-3440x1440}"
+    local resolution="${5:-$(detect_host_resolution "$host_os")}"
     
     local accel
     local audio_driver

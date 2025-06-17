@@ -98,7 +98,7 @@
         # Enable OpenGL for guest (updated options)
         graphics = {
           enable = true;
-          enable32Bit = true;
+          enable32Bit = lib.mkIf (pkgs.stdenv.hostPlatform.system == "x86_64-linux") true;
           extraPackages = with pkgs; [
             vaapiVdpau
             libvdpau-va-gl

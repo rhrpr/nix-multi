@@ -5,9 +5,10 @@
 let
   isNvidia = gpuConfig.vendor == "nvidia";
   enablePassthrough = gpuConfig.enablePartialPassthrough;
+  isX86_64 = pkgs.system == "x86_64-linux";
 in
 {
-  config = lib.mkIf (isNvidia && enablePassthrough) {
+  config = lib.mkIf (isNvidia && enablePassthrough && isX86_64) {
     # NVIDIA driver configuration for VM guest
     services.xserver.videoDrivers = [ "nvidia" ];
     hardware = {

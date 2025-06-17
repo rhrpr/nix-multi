@@ -196,13 +196,14 @@
         system = "aarch64-linux";
         specialArgs = vmSpecialArgs // { hostname = "nixos-vm-hyprland-arm"; };
         modules = [
-          ./modules/vm/hardware-configuration.nix
-          ./modules/nixos/nix-core.nix  
-          ./modules/vm/system.nix
+          ./modules/vm/hardware-configuration.nix  # VM-optimized hardware config
+          ./modules/nixos/nix-core.nix
+          ./modules/vm/system.nix                  # VM-specific system config
           ./modules/nixos/host-users.nix
-          ./modules/vm/apps.nix
-          ./modules/nixos/desktop.nix
-          ./modules/vm/vm-guest.nix
+          ./modules/vm/apps.nix                    # VM-optimized apps
+          ./modules/nixos/desktop.nix              # Hyprland desktop environment
+          ./modules/vm/vm-guest.nix                # Guest additions and optimizations
+          ./modules/vm/gpu-guest.nix               # GPU passthrough guest configuration (no-op on aarch64)
           home-manager.nixosModules.home-manager {
             home-manager = mkHomeManagerConfig "aarch64-linux" vmSpecialArgs;
           }
