@@ -2,8 +2,8 @@
 { pkgs, lib, ... }:
 
 {
-
   nix.enable = false;
+  download-buffer-size = 67108864; # 64 MB (default is 64 KB)
 
   # enable flakes globally
   nix.settings.experimental-features = [ "nix-command" "flakes" ];

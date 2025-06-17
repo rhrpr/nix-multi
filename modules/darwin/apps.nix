@@ -109,7 +109,7 @@
       "lm-studio"      # Local AI model runner and chat interface
       "logitech-options" # Configuration tool for Logitech devices
       "lulu"           # Open-source firewall for macOS
-      "microsoft-edge" # Web browser
+      # "microsoft-edge" # Web browser
       "mixxx"          # DJ software
       "moonlight"      # Game streaming client
       "obsidian"       # Markdown knowledge base and note-taking app
