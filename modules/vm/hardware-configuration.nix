@@ -59,6 +59,6 @@
   };
 
   # Enable microcode updates for better VM performance (x86_64 only)
-  hardware.cpu.intel.updateMicrocode = lib.mkDefault (config.nixpkgs.hostPlatform == "x86_64-linux" && config.hardware.enableRedistributableFirmware);
-  hardware.cpu.amd.updateMicrocode = lib.mkDefault (config.nixpkgs.hostPlatform == "x86_64-linux" && config.hardware.enableRedistributableFirmware);
+  hardware.cpu.intel.updateMicrocode = lib.mkDefault (pkgs.stdenv.hostPlatform.system == "x86_64-linux" && config.hardware.enableRedistributableFirmware);
+  hardware.cpu.amd.updateMicrocode = lib.mkDefault (pkgs.stdenv.hostPlatform.system == "x86_64-linux" && config.hardware.enableRedistributableFirmware);
 }

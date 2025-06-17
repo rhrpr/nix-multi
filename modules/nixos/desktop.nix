@@ -171,7 +171,7 @@ in
   services.pipewire = {
     enable = true;
     alsa.enable = true;
-    alsa.support32Bit = true;
+    alsa.support32Bit = lib.mkIf (pkgs.stdenv.hostPlatform.system == "x86_64-linux") true;
     pulse.enable = true;
     jack.enable = true;
     wireplumber.enable = true;
@@ -287,11 +287,11 @@ in
   services.gvfs.enable = lib.mkIf isHyprland true; # Trash and mount support
   services.tumbler.enable = lib.mkIf isHyprland true; # Thumbnail support
 
-  # Gaming support (optional)
-  programs.steam = {
+  # Gaming support (optional, x86_64 only)
+  programs.steam = lib.mkIf (pkgs.stdenv.hostPlatform.system == "x86_64-linux") {
     enable = true;
     remotePlay.openFirewall = true;
     dedicatedServer.openFirewall = true;
   };
-  programs.gamemode.enable = true;
+  programs.gamemode.enable = lib.mkIf (pkgs.stdenv.hostPlatform.system == "x86_64-linux") true;
 }

@@ -104,21 +104,21 @@
             libvdpau-va-gl
             ];
           };
-    };
 
-    # NVIDIA configuration for host usage and VM sharing
-    nvidia = {
-      modesetting.enable = true;
-      powerManagement.enable = false;
-      powerManagement.finegrained = false;
-      open = false; # Use proprietary driver for better VM support
-      nvidiaSettings = true;
-      
-      # Enable NVIDIA persistence daemon for VM sharing
-      nvidiaPersistenced = true;
-      
-      # Package selection (latest stable for best VM support)
-      package = config.boot.kernelPackages.nvidiaPackages.stable;
+        # NVIDIA configuration for host usage and VM sharing
+        nvidia = {
+          modesetting.enable = true;
+          powerManagement.enable = false;
+          powerManagement.finegrained = false;
+          open = false; # Use proprietary driver for better VM support
+          nvidiaSettings = true;
+          
+          # Enable NVIDIA persistence daemon for VM sharing
+          nvidiaPersistenced = true;
+          
+          # Package selection (latest stable for best VM support)
+          package = config.boot.kernelPackages.nvidiaPackages.stable;
+        };
     };
   };
 
