@@ -134,6 +134,7 @@
         ./modules/darwin/host-users.nix
         ./modules/darwin/apps.nix
         ./modules/hosts/macos/vm-management.nix  # VM creation tools for macOS
+        ./modules/shared/vm-tools.nix           # Cross-platform VM tools
         home-manager.darwinModules.home-manager {
           home-manager = mkHomeManagerConfig "aarch64-darwin" macosSpecialArgs;
         }
@@ -153,6 +154,7 @@
         ./modules/nixos/desktop.nix
         ./modules/hosts/linux/gpu-passthrough.nix  # RTX 3080 partial passthrough
         ./modules/hosts/linux/vm-management.nix    # VM management on Linux
+        ./modules/shared/vm-tools.nix              # Cross-platform VM tools
         home-manager.nixosModules.home-manager {
           home-manager = (mkHomeManagerConfig "x86_64-linux" linuxSpecialArgs) // {
             sharedModules = [ plasma-manager.homeManagerModules.plasma-manager ];

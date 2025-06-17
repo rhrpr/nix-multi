@@ -67,9 +67,15 @@ sudo nixos-rebuild switch --flake .#nixos-plasma
 ./vm-build.sh x86_64 build   # For Intel/AMD systems
 ./vm-build.sh aarch64 build  # For ARM64/Apple Silicon
 
+# Test QEMU configuration
+./scripts/qemu-config.sh test x86_64
+./scripts/qemu-config.sh config
+
 # Run built VM directly
 ./result/bin/run-nixos-vm
 ```
+
+For detailed VM management information, see [VM Management Guide](docs/VM-MANAGEMENT.md).
 
 ## 📁 Repository Structure
 

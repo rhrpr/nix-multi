@@ -200,32 +200,62 @@ run_vm() {
     
     log_section "Running Hyprland VM"
     
-    if [[ ! -L "./result" ]] || [[ ! -e "./result/bin/run-nixos-vm-hyprland-vm" ]]; then
+    if [[ ! -L "./result" ]] || [[ ! -e "./result/bin/run-nixos-vm" ]]; then
         log_warn "VM not found. Building VM first..."
         build_vm
     fi
     
-    if [[ "$host_os" == "linux" ]]; then
-        log_info "Starting VM with GPU passthrough support..."
-        log_warn "Use Ctrl+Alt+G to release mouse from VM"
+    # Use the improved QEMU configuration helper if available
+    if [[ -f "./scripts/qemu-config.sh" ]]; then
+        log_info "Using platform-optimized QEMU configuration"
         
-        # Set optimal VM settings for Linux host with ultrawide resolution support
-        export QEMU_OPTS="-m 8G -smp 4 -enable-kvm -device virtio-gpu-pci,xres=3440,yres=1440 -display gtk,gl=on"
-        
-        # Check for GPU passthrough
-        if lspci | grep -i nvidia &>/dev/null; then
-            log_info "NVIDIA GPU detected - GPU passthrough should be available in VM"
+        if [[ "$host_os" == "linux" ]]; then
+            log_info "Starting VM with GPU passthrough support..."
+            log_warn "Use Ctrl+Alt+G to release mouse from VM"
+            
+            # Enhanced settings for Linux host with ultrawide resolution support
+            export QEMU_OPTS=$(./scripts/qemu-config.sh opts "x86_64" "8G" "4" "3440x1440")
+            
+            # Check for GPU passthrough
+            if lspci | grep -i nvidia &>/dev/null; then
+                log_info "NVIDIA GPU detected - GPU passthrough should be available in VM"
+            fi
+            
+        elif [[ "$host_os" == "macos" ]]; then
+            log_info "Starting VM on macOS..."
+            log_warn "Note: GPU passthrough not available on macOS"
+            
+            # macOS settings with HVF acceleration
+            export QEMU_OPTS=$(./scripts/qemu-config.sh opts "x86_64" "6G" "4" "3440x1440")
         fi
         
-    elif [[ "$host_os" == "macos" ]]; then
-        log_info "Starting VM on macOS..."
-        log_warn "Note: GPU passthrough not available on macOS"
+        log_info "QEMU Options: $QEMU_OPTS"
+    else
+        # Fallback to legacy configuration
+        log_warn "Using legacy QEMU configuration"
         
-        # Set VM settings for macOS host with ultrawide resolution support
-        export QEMU_OPTS="-m 6G -smp 2 -device virtio-gpu-pci,xres=3440,yres=1440 -display cocoa"
+        if [[ "$host_os" == "linux" ]]; then
+            log_info "Starting VM with GPU passthrough support..."
+            log_warn "Use Ctrl+Alt+G to release mouse from VM"
+            
+            # Set optimal VM settings for Linux host with ultrawide resolution support
+            export QEMU_OPTS="-m 8G -smp 4 -enable-kvm -device virtio-gpu-pci,xres=3440,yres=1440 -display gtk,gl=on"
+            
+            # Check for GPU passthrough
+            if lspci | grep -i nvidia &>/dev/null; then
+                log_info "NVIDIA GPU detected - GPU passthrough should be available in VM"
+            fi
+            
+        elif [[ "$host_os" == "macos" ]]; then
+            log_info "Starting VM on macOS..."
+            log_warn "Note: GPU passthrough not available on macOS"
+            
+            # Set VM settings for macOS host with ultrawide resolution support
+            export QEMU_OPTS="-m 6G -smp 2 -device virtio-gpu-pci,xres=3440,yres=1440 -display cocoa"
+        fi
     fi
     
-    ./result/bin/run-nixos-vm-hyprland-vm
+    ./result/bin/run-nixos-vm
 }
 
 # Test GPU setup (Linux only)

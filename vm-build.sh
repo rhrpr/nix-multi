@@ -128,7 +128,7 @@ run_vm() {
     local host_os
     host_os=$(detect_host_os)
     
-    log_info "Starting VM with architecture: $arch"
+    log_info "Starting VM with architecture: $arch on $host_os"
     
     # First build the VM
     build_vm "$arch"
@@ -139,8 +139,23 @@ run_vm() {
             log_warn "VM will start with default settings. Use Ctrl+Alt+G to release mouse."
             log_warn "SSH access available on localhost:22000 (user: hrpr, password: nixos)"
             
-            # Set memory and CPU for better performance with ultrawide resolution support
-            export QEMU_OPTS="-m 6G -smp 4 -enable-kvm -device virtio-gpu-pci,xres=3440,yres=1440 -display gtk,gl=on"
+            # Use the QEMU configuration helper if available
+            if [[ -f "./scripts/qemu-config.sh" ]]; then
+                log_info "Using platform-optimized QEMU configuration"
+                export QEMU_OPTS=$(./scripts/qemu-config.sh opts "$arch" "6G" "4" "3440x1440")
+                log_info "QEMU Options: $QEMU_OPTS"
+            else
+                # Fallback to platform-specific options
+                if [[ "$host_os" == "macos" ]]; then
+                    # macOS-specific optimizations
+                    export QEMU_OPTS="-m 6G -smp 4 -accel hvf -device virtio-gpu-pci,xres=3440,yres=1440 -audiodev coreaudio,id=audio0 -device intel-hda -device hda-duplex,audiodev=audio0 -netdev user,id=net0,hostfwd=tcp::22000-:22 -device virtio-net-pci,netdev=net0"
+                    log_info "Using macOS Hypervisor Framework (HVF) acceleration"
+                elif [[ "$host_os" == "linux" ]]; then
+                    # Linux-specific optimizations
+                    export QEMU_OPTS="-m 6G -smp 4 -enable-kvm -device virtio-gpu-pci,xres=3440,yres=1440 -display gtk,gl=on -audiodev pipewire,id=audio0 -device intel-hda -device hda-duplex,audiodev=audio0 -netdev user,id=net0,hostfwd=tcp::22000-:22 -device virtio-net-pci,netdev=net0"
+                    log_info "Using KVM acceleration"
+                fi
+            fi
             
             ./result/bin/run-nixos-vm
         else
@@ -149,12 +164,36 @@ run_vm() {
         fi
     elif [[ "$arch" == "aarch64" ]]; then
         if [[ "$host_os" == "macos" ]]; then
-            log_info "For ARM64 VMs on macOS, please use UTM or another virtualization tool"
-            log_info "Import the built VM image into your preferred virtualization software"
+            log_info "For ARM64 VMs on macOS:"
+            log_info "1. Use UTM (recommended) or another ARM64-capable virtualization tool"
+            log_info "2. Import the built VM image from ./result/"
+            log_info "3. Configure with 4GB+ RAM and 2+ CPU cores"
+            log_warn "Direct QEMU launch for ARM64 not yet implemented on macOS"
+            
+            # Show UTM-compatible settings
+            log_info "Recommended UTM settings:"
+            echo "  - System: Linux"
+            echo "  - Architecture: ARM64 (aarch64)"
+            echo "  - Memory: 4096 MB or more"
+            echo "  - CPU Cores: 2 or more"
+            echo "  - Display: VirtIO GPU"
+            echo "  - Network: Shared Network"
         else
-            log_info "Starting aarch64 VM..."
-            # For ARM64 on Linux, we'd need to set up QEMU appropriately
-            log_warn "ARM64 VM startup not yet implemented for Linux hosts"
+            log_info "Starting aarch64 VM on Linux..."
+            if [[ -f "./result/bin/run-nixos-vm" ]]; then
+                # Use QEMU config helper if available, otherwise fallback
+                if [[ -f "./scripts/qemu-config.sh" ]]; then
+                    export QEMU_OPTS=$(./scripts/qemu-config.sh opts "$arch" "4G" "2" "1920x1080")
+                else
+                    # ARM64 Linux VM settings fallback
+                    export QEMU_OPTS="-m 4G -smp 2 -machine virt -cpu cortex-a72 -device virtio-gpu-pci -audiodev pipewire,id=audio0 -device intel-hda -device hda-duplex,audiodev=audio0 -netdev user,id=net0,hostfwd=tcp::22000-:22 -device virtio-net-pci,netdev=net0"
+                fi
+                log_info "Using ARM64 virtualization"
+                ./result/bin/run-nixos-vm
+            else
+                log_error "ARM64 VM build not found. Please build first."
+                exit 1
+            fi
         fi
     fi
 }
