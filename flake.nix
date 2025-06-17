@@ -226,7 +226,10 @@
       let
         pkgs = import nixpkgs {
           inherit system;
-          config.allowUnfree = true;
+          config = {
+            allowUnfree = true;
+            android_sdk.accept_license = true;
+          };
         };
         treefmtWrapper = pkgs.treefmt;
       in {
@@ -255,7 +258,16 @@
 
     # Formatter for `nix fmt`
     formatter = nixpkgs.lib.genAttrs [ "x86_64-linux" "aarch64-darwin" ] (system:
-      nixpkgs.legacyPackages.${system}.nixfmt-rfc-style
+      let
+        pkgs = import nixpkgs {
+          inherit system;
+          config = {
+            allowUnfree = true;
+            android_sdk.accept_license = true;
+          };
+        };
+      in
+        pkgs.nixfmt-rfc-style
     );
   };
 }
