@@ -216,7 +216,7 @@
         ];
       }).config.system.build.vm;
     };
-    
+
     # Add all the devshells with treefmt support
     devShells = nixpkgs.lib.genAttrs [ "x86_64-linux" "aarch64-darwin" ] (system:
       let
@@ -243,20 +243,6 @@
         inherit pkgs;
         inherit treefmtWrapper;
       };
-      }
-    );
-
-    # Development shells and formatting
-    devShells = nixpkgs.lib.genAttrs [ "x86_64-linux" "aarch64-darwin" ] (system:
-      let pkgs = nixpkgs.legacyPackages.${system}; in
-      {
-        default = pkgs.mkShell {
-          buildInputs = with pkgs; [
-            nixfmt-rfc-style
-            nil
-            statix
-          ];
-        };
       }
     );
 

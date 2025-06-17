@@ -107,11 +107,11 @@ setup_macos() {
     log_info "Building nix-darwin configuration..."
     
     # Build the darwin configuration
-    if nix --extra-experimental-features 'nix-command flakes' build ".#darwinConfigurations.\"$hostname\".system" --no-link; then
+    if nix --extra-experimental-features 'nix-command flakes' build ".#darwinConfigurations.\"$hostname\".system"; then
         log_success "macOS configuration built successfully"
         
         log_info "Activating nix-darwin configuration..."
-        if ./result/sw/bin/darwin-rebuild switch --flake ".#$hostname"; then
+        if sudo ./result/sw/bin/darwin-rebuild switch --flake ".#$hostname"; then
             log_success "macOS configuration activated"
         else
             log_error "Failed to activate macOS configuration"
