@@ -6,9 +6,8 @@
 
   # enable flakes globally and configure Nix settings
   nix.settings = {
-      # Enable flakes globally
-    experimental-features = [ "flakes" ];
-    extra-experimental-features = [ "nix-command" ];
+    # Enable flakes and nix-command globally
+    experimental-features = [ "nix-command" "flakes" ];
     # Increase connection settings to help with download issues
     connect-timeout = 5;
     stalled-download-timeout = 300;

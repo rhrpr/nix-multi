@@ -56,7 +56,6 @@
     };
 
     taps = [
-      "homebrew/services"
       "hashicorp/tap"
       "nikitabobko/tap" # aerospace - an i3-like tiling window manager for macOS
       "FelixKratz/formulae" # janky borders - highlight active window borders
