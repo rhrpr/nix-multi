@@ -106,19 +106,23 @@
       "ghostty"        # terminal emulator
       "google-chrome"  # Web browser
       "ibkr"           # Interactive Brokers trading platform
+      "iterm2"         # MacOS Terminal emulator
       "knockknock"     # Security tool to show persistent apps
       "lm-studio"      # Local AI model runner and chat interface
       "logitech-options" # Configuration tool for Logitech devices
+      "libre-office"   # Open-source office software
       "lulu"           # Open-source firewall for macOS
       # "microsoft-edge" # Web browser
       "mixxx"          # DJ software
       "moonlight"      # Game streaming client
       "obsidian"       # Markdown knowledge base and note-taking app
       # "oversight"      # Monitors and notifies when microphone or camera is activated
+      "proton-mail-bridge"  # Proton email
       "protonvpn"      # VPN client
       "spotify"        # Music streaming service
       "stats"          # System monitor for the menu bar
       "steam"          # Gaming platform and store
+      "rancher"        # Kubernetes and containers host
       "transmission"   # BitTorrent client
       "utm"            # Virtual machines UI using QEMU
       "vagrant"        # Tool for building and managing virtual machine environments
@@ -127,6 +131,7 @@
       "whatsapp"       # Messaging app
       "yubico-authenticator" # Authentication tool for YubiKey devices
       "vanilla"        # macOS app to hide menu bar icons
+      "zed"            # Next generation browser
     ];
   };
 }
