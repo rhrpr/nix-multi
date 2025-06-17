@@ -5,6 +5,7 @@
     xz
     unzip
     p7zip
+    claude-code # Deep terminal AI
 
     # utils
     ripgrep # recursively searches directories for a regex pattern

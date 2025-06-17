@@ -99,7 +99,8 @@
       "arturia-software-center" # Arturia software management tool
       "betterdisplay"  # Display scaling (hidpi)
       "blackhole-16ch" # Virtual audio driver for routing audio between applications
-      "cursor"        # Cursor AI code editor
+      "cursor"         # Cursor AI code editor
+      "claude"         # Claude AI App
       "cyberduck"      # FTP, SFTP, WebDAV, S3 file transfer client
       "discord"        # Voice, video, and text chat app
       "firefox"        # Web browser
