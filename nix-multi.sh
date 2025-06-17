@@ -86,7 +86,7 @@ check_nix() {
 
 # Check for flakes support
 check_flakes() {
-    if ! nix flake --help &> /dev/null; then
+    if ! nix --extra-experimental-features 'nix-command flakes' flake --help &> /dev/null; then
         log_warn "Nix flakes not enabled. Enabling flakes..."
         mkdir -p ~/.config/nix
         echo "experimental-features = nix-command flakes" >> ~/.config/nix/nix.conf
@@ -107,7 +107,7 @@ setup_macos() {
     log_info "Building nix-darwin configuration..."
     
     # Build the darwin configuration
-    if nix build ".#darwinConfigurations.\"$hostname\".system" --no-link; then
+    if nix --extra-experimental-features 'nix-command flakes' build ".#darwinConfigurations.\"$hostname\".system" --no-link; then
         log_success "macOS configuration built successfully"
         
         log_info "Activating nix-darwin configuration..."
@@ -147,7 +147,7 @@ setup_linux() {
     fi
     
     # Build the NixOS configuration
-    if nix build ".#nixosConfigurations.$hostname.config.system.build.toplevel" --no-link; then
+    if nix --extra-experimental-features 'nix-command flakes' build ".#nixosConfigurations.$hostname.config.system.build.toplevel" --no-link; then
         log_success "NixOS configuration built successfully"
         
         log_info "Activating NixOS configuration..."
@@ -179,11 +179,11 @@ build_vm() {
     
     if [[ "$arch" == "x86_64" ]]; then
         log_info "Building x86_64 VM..."
-        nix build ".#vmImages.hyprland-vm-x86_64"
+        nix --extra-experimental-features 'nix-command flakes' build ".#vmImages.hyprland-vm-x86_64"
         log_success "x86_64 VM built successfully!"
     elif [[ "$arch" == "aarch64" ]]; then
         log_info "Building aarch64 VM..."
-        nix build ".#vmImages.hyprland-vm-aarch64"
+        nix --extra-experimental-features 'nix-command flakes' build ".#vmImages.hyprland-vm-aarch64"
         log_success "aarch64 VM built successfully!"
     else
         log_error "Unsupported architecture: $arch"

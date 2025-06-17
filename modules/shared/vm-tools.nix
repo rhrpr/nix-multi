@@ -61,20 +61,20 @@ in
   # Enable virtualization services on Linux only
   virtualisation = lib.mkIf isLinux {
     libvirtd = {
-      enable = true;
+      enable = lib.mkDefault true;
       qemu = {
-        package = pkgs.qemu_kvm;
-        runAsRoot = true;
-        swtpm.enable = true;
+        package = lib.mkDefault pkgs.qemu_kvm;
+        runAsRoot = lib.mkDefault true;
+        swtpm.enable = lib.mkDefault true;
         ovmf = {
-          enable = true;
-          packages = [ pkgs.OVMFFull.fd ];
+          enable = lib.mkDefault true;
+          packages = lib.mkDefault [ pkgs.OVMFFull.fd ];
         };
       };
     };
     
     # Enable SPICE USB redirection
-    spiceUSBRedirection.enable = true;
+    spiceUSBRedirection.enable = lib.mkDefault true;
   };
 
   # Add user to virtualization groups on Linux
@@ -109,12 +109,5 @@ in
   } // lib.optionalAttrs isDarwin {
     # macOS-specific aliases  
     vm-list = "ls -la ~/VMs/";
-  };
-}
-    kernelModules = [ "kvm-intel" "kvm-amd" "vfio-pci" ];
-    kernelParams = [
-      "intel_iommu=on"
-      "amd_iommu=on"
-    ];
   };
 }

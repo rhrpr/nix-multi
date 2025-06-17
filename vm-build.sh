@@ -104,7 +104,7 @@ build_vm() {
     
     if [[ "$arch" == "x86_64" ]]; then
         log_info "Building x86_64 VM..."
-        nix build .#vmImages.hyprland-vm-x86_64
+        nix --extra-experimental-features 'nix-command flakes' build .#vmImages.hyprland-vm-x86_64
         log_success "x86_64 VM built successfully!"
         echo "VM script location: ./result/bin/run-nixos-vm"
     elif [[ "$arch" == "aarch64" ]]; then
@@ -112,10 +112,10 @@ build_vm() {
         if [[ "$host_os" == "macos" ]]; then
             # On macOS, we might need to use cross-compilation or UTM
             log_warn "Building ARM64 VM on macOS - this may require UTM or cross-compilation"
-            nix build .#vmImages.hyprland-vm-aarch64 --system aarch64-linux
+            nix --extra-experimental-features 'nix-command flakes' build .#vmImages.hyprland-vm-aarch64 --system aarch64-linux
         else
             # On Linux, try to build natively or cross-compile
-            nix build .#vmImages.hyprland-vm-aarch64
+            nix --extra-experimental-features 'nix-command flakes' build .#vmImages.hyprland-vm-aarch64
         fi
         log_success "aarch64 VM built successfully!"
         echo "VM script location: ./result/bin/run-nixos-vm"
