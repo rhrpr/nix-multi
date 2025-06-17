@@ -15,7 +15,7 @@
     ll = "ls -altr";
     ls = "ls --color=auto";
     latr = "ls -altr";
-    darwinup = "/Users/hrpr/.config/darwin/darwin-rebuild.sh";
-    linuxup = "/Users/hrpr/.config/nixos/darwin-rebuild.sh";
+    darwinup = "/Users/hrpr/.config/nix-multi/darwin-rebuild.sh";
+    rebuild = "/Users/hrpr/.config/nix-multi/darwin-rebuild.sh";
   };
 }

@@ -22,10 +22,12 @@
       nixd
       terraform-ls
       nodejs
-      (python3.withPackages(ps: with ps; [
-        python-lsp-server
-        flake8
-      ]))
+      (python3.withPackages (
+        ps: with ps; [
+          python-lsp-server
+          flake8
+        ]
+      ))
     ];
 
     hm-activation = true;
@@ -33,10 +35,9 @@
   };
 
   # Fetch Primeagen's Lua config and mount it inside ~/.config/nvim/lua/theprimeagen
-  home.file.".config/nvim/lua/theprimeagen".source =
-    "${inputs.primeagenInit}/lua/theprimeagen";
+  home.file.".config/nvim/lua/theprimeagen".source = "${inputs.primeagenInit}/lua/theprimeagen";
 
   # Your NvChad custom config (mapped from your repo)
   home.file.".config/nvim/lua/custom".source =
-    config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/.config/darwin/home/neovim/lua/custom";
+    config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/.config/nix-multi/home/neovim/lua/custom";
 }
