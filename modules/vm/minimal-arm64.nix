@@ -8,10 +8,8 @@
   system.stateVersion = "24.05";
   
   # Minimal desktop environment - using Sway instead of Hyprland for better ARM64 support
-  services.xserver = {
-    enable = true;
-    displayManager.gdm.enable = true;
-  };
+  services.xserver.enable = true;
+  services.displayManager.gdm.enable = true;
   
   # Use Sway (Wayland compositor) - more stable on ARM64 than Hyprland
   programs.sway = {
@@ -23,8 +21,7 @@
   environment.systemPackages = with pkgs; [
     # Terminal and shell
     kitty
-    fish
-    starship
+    bash
     
     # Basic utilities
     git
@@ -33,7 +30,6 @@
     vim
     nano
     htop
-    neofetch
     
     # Development tools
     nodejs
@@ -42,28 +38,16 @@
     # GUI applications (ARM64 compatible)
     firefox
     
-    # File management
-    ranger
-    
-    # Media
-    mpv
-    
     # System tools
-    btop
-    ripgrep
-    fd
-    jq
+    htop
     
     # Archive tools
     unzip
     zip
-    
-    # Network tools
-    networkmanagerapplet
   ];
   
-  # Enable NetworkManager for easy network configuration
-  networking.networkmanager.enable = true;
+  # Enable basic networking (avoid NetworkManager for ARM64 compatibility)
+  networking.dhcpcd.enable = true;
   
   # Enable sound
   security.rtkit.enable = true;
