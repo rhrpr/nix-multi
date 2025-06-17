@@ -131,7 +131,8 @@
       "whatsapp"       # Messaging app
       "yubico-authenticator" # Authentication tool for YubiKey devices
       "vanilla"        # macOS app to hide menu bar icons
-      "zed"            # Next generation browser
+      "zed"            # Next generation editor
+      "zen"            # Next generation browser
     ];
   };
 }
