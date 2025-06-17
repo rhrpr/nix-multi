@@ -3,6 +3,34 @@
 { pkgs, lib, config, username, gpuConfig, ... }:
 
 {
+  # Boot configuration for better VM performance (Linux only)
+  boot = {
+    kernelModules = [ "kvm-intel" "kvm-amd" "vfio-pci" ];
+    kernelParams = [
+      "intel_iommu=on"
+      "amd_iommu=on"
+    ];
+  };
+
+  # Enable virtualization services
+  virtualisation = {
+    libvirtd = {
+      enable = lib.mkDefault true;
+      qemu = {
+        package = lib.mkDefault pkgs.qemu_kvm;
+        runAsRoot = lib.mkDefault true;
+        swtpm.enable = lib.mkDefault true;
+        ovmf = {
+          enable = lib.mkDefault true;
+          packages = lib.mkDefault [ pkgs.OVMFFull.fd ];
+        };
+      };
+    };
+    
+    # Enable SPICE USB redirection
+    spiceUSBRedirection.enable = lib.mkDefault true;
+  };
+
   # VM creation and management tools for Linux
   environment.systemPackages = with pkgs; [
     # Core virtualization tools
