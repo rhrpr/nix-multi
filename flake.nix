@@ -138,6 +138,7 @@
         ./modules/darwin/host-users.nix
         ./modules/darwin/apps.nix
         ./modules/hosts/macos/vm-management.nix  # VM creation tools for macOS
+        ./modules/hosts/macos/linux-builder.nix  # Linux builder for cross-compilation
         ./modules/shared/vm-tools.nix           # Cross-platform VM tools
         home-manager.darwinModules.home-manager {
           home-manager = mkHomeManagerConfig "aarch64-darwin" macosSpecialArgs;
@@ -186,7 +187,7 @@
       ];
     };
 
-    # 4. VM disk images for easy deployment
+    # 4. VM disk images and ISO images for easy deployment
     vmImages = {
       # Build VM disk image for x86_64 systems (Intel Linux, macOS with QEMU)
       hyprland-vm-x86_64 = self.nixosConfigurations."nixos-vm-hyprland".config.system.build.vm;
@@ -220,6 +221,33 @@
           ./modules/nixos/nix-core.nix
         ];
       }).config.system.build.vm;
+    };
+
+    # ISO images for UTM and other virtualization platforms
+    isoImages = {
+      # ARM64 NixOS + Hyprland ISO for UTM on Apple Silicon
+      nixos-hyprland-aarch64 = (nixpkgs.lib.nixosSystem {
+        system = "aarch64-linux";
+        specialArgs = vmSpecialArgs // { hostname = "nixos-hyprland-live"; };
+        modules = [
+          "${nixpkgs}/nixos/modules/installer/cd-dvd/installation-cd-graphical-gnome.nix"
+          ./modules/vm/iso-arm64.nix
+          ./modules/nixos/nix-core.nix
+          ./modules/nixos/host-users.nix
+          ./modules/nixos/desktop.nix
+        ];
+      }).config.system.build.isoImage;
+
+      # Minimal ARM64 NixOS ISO for UTM
+      nixos-minimal-aarch64 = (nixpkgs.lib.nixosSystem {
+        system = "aarch64-linux";
+        specialArgs = vmSpecialArgs // { hostname = "nixos-minimal-live"; };
+        modules = [
+          "${nixpkgs}/nixos/modules/installer/cd-dvd/installation-cd-minimal.nix"
+          ./modules/vm/iso-minimal-arm64.nix
+          ./modules/nixos/nix-core.nix
+        ];
+      }).config.system.build.isoImage;
     };
 
     # Add all the devshells with treefmt support
