@@ -123,6 +123,7 @@
       "stats"          # System monitor for the menu bar
       "steam"          # Gaming platform and store
       "rancher"        # Kubernetes and containers host
+      "raycast"        # Spotlight replacement on MacOS
       "transmission"   # BitTorrent client
       "utm"            # Virtual machines UI using QEMU
       "vagrant"        # Tool for building and managing virtual machine environments
