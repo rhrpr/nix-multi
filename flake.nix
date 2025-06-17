@@ -130,6 +130,10 @@
       system = "aarch64-darwin";
       specialArgs = macosSpecialArgs // { hostname = "Ryans-MacBook-Pro"; };
       modules = [
+        # Configure nixpkgs to allow unfree packages
+        {
+          nixpkgs.config.allowUnfree = true;
+        }
         ./modules/darwin/nix-core.nix
         ./modules/darwin/system.nix
         ./modules/darwin/host-users.nix
