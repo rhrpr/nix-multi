@@ -113,7 +113,6 @@
       "mixxx"          # DJ software
       "moonlight"      # Game streaming client
       "obsidian"       # Markdown knowledge base and note-taking app
-      "oversight"      # Monitors and notifies when microphone or camera is activated
       # "oversight"      # Monitors and notifies when microphone or camera is activated
       "protonvpn"      # VPN client
       "spotify"        # Music streaming service
