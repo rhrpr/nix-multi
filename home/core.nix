@@ -52,7 +52,7 @@
     skim = {
       enable = true;
       enableZshIntegration = true;
--     enableBashIntegration = true;
+      enableBashIntegration = true;
     };
   };
 }
