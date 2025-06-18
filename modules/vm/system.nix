@@ -47,12 +47,8 @@
     dconf.enable = true; # Required for some GUI applications
   };
 
-  # VM-specific user configuration
+  # VM-specific user overrides (user config comes from users/hrpr/nixos.nix)
   users.users.${username} = {
-    isNormalUser = true;
-    description = "Ryan Harper";
-    extraGroups = [ "wheel" "networkmanager" "video" "audio" "storage" ];
-    shell = pkgs.zsh;
     # Set a default password for VM (change after first login)
     password = "nixos";
   };

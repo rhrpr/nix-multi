@@ -8,58 +8,38 @@
     # Enable the built-in Linux builder
     linux-builder = {
       enable = true;
-      
-      # Customize VM resources for better performance
       maxJobs = 4;
-      
       config = {
         virtualisation = {
           darwin-builder = {
-            # Allocate more disk space for builds (40GB)
-            diskSize = 40 * 1024;
-            # Allocate more memory for builds (8GB)
-            memorySize = 8 * 1024;
+            diskSize = 30 * 1024; # 30GB
+            memorySize = 6 * 1024; # 6GB
           };
-          # Use more CPU cores for parallel builds
-          cores = 6;
-        };
-        
-        # Enable additional features for development
-        nix.settings = {
-          # Enable experimental features
-          experimental-features = [ "nix-command" "flakes" ];
-          # Use more build jobs for parallel compilation
-          max-jobs = 6;
-          # Enable sandbox for reproducible builds
-          sandbox = true;
+          cores = 4;
         };
       };
-    };
-
-    # Trust the Linux builder for remote builds
-    settings = {
-      trusted-users = [ "@admin" username ];
-      # Enable building for different architectures
-      extra-platforms = [ "x86_64-linux" "aarch64-linux" ];
-      # Use binary caches for faster builds
-      substituters = [
-        "https://cache.nixos.org"
-        "https://hyprland.cachix.org"
-        "https://nix-community.cachix.org"
-      ];
     };
 
     # Configure distributed builds to use the Linux builder
     distributedBuilds = true;
     buildMachines = [{
       hostName = "linux-builder";
-      system = "x86_64-linux";
-      protocol = "ssh-ng";
+      systems = [ "x86_64-linux" "aarch64-linux" ];
       maxJobs = 4;
       speedFactor = 1;
       supportedFeatures = [ "nixos-test" "benchmark" "big-parallel" "kvm" ];
       mandatoryFeatures = [ ];
+      sshUser = "builder";
+      # Let nix handle SSH key automatically for now
+      protocol = "ssh-ng";
     }];
+
+    # Trust the Linux builder for remote builds
+    settings = {
+      trusted-users = [ "@admin" username ];
+      # Enable building for different architectures
+      extra-platforms = [ "x86_64-linux" "aarch64-linux" ];
+    };
   };
 
   # Environment variables for build optimization

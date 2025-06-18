@@ -10,18 +10,10 @@
     shell = pkgs.zsh;
   };
 
-  # Enable sudo without password for admin users
-  security.sudo.extraRules = [
-    {
-      users = [ username ];
-      commands = [
-        {
-          command = "ALL";
-          options = [ "NOPASSWD" ];
-        }
-      ];
-    }
-  ];
+  # Enable sudo without password for admin users (macOS uses different syntax)
+  security.sudo.extraConfig = ''
+    %admin ALL=(ALL) NOPASSWD: ALL
+  '';
 
   # macOS-specific user environment
   programs.zsh.enable = true;

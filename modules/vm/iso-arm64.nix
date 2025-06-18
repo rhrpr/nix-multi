@@ -161,17 +161,12 @@
     };
   };
 
-  # Services for live environment
+  # Additional services for live environment
   services = {
-    # Enable the X11 windowing system
-    xserver = {
-      enable = true;
-      
-      # Keyboard configuration
-      xkb = {
-        layout = "us";
-        variant = "";
-      };
+    # Keyboard configuration for X11 (already enabled above)
+    xserver.xkb = {
+      layout = "us";
+      variant = "";
     };
     
     # Enable CUPS for printing

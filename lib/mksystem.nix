@@ -1,13 +1,12 @@
 # System configuration builder function
 # Inspired by mitchellh/nixos-config
-{ nixpkgs, home-manager, darwin, plasma-manager, hyprland, nvchad4nix, primeagenInit, ... }:
+{ nixpkgs, home-manager, darwin, plasma-manager, hyprland, nvchad4nix, primeagenInit, agenix, ... }:
 
-{ name, system, user, darwin ? false, vm ? false }:
+{ name, system, user, isDarwin ? false, vm ? false }:
 
 let
-  # Determine if this is a Darwin (macOS) system
-  isDarwin = darwin;
-  isLinux = !darwin;
+  # System flags
+  isLinux = !isDarwin;
   isVM = vm;
 
   # User configuration
@@ -20,7 +19,7 @@ let
   # Common special arguments for all configurations
   specialArgs = {
     inherit username useremail gpuConfig;
-    inherit nixpkgs home-manager darwin plasma-manager hyprland nvchad4nix primeagenInit;
+    inherit nixpkgs home-manager darwin plasma-manager hyprland nvchad4nix primeagenInit agenix;
     inherit isDarwin isLinux isVM;
     hostname = name;
     currentSystem = system;

@@ -7,7 +7,9 @@
     ../modules/darwin/system.nix
     ../modules/darwin/host-users.nix
     ../modules/darwin/apps.nix
+    ../modules/darwin/secrets.nix
     ../modules/hosts/macos/vm-management.nix
+    ../modules/hosts/macos/linux-builder.nix  # Enable Linux builder for VM builds
     ../modules/shared/vm-tools.nix
   ];
 
@@ -15,5 +17,5 @@
   networking.hostName = hostname;
   
   # macOS-specific optimizations for VM hosting
-  system.stateVersion = 4;
+  # system.stateVersion defined in system.nix
 }

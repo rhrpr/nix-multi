@@ -42,6 +42,22 @@ ssh hrpr@localhost -p 22000         # SSH into running VM (password: nixos)
 ./vm-build.sh run
 ```
 
+### Secret Management (Agenix)
+```bash
+# Create new encrypted secrets
+nix run github:ryantm/agenix -- -e secrets/new-secret.age
+
+# Edit existing secrets
+nix run github:ryantm/agenix -- -e secrets/ssh-keys/id_ed25519.age
+
+# Decrypt and view secrets (for debugging)
+nix run github:ryantm/agenix -- -d secrets/ssh-keys/id_ed25519.age
+
+# After system rebuild, encrypted secrets are automatically placed at configured paths
+# Darwin: /Users/hrpr/.ssh/id_ed25519_agenix
+# NixOS: /home/hrpr/.ssh/id_ed25519_agenix
+```
+
 ### Testing and Validation
 ```bash
 # Comprehensive testing

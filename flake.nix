@@ -47,9 +47,16 @@
       url = "github:ThePrimeagen/init.lua";
       flake = false;
     };
+
+    # Secret management
+    agenix = {
+      url = "github:ryantm/agenix";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.darwin.follows = "darwin";
+    };
   };
 
-  outputs = inputs @ { self, nixpkgs, ... }:
+  outputs = inputs @ { self, nixpkgs, agenix, ... }:
   let
     # Import system builder
     mkSystem = import ./lib/mksystem.nix inputs;
@@ -73,7 +80,7 @@
       name = "macbook-pro";
       system = "aarch64-darwin";
       inherit user;
-      darwin = true;
+      isDarwin = true;
     };
 
     # Linux desktop host with GPU passthrough
