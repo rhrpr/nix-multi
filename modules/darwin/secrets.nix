@@ -13,31 +13,15 @@
 
   # Age configuration for Darwin
   age = {
-    # Secrets configuration
-    secrets = {
-      # Main SSH private key
-      ssh-private-key = {
-        file = ../../secrets/ssh-keys/id_ed25519.age;
-        mode = "0600";
-        owner = username;
-        path = "/Users/${username}/.ssh/id_ed25519_agenix";
-      };
-      
-      # Linux builder SSH key
+    # Only configure secrets that are actually needed and have valid identity paths
+    secrets = lib.mkIf (builtins.pathExists "/Users/${username}/.ssh/id_ed25519") {
+      # Linux builder SSH key (only if we have the identity key)
       linux-builder-key = {
         file = ../../secrets/ssh-keys/linux-builder-key.age;
         mode = "0600";
         owner = "root";
         group = "wheel";
         path = "/etc/ssh/linux-builder_ed25519";
-      };
-      
-      # GitHub deploy key (example)
-      github-deploy-key = {
-        file = ../../secrets/ssh-keys/github-deploy-key.age;
-        mode = "0600";
-        owner = username;
-        path = "/Users/${username}/.ssh/github_deploy_key";
       };
     };
 

@@ -13,7 +13,7 @@
 
   # Age configuration
   age = {
-    # Secrets configuration
+    # Secrets configuration - only reference existing secrets
     secrets = {
       # Main SSH private key for user
       ssh-private-key = {
@@ -24,22 +24,13 @@
         path = "/home/${username}/.ssh/id_ed25519_agenix";
       };
 
-      # Linux builder SSH private key
-      linux-builder-ssh-key = {
-        file = ../../secrets/linux-builder-ssh-key.age;
+      # Linux builder SSH key
+      linux-builder-key = {
+        file = ../../secrets/ssh-keys/linux-builder-key.age;
         mode = "0600";
         owner = "root";
         group = "wheel";
         path = "/etc/ssh/linux-builder_ed25519";
-      };
-      
-      # Linux builder SSH host key
-      linux-builder-host-key = {
-        file = ../../secrets/linux-builder-host-key.age;
-        mode = "0600";
-        owner = "root";
-        group = "wheel";
-        path = "/etc/ssh/linux-builder_host_ed25519";
       };
 
       # GitHub deploy key (example)

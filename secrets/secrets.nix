@@ -11,20 +11,8 @@ let
   
 in
 {
-  # SSH Keys for services and systems
+  # SSH Keys that actually exist
   "ssh-keys/id_ed25519.age".publicKeys = allKeys;
-  "ssh-keys/id_ed25519_pub.age".publicKeys = allKeys;
-  
-  # Linux builder SSH keys (for nix-darwin cross-compilation)
   "ssh-keys/linux-builder-key.age".publicKeys = allKeys;
-  "ssh-keys/linux-builder-host-key.age".publicKeys = allKeys;
-  
-  # Service-specific SSH keys
   "ssh-keys/github-deploy-key.age".publicKeys = allKeys;
-  "ssh-keys/server-access-key.age".publicKeys = allKeys;
-  
-  # Legacy secrets (keep for compatibility)
-  "linux-builder-ssh-key.age".publicKeys = allKeys;
-  "linux-builder-host-key.age".publicKeys = allKeys;
-  "example-secret.age".publicKeys = allKeys;
 }
