@@ -1,5 +1,5 @@
 {
-  description = "Unified Nix configuration for macOS (nix-darwin) and Linux (NixOS) with GPU passthrough and VM support";
+  description = "Unified Nix configuration for macOS and Linux with VM support";
 
   nixConfig = {
     substituters = [ 
@@ -17,32 +17,27 @@
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
 
-    # macOS support
     darwin = {
       url = "github:lnl7/nix-darwin";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # Home Manager for dotfiles management
     home-manager = {
       url = "github:nix-community/home-manager/master";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # KDE Plasma configuration
     plasma-manager = {
       url = "github:nix-community/plasma-manager";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.home-manager.follows = "home-manager";
     };
 
-    # Hyprland support
     hyprland = {
       url = "github:hyprwm/Hyprland";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # Neovim configuration
     nvchad4nix = {
       url = "github:nix-community/nix4nvchad";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -54,181 +49,70 @@
     };
   };
 
-  outputs = inputs @ { 
-    self, 
-    nixpkgs, 
-    home-manager, 
-    darwin, 
-    plasma-manager, 
-    hyprland,
-    nvchad4nix, 
-    primeagenInit,
-    ... 
-  }:
+  outputs = inputs @ { self, nixpkgs, ... }:
   let
-    # User configuration - customize these
-    username = "hrpr";
-    useremail = "ryan@hrpr.dev";
+    # Import system builder
+    mkSystem = import ./lib/mksystem.nix inputs;
     
-    # System types
-    # - "macos" - macOS with nix-darwin (VM host)
-    # - "linux-plasma" - NixOS with Plasma desktop + RTX 3080 partial passthrough (VM host)
-    # - "vm-hyprland" - NixOS Hyprland VM (guest system)
-    
-    # GPU configuration (customize for your hardware)
-    gpuConfig = {
-      vendor = "nvidia";          # nvidia or amd
-      deviceId = "10de:2206";     # RTX 3080 GPU PCI ID
-      audioId = "10de:1aef";      # RTX 3080 Audio PCI ID
-      pciAddress = "01:00";       # PCI bus address (without function)
-      enablePartialPassthrough = true;  # Enable sharing between host and VMs
-    };
-    
-    # Common special arguments for all configurations
-    baseSpecialArgs = inputs // {
-      inherit username useremail gpuConfig;
-    };
-    
-    # VM-specific configuration (guest system)
-    vmSpecialArgs = baseSpecialArgs // {
-      desktopManager = "hyprland";
-      isVM = true;
-      hostType = "guest";
-    };
-    
-    # Linux host configuration (with GPU passthrough capability)
-    linuxSpecialArgs = baseSpecialArgs // {
-      desktopManager = "plasma";
-      isVM = false;
-      hostType = "linux-host";
-    };
-    
-    # macOS host configuration (VM creation only)
-    macosSpecialArgs = baseSpecialArgs // {
-      desktopManager = "none";
-      isVM = false;
-      hostType = "macos-host";
-    };
-
-    # Common home-manager configuration function
-    mkHomeManagerConfig = system: extraSpecialArgs: {
-      useGlobalPkgs = true;
-      useUserPackages = true;
-      extraSpecialArgs = extraSpecialArgs // {
-        # Pass system information to avoid circular dependency
-        isDarwin = system == "aarch64-darwin" || system == "x86_64-darwin";
-        isLinux = system == "x86_64-linux" || system == "aarch64-linux";
+    # User configuration
+    user = {
+      name = "hrpr";
+      email = "ryan@hrpr.dev";
+      gpuConfig = {
+        vendor = "nvidia";
+        deviceId = "10de:2206";
+        audioId = "10de:1aef";
+        pciAddress = "01:00";
+        enablePartialPassthrough = true;
       };
-      users.${username} = import ./home;
-      backupFileExtension = "backup";
     };
 
   in {
-    # 1. macOS host configuration (VM creation and management)
-    darwinConfigurations."Ryans-MacBook-Pro" = darwin.lib.darwinSystem {
+    # macOS host (VM creation and management)
+    darwinConfigurations."Ryans-MacBook-Pro" = mkSystem {
+      name = "macbook-pro";
       system = "aarch64-darwin";
-      specialArgs = macosSpecialArgs // { hostname = "Ryans-MacBook-Pro"; };
-      modules = [
-        # Configure nixpkgs to allow unfree packages
-        {
-          nixpkgs.config.allowUnfree = true;
-        }
-        ./modules/darwin/nix-core.nix
-        ./modules/darwin/system.nix
-        ./modules/darwin/host-users.nix
-        ./modules/darwin/apps.nix
-        ./modules/hosts/macos/vm-management.nix  # VM creation tools for macOS
-        ./modules/hosts/macos/linux-builder.nix  # Linux builder for cross-compilation
-        ./modules/shared/vm-tools.nix           # Cross-platform VM tools
-        home-manager.darwinModules.home-manager {
-          home-manager = mkHomeManagerConfig "aarch64-darwin" macosSpecialArgs;
-        }
-      ];
+      inherit user;
+      darwin = true;
     };
 
-    # 2. Linux host configuration with RTX 3080 partial GPU passthrough
-    nixosConfigurations."nixos-plasma" = nixpkgs.lib.nixosSystem {
+    # Linux desktop host with GPU passthrough
+    nixosConfigurations."nixos-plasma" = mkSystem {
+      name = "nixos-desktop";
       system = "x86_64-linux";
-      specialArgs = linuxSpecialArgs // { hostname = "nixos-plasma"; };
-      modules = [
-        ./modules/nixos/hardware-configuration.nix
-        ./modules/nixos/nix-core.nix
-        ./modules/nixos/system.nix
-        ./modules/nixos/host-users.nix
-        ./modules/nixos/apps.nix
-        ./modules/nixos/desktop.nix
-        ./modules/hosts/linux/gpu-passthrough.nix  # RTX 3080 partial passthrough
-        ./modules/hosts/linux/vm-management.nix    # VM management on Linux
-        ./modules/shared/vm-tools.nix              # Cross-platform VM tools
-        home-manager.nixosModules.home-manager {
-          home-manager = (mkHomeManagerConfig "x86_64-linux" linuxSpecialArgs) // {
-            sharedModules = [ plasma-manager.homeManagerModules.plasma-manager ];
-          };
-        }
-      ];
+      inherit user;
     };
 
-    # 3. Hyprland VM guest configuration (runs on both macOS and Linux hosts)
-    nixosConfigurations."nixos-vm-hyprland" = nixpkgs.lib.nixosSystem {
+    # NixOS VM guests
+    nixosConfigurations."nixos-vm-hyprland" = mkSystem {
+      name = "nixos-vm";
       system = "x86_64-linux";
-      specialArgs = vmSpecialArgs // { hostname = "nixos-vm-hyprland"; };
-      modules = [
-        ./modules/vm/hardware-configuration.nix  # VM-optimized hardware config
-        ./modules/nixos/nix-core.nix
-        ./modules/vm/system.nix                  # VM-specific system config
-        ./modules/nixos/host-users.nix
-        ./modules/vm/apps.nix                    # VM-optimized apps
-        ./modules/nixos/desktop.nix              # Hyprland desktop environment
-        ./modules/vm/vm-guest.nix                # Guest additions and optimizations
-        ./modules/vm/gpu-guest.nix               # GPU passthrough guest configuration
-        home-manager.nixosModules.home-manager {
-          home-manager = mkHomeManagerConfig "x86_64-linux" vmSpecialArgs;
-        }
-      ];
+      inherit user;
+      vm = true;
     };
 
-    # 4. VM disk images and ISO images for easy deployment
+    nixosConfigurations."nixos-vm-hyprland-arm" = mkSystem {
+      name = "nixos-vm";
+      system = "aarch64-linux";
+      inherit user;
+      vm = true;
+    };
+
+    # VM images for direct building
     vmImages = {
-      # Build VM disk image for x86_64 systems (Intel Linux, macOS with QEMU)
       hyprland-vm-x86_64 = self.nixosConfigurations."nixos-vm-hyprland".config.system.build.vm;
-      
-      # Build VM disk image for aarch64 systems (Apple Silicon with UTM/QEMU)
-      hyprland-vm-aarch64 = (nixpkgs.lib.nixosSystem {
-        system = "aarch64-linux";
-        specialArgs = vmSpecialArgs // { hostname = "nixos-vm-hyprland-arm"; };
-        modules = [
-          ./modules/vm/hardware-configuration.nix  # VM-optimized hardware config
-          ./modules/nixos/nix-core.nix
-          ./modules/vm/system.nix                  # VM-specific system config
-          ./modules/nixos/host-users.nix
-          ./modules/vm/apps.nix                    # VM-optimized apps
-          ./modules/nixos/desktop.nix              # Hyprland desktop environment
-          ./modules/vm/vm-guest.nix                # Guest additions and optimizations
-          ./modules/vm/gpu-guest.nix               # GPU passthrough guest configuration (no-op on aarch64)
-          home-manager.nixosModules.home-manager {
-            home-manager = mkHomeManagerConfig "aarch64-linux" vmSpecialArgs;
-          }
-        ];
-      }).config.system.build.vm;
-      
-      # Minimal ARM64 VM optimized for Apple Silicon and UTM
-      minimal-vm-aarch64 = (nixpkgs.lib.nixosSystem {
-        system = "aarch64-linux";
-        specialArgs = vmSpecialArgs // { hostname = "nixos-minimal-arm"; };
-        modules = [
-          ./modules/vm/minimal-arm64.nix
-          ./modules/vm/hardware-configuration.nix
-          ./modules/nixos/nix-core.nix
-        ];
-      }).config.system.build.vm;
+      hyprland-vm-aarch64 = self.nixosConfigurations."nixos-vm-hyprland-arm".config.system.build.vm;
     };
 
-    # ISO images for UTM and other virtualization platforms
+    # ISO images for UTM and other platforms
     isoImages = {
-      # ARM64 NixOS + Hyprland ISO for UTM on Apple Silicon
       nixos-hyprland-aarch64 = (nixpkgs.lib.nixosSystem {
         system = "aarch64-linux";
-        specialArgs = vmSpecialArgs // { hostname = "nixos-hyprland-live"; };
+        specialArgs = {
+          username = user.name;
+          hostname = "nixos-hyprland-live";
+          isVM = true;
+        };
         modules = [
           "${nixpkgs}/nixos/modules/installer/cd-dvd/installation-cd-graphical-gnome.nix"
           ./modules/vm/iso-arm64.nix
@@ -238,10 +122,13 @@
         ];
       }).config.system.build.isoImage;
 
-      # Minimal ARM64 NixOS ISO for UTM
       nixos-minimal-aarch64 = (nixpkgs.lib.nixosSystem {
         system = "aarch64-linux";
-        specialArgs = vmSpecialArgs // { hostname = "nixos-minimal-live"; };
+        specialArgs = {
+          username = user.name;
+          hostname = "nixos-minimal-live";
+          isVM = true;
+        };
         modules = [
           "${nixpkgs}/nixos/modules/installer/cd-dvd/installation-cd-minimal.nix"
           ./modules/vm/iso-minimal-arm64.nix
@@ -250,7 +137,7 @@
       }).config.system.build.isoImage;
     };
 
-    # Add all the devshells with treefmt support
+    # Development shells
     devShells = nixpkgs.lib.genAttrs [ "x86_64-linux" "aarch64-darwin" ] (system:
       let
         pkgs = import nixpkgs {
@@ -263,37 +150,29 @@
         treefmtWrapper = pkgs.treefmt;
       in {
         default = pkgs.mkShell {
-          packages = [
-            treefmtWrapper
-          ];
+          packages = [ treefmtWrapper ];
         };
 
         flutter = import ./devshells/flutter.nix {
-          inherit pkgs;
-          inherit treefmtWrapper;
+          inherit pkgs treefmtWrapper;
         };
 
-      web = import ./devshells/web.nix {
-        inherit pkgs;
-        inherit treefmtWrapper;
-      };
+        web = import ./devshells/web.nix {
+          inherit pkgs treefmtWrapper;
+        };
 
-      python = import ./devshells/python.nix {
-        inherit pkgs;
-        inherit treefmtWrapper;
-      };
+        python = import ./devshells/python.nix {
+          inherit pkgs treefmtWrapper;
+        };
       }
     );
 
-    # Formatter for `nix fmt`
+    # Formatter
     formatter = nixpkgs.lib.genAttrs [ "x86_64-linux" "aarch64-darwin" ] (system:
       let
         pkgs = import nixpkgs {
           inherit system;
-          config = {
-            allowUnfree = true;
-            android_sdk.accept_license = true;
-          };
+          config.allowUnfree = true;
         };
       in
         pkgs.nixfmt-rfc-style

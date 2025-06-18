@@ -38,43 +38,57 @@ check_utm() {
     log_success "UTM found and available"
 }
 
-# Build NixOS ARM64 ISO using Nix flake
-build_nixos_arm64_iso() {
-    local iso_type="${1:-hyprland}"  # hyprland or minimal
+# Download pre-built NixOS ARM64 ISO or build if available
+get_nixos_arm64_iso() {
+    local iso_type="${1:-hyprland}"
     local download_dir="$HOME/VMs/ISOs"
     local iso_name="nixos-${iso_type}-aarch64.iso"
     local iso_path="$download_dir/$iso_name"
     
     mkdir -p "$download_dir"
     
-    log_info "Building NixOS ARM64 ISO (${iso_type})..."
-    log_warn "This may take a while (first build can take 30+ minutes)"
-    
-    # Change to the nix-multi directory
-    local nix_multi_dir="$HOME/.config/nix-multi"
-    if [[ ! -d "$nix_multi_dir" ]]; then
-        log_error "nix-multi directory not found at $nix_multi_dir"
-        return 1
+    # Check if we already have the ISO
+    if [[ -f "$iso_path" ]]; then
+        log_success "NixOS ARM64 ISO already available at $iso_path"
+        echo "$iso_path"
+        return 0
     fi
     
-    cd "$nix_multi_dir"
+    log_info "Getting NixOS ARM64 ISO (${iso_type})..."
     
-    # Build the ISO using the Linux builder
-    if nix build ".#isoImages.nixos-${iso_type}-aarch64" --out-link "result-iso-${iso_type}"; then
-        # Copy the ISO to the VMs directory
-        local result_iso=$(readlink -f "result-iso-${iso_type}/iso/"*.iso)
-        if [[ -f "$result_iso" ]]; then
-            cp "$result_iso" "$iso_path"
-            log_success "NixOS ARM64 ISO built and saved to $iso_path"
+    # Try to download a pre-built NixOS ARM64 ISO
+    local nixos_iso_url="https://channels.nixos.org/nixos-unstable/latest-nixos-minimal-aarch64-linux.iso"
+    if [[ "$iso_type" == "minimal" ]]; then
+        log_info "Downloading NixOS minimal ARM64 ISO..."
+        if curl -L -o "$iso_path" "$nixos_iso_url"; then
+            log_success "NixOS minimal ARM64 ISO downloaded"
             echo "$iso_path"
+            return 0
         else
-            log_error "ISO file not found in build result"
-            return 1
+            log_warn "Failed to download pre-built NixOS ISO"
         fi
-    else
-        log_error "Failed to build NixOS ARM64 ISO"
-        return 1
     fi
+    
+    # Try to build locally if we have a Linux builder available
+    log_info "Attempting to build NixOS ARM64 ISO locally..."
+    local nix_multi_dir="$HOME/.config/nix-multi"
+    if [[ -d "$nix_multi_dir" ]]; then
+        cd "$nix_multi_dir"
+        
+        # Try building with emulation
+        if nix build ".#isoImages.nixos-${iso_type}-aarch64" --extra-platforms aarch64-linux --out-link "result-iso-${iso_type}" 2>/dev/null; then
+            local result_iso=$(find result-iso-${iso_type} -name "*.iso" 2>/dev/null | head -1)
+            if [[ -f "$result_iso" ]]; then
+                cp "$result_iso" "$iso_path"
+                log_success "NixOS ARM64 ISO built and saved to $iso_path"
+                echo "$iso_path"
+                return 0
+            fi
+        fi
+    fi
+    
+    log_warn "Could not build NixOS ARM64 ISO locally"
+    return 1
 }
 
 # Download Ubuntu ARM64 image (fallback option)
@@ -106,15 +120,29 @@ setup_utm_vm() {
     case "$vm_type" in
         nixos)
             vm_name="NixOS-Hyprland-VM"
-            iso_path=$(build_nixos_arm64_iso "hyprland")
+            log_info "Attempting to get NixOS ARM64 ISO with Hyprland support..."
+            iso_path=$(get_nixos_arm64_iso "hyprland")
+            if [[ $? -ne 0 ]]; then
+                log_warn "Falling back to NixOS minimal ISO..."
+                iso_path=$(get_nixos_arm64_iso "minimal")
+                if [[ $? -ne 0 ]]; then
+                    log_warn "Falling back to Ubuntu ARM64 as last resort"
+                    iso_path=$(download_ubuntu_arm64 2>/dev/null)
+                fi
+            fi
             ;;
         nixos-minimal)
             vm_name="NixOS-Minimal-VM"
-            iso_path=$(build_nixos_arm64_iso "minimal")
+            log_info "Getting NixOS minimal ARM64 ISO..."
+            iso_path=$(get_nixos_arm64_iso "minimal")
+            if [[ $? -ne 0 ]]; then
+                log_warn "Falling back to Ubuntu ARM64"
+                iso_path=$(download_ubuntu_arm64 2>/dev/null)
+            fi
             ;;
         ubuntu)
             vm_name="Ubuntu-ARM64-VM"
-            iso_path=$(download_ubuntu_arm64)
+            iso_path=$(download_ubuntu_arm64 2>/dev/null)
             ;;
         *)
             log_error "Unknown VM type: $vm_type"
@@ -123,7 +151,7 @@ setup_utm_vm() {
             ;;
     esac
     
-    if [[ $? -ne 0 ]] || [[ ! -f "$iso_path" ]]; then
+    if [[ -z "$iso_path" ]] || [[ ! -f "$iso_path" ]]; then
         log_error "Failed to get ISO image for $vm_type"
         return 1
     fi
@@ -203,7 +231,19 @@ main() {
     
     case "$command" in
         setup)
-            setup_utm_vm
+            setup_utm_vm "${2:-nixos}"
+            ;;
+        setup-nixos)
+            setup_utm_vm "nixos"
+            ;;
+        setup-minimal)
+            setup_utm_vm "nixos-minimal"
+            ;;
+        setup-ubuntu)
+            setup_utm_vm "ubuntu"
+            ;;
+        build-iso)
+            get_nixos_arm64_iso "${2:-hyprland}"
             ;;
         list)
             list_vms
@@ -225,17 +265,23 @@ USAGE:
     $0 [COMMAND] [ARGS...]
 
 COMMANDS:
-    setup       Guide for setting up Ubuntu ARM64 VM in UTM
-    list        List available UTM VMs
-    start NAME  Start a specific VM
-    stop NAME   Stop a specific VM
-    download    Download Ubuntu ARM64 ISO
-    help        Show this help message
+    setup [TYPE]      Guide for setting up VM in UTM (default: nixos)
+    setup-nixos       Setup NixOS + Hyprland VM
+    setup-minimal     Setup minimal NixOS VM
+    setup-ubuntu      Setup Ubuntu ARM64 VM
+    build-iso [TYPE]  Build NixOS ISO (hyprland or minimal)
+    list              List available UTM VMs
+    start NAME        Start a specific VM
+    stop NAME         Stop a specific VM
+    download          Download Ubuntu ARM64 ISO (fallback)
+    help              Show this help message
 
 EXAMPLES:
-    $0 setup                    # Setup guide for new VM
-    $0 download                 # Download Ubuntu ARM64 ISO
-    $0 start Ubuntu-VM          # Start a VM named "Ubuntu-VM"
+    $0 setup-nixos              # Setup NixOS + Hyprland VM
+    $0 setup-minimal            # Setup minimal NixOS VM
+    $0 build-iso hyprland       # Build NixOS + Hyprland ISO
+    $0 build-iso minimal        # Build minimal NixOS ISO
+    $0 start NixOS-Hyprland-VM  # Start NixOS VM
     $0 list                     # List all VMs
 
 EOF

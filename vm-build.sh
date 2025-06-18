@@ -135,17 +135,43 @@ build_vm() {
     elif [[ "$arch" == "aarch64" ]]; then
         log_info "Building aarch64 VM..."
         if [[ "$host_os" == "macos" ]]; then
-            # On Apple Silicon Mac, build minimal VM optimized for UTM
-            log_info "Detected Apple Silicon Mac - building minimal VM optimized for UTM"
-            log_warn "For full Hyprland experience, consider using UTM with Ubuntu ARM64"
+            # On Apple Silicon Mac, recommend UTM instead of cross-compilation
+            log_warn "Cross-compiling NixOS VMs on Apple Silicon is complex and time-consuming"
+            log_info "RECOMMENDED: Use UTM for better Apple Silicon VM experience"
             
             if check_utm; then
-                log_info "UTM detected - you can also use: ./scripts/utm-vm-setup.sh"
+                log_success "UTM detected! Use: ./scripts/utm-vm-setup.sh setup"
+                echo ""
+                echo "UTM provides:"
+                echo "  ✅ Native ARM64 virtualization"
+                echo "  ✅ Better performance than cross-compilation"
+                echo "  ✅ Easy setup with Ubuntu/Fedora ARM64"
+                echo "  ✅ Full desktop environment support"
+                echo ""
+                log_info "After setting up UTM VM, you can install Hyprland with:"
+                echo "  sudo apt update && sudo apt install hyprland  # Ubuntu"
+                echo "  sudo dnf install hyprland                      # Fedora"
+                echo ""
+                read -p "Do you want to continue with cross-compilation anyway? (y/N): " confirm
+                if [[ ! "$confirm" =~ ^[Yy]$ ]]; then
+                    log_info "Launching UTM setup instead..."
+                    ./scripts/utm-vm-setup.sh setup
+                    return 0
+                fi
+            else
+                log_error "UTM not found. Please install UTM for better Apple Silicon VM support"
+                log_info "You can install UTM from: https://mac.getutm.app/"
+                return 1
             fi
             
-            # Build minimal ARM64 VM that's more likely to work
+            # If user insists on cross-compilation, try minimal build
+            log_warn "Attempting cross-compilation (this may take hours and require significant resources)..."
             log_info "Building lightweight ARM64 VM..."
-            nix --extra-experimental-features 'nix-command flakes' build .#vmImages.minimal-vm-aarch64
+            if ! nix --extra-experimental-features 'nix-command flakes' build .#vmImages.minimal-vm-aarch64; then
+                log_error "Cross-compilation failed. Please use UTM instead."
+                log_info "Run: ./scripts/utm-vm-setup.sh setup"
+                return 1
+            fi
         else
             # On Linux, try to build full Hyprland VM
             nix --extra-experimental-features 'nix-command flakes' build .#vmImages.hyprland-vm-aarch64

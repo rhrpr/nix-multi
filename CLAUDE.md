@@ -7,34 +7,39 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ### Setup and Management
 ```bash
 # One-command setup (auto-detects OS)
-./nix-multi.sh setup
+make setup
 
-# Platform-specific setup
-./nix-multi.sh setup-macos          # macOS with nix-darwin
-./nix-multi.sh setup-linux          # Linux with NixOS + GPU passthrough
+# Platform-specific setup  
+make setup-macos                    # macOS with nix-darwin
+make setup-linux                    # Linux with NixOS + GPU passthrough
 
 # Validate entire configuration
-./nix-multi.sh validate
+make check
 
-# Legacy rebuild (auto-detects platform)
+# Legacy scripts (still available)
+./nix-multi.sh setup
 ./nix-rebuild.sh
 ```
 
 ### VM Operations
 ```bash
 # VM management (recommended)
-./nix-multi.sh vm-build             # Build NixOS Hyprland VM
-./nix-multi.sh vm-run               # Run NixOS Hyprland VM
-./nix-multi.sh vm-manage            # Interactive management
+make vm-build                       # Build NixOS Hyprland VM (auto-detects arch)
+make vm-run                         # Build and run NixOS Hyprland VM
+make vm-build-x86                   # Build x86_64 VM
+make vm-build-arm                   # Build ARM64 VM
 
-# Direct VM scripts
-./vm-build.sh x86_64 build          # Build for Intel/AMD
-./vm-build.sh aarch64 build         # Build for ARM64/Apple Silicon
-./vm-build.sh run                   # Build and run
-./vm-build.sh clean                 # Clean artifacts
+# ISO building
+make iso-build                      # Build NixOS ARM64 ISO for UTM
+make iso-minimal                    # Build minimal NixOS ISO
 
 # VM access
 ssh hrpr@localhost -p 22000         # SSH into running VM (password: nixos)
+
+# Legacy scripts (still available)
+./nix-multi.sh vm-build
+./nix-multi.sh vm-run
+./vm-build.sh run
 ```
 
 ### Testing and Validation
@@ -57,14 +62,19 @@ ssh hrpr@localhost -p 22000         # SSH into running VM (password: nixos)
 ### Development Environments
 ```bash
 # Enter specialized development shells
-nix develop .#flutter              # Flutter/Android development
-nix develop .#python               # Python development
-nix develop .#web                  # Web development (Node.js, TypeScript)
-nix develop                        # Default shell with treefmt
+make dev                           # Default development shell
+make dev-flutter                   # Flutter/Android development
+make dev-python                    # Python development
+make dev-web                       # Web development (Node.js, TypeScript)
 
 # Code formatting
-nix fmt                            # Format Nix files (nixfmt-rfc-style)
-treefmt                            # Format all files
+make fmt                           # Format Nix files (nixfmt-rfc-style)
+treefmt                            # Format all files (when in dev shell)
+
+# Legacy commands (still available)
+nix develop .#flutter
+nix develop .#python
+nix fmt
 ```
 
 ### Manual Nix Operations
@@ -128,11 +138,13 @@ This is a sophisticated multi-platform Nix configuration supporting:
 4. **SSH access**: `ssh hrpr@localhost -p 22000`
 
 ### Platform-Specific VM Features
-- **macOS (aarch64)**: Full NixOS Hyprland VM optimized for Apple Silicon
-  - ⚠️ Note: Cross-compilation from macOS may require significant resources
-  - Consider using UTM with pre-built images for faster setup
+- **macOS (aarch64)**: Multiple virtualization options for Apple Silicon
+  - 🚀 **UTM (Recommended)**: Native ARM64 NixOS ISOs with Hyprland
+  - 🔧 **Linux Builder**: Cross-compilation using darwin.linux-builder
+  - 📦 **Pre-built ISOs**: Available for both full and minimal configurations
 - **Linux (x86_64)**: Full NixOS Hyprland VM with NVIDIA GPU passthrough
   - ✅ Native compilation provides fastest build times
+  - 🎮 GPU passthrough for gaming and compute workloads
 - **Both platforms**: Identical NixOS experience with Hyprland desktop environment
 
 ## Key Configuration Details

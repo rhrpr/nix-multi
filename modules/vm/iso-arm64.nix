@@ -4,8 +4,8 @@
 
 {
   imports = [
-    # Use the graphical installation CD base
-    (modulesPath + "/installer/cd-dvd/installation-cd-graphical-calamares.nix")
+    # Use the minimal graphical installation CD as base
+    (modulesPath + "/installer/cd-dvd/installation-cd-graphical-base.nix")
   ];
 
   # ISO configuration
@@ -34,14 +34,15 @@
     xwayland.enable = true;
   };
 
-  # Display manager configuration
-  services.displayManager = {
-    gdm = {
-      enable = true;
-      wayland = true;
-    };
-    defaultSession = "hyprland";
+  # Use X11 with a lightweight desktop manager for the ISO
+  services.xserver = {
+    enable = true;
+    desktopManager.gnome.enable = true;
+    displayManager.gdm.enable = true;
   };
+
+  # Add Hyprland as an available session
+  services.displayManager.defaultSession = lib.mkDefault "gnome";
 
   # Essential packages for live environment
   environment.systemPackages = with pkgs; [

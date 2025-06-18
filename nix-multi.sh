@@ -177,21 +177,28 @@ build_vm() {
     
     log_section "Building NixOS Hyprland VM for architecture: $arch"
     
-    if [[ "$arch" == "x86_64" ]]; then
-        log_info "Building x86_64 NixOS Hyprland VM..."
-        nix --extra-experimental-features 'nix-command flakes' build ".#vmImages.hyprland-vm-x86_64"
-        log_success "x86_64 NixOS Hyprland VM built successfully!"
-    elif [[ "$arch" == "aarch64" ]]; then
-        log_info "Building aarch64 NixOS Hyprland VM..."
-        log_warn "Note: Cross-compilation may require significant build time and resources"
-        nix --extra-experimental-features 'nix-command flakes' build ".#vmImages.hyprland-vm-aarch64"
-        log_success "aarch64 NixOS Hyprland VM built successfully!"
+    # Use the dedicated VM build script for better handling
+    if [[ -f "./vm-build.sh" ]]; then
+        log_info "Using dedicated VM build script for better platform support"
+        ./vm-build.sh "$arch" build
     else
-        log_error "Unsupported architecture: $arch"
-        return 1
+        # Fallback to direct nix build
+        if [[ "$arch" == "x86_64" ]]; then
+            log_info "Building x86_64 NixOS Hyprland VM..."
+            nix --extra-experimental-features 'nix-command flakes' build ".#vmImages.hyprland-vm-x86_64"
+            log_success "x86_64 NixOS Hyprland VM built successfully!"
+        elif [[ "$arch" == "aarch64" ]]; then
+            log_info "Building aarch64 NixOS Hyprland VM..."
+            log_warn "Note: Cross-compilation may require significant build time and resources"
+            nix --extra-experimental-features 'nix-command flakes' build ".#vmImages.hyprland-vm-aarch64"
+            log_success "aarch64 NixOS Hyprland VM built successfully!"
+        else
+            log_error "Unsupported architecture: $arch"
+            return 1
+        fi
+        
+        echo "VM executable: ./result/bin/run-nixos-vm-hyprland-vm"
     fi
-    
-    echo "VM executable: ./result/bin/run-nixos-vm-hyprland-vm"
 }
 
 # Run VM

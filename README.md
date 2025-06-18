@@ -1,37 +1,34 @@
-# Nix-Multi: Unified Nix Configuration
+# Nix Multi-Platform Configuration
 
-A comprehensive Nix configuration that supports:
+A simplified, modular Nix configuration inspired by [mitchellh/nixos-config](https://github.com/mitchellh/nixos-config) that supports:
 
-- **macOS hosts** with nix-darwin (VM creation and management)
-- **Linux hosts** with NixOS + Plasma + RTX 3080 partial GPU passthrough  
-- **Hyprland VMs** that run on both macOS and Linux hosts with shared userland configuration
+- **macOS hosts** (nix-darwin) for VM creation and development
+- **Linux hosts** (NixOS + Plasma) with GPU passthrough
+- **NixOS VMs** (Hyprland desktop) that run on both platforms
 
-## 🚀 Quick Start
-
-### Prerequisites
-
-- [Nix package manager](https://nixos.org/download.html) installed
-- [Flakes enabled](https://nixos.wiki/wiki/Flakes#Enable_flakes) in your Nix configuration
-
-### One-Command Setup
+## Quick Start
 
 ```bash
-# Auto-setup for your current OS
-./nix-multi.sh setup
+# Setup system (auto-detects platform)
+make setup
 
-# Or OS-specific setup  
-./nix-multi.sh setup-macos              # macOS with nix-darwin
-./nix-multi.sh setup-linux              # Linux with NixOS + GPU passthrough
+# Build and run NixOS VM
+make vm-build
+make vm-run
+
+# Enter development environment
+make dev
 ```
 
-### VM Quick Start
+## Key Improvements
 
-```bash
-./nix-multi.sh vm-build                 # Build Hyprland VM
-./nix-multi.sh vm-run                   # Run VM  
-./nix-multi.sh vm-manage                # Interactive management
-./nix-multi.sh validate                 # Test entire setup
-```
+This restructure simplifies the original configuration by:
+
+- **Centralized system builder** using `lib/mksystem.nix`
+- **Machine-specific configs** instead of complex flake outputs
+- **Makefile commands** replacing shell scripts
+- **Cleaner user management** with platform separation
+- **Standard Nix patterns** following community practices
 
 ## 📋 Manual Setup (Advanced)
 
