@@ -60,7 +60,6 @@
         UserKnownHostsFile /dev/null
         LogLevel ERROR
     '';
-    mode = "0644";
   };
 
   # SSH agent configuration for user
