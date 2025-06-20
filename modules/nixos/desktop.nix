@@ -4,6 +4,7 @@
   pkgs,
   desktopManager ? "plasma",
   hyprland,
+  isVM ? false,
   ...
 }:
 
@@ -116,7 +117,7 @@ in
     liberation_ttf
     fira-code
     fira-code-symbols
-  ] ++ lib.optionals isHyprland [
+  ] ++ lib.optionals isHyprland ([
     # Hyprland-specific packages
     waybar
     rofi-wayland
@@ -131,7 +132,6 @@ in
     swaylock-effects
     swayidle
     networkmanagerapplet
-    blueman
     pavucontrol
     file-roller
     nautilus
@@ -139,7 +139,10 @@ in
     gnome-calendar
     gnome-clocks
     gnome-weather
-  ] ++ lib.optionals isPlasma [
+  ] ++ lib.optionals (!isVM) [
+    # Bluetooth manager (only on physical systems)
+    blueman
+  ]) ++ lib.optionals isPlasma [
     # Additional Plasma packages
     kdePackages.kate
     kdePackages.kdeconnect-kde
@@ -257,12 +260,12 @@ in
   # Network configuration
   networking.networkmanager.enable = true;
   
-  # Bluetooth support
-  hardware.bluetooth = {
+  # Bluetooth support (disabled in VMs)
+  hardware.bluetooth = lib.mkIf (!isVM) {
     enable = true;
     powerOnBoot = true;
   };
-  services.blueman.enable = lib.mkIf isHyprland true;
+  services.blueman.enable = lib.mkIf (isHyprland && !isVM) true;
 
   # Printing support
   services.printing = {

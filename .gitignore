@@ -37,3 +37,7 @@ keys.txt
 
 # Age files are SAFE to commit (they're encrypted)
 # *.age files should be committed
+
+# VM ISO files and downloads
+vm-iso/
+*.iso

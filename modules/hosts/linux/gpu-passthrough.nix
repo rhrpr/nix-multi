@@ -116,9 +116,12 @@ in
       graphics = {
         enable = true;
         enable32Bit = lib.mkIf (pkgs.stdenv.hostPlatform.system == "x86_64-linux") true;  # Replaces driSupport32Bit
-        extraPackages = with pkgs; [
+        extraPackages = with pkgs; (lib.optionals (pkgs.stdenv.hostPlatform.system == "x86_64-linux") [
+          # Intel-specific packages (only for x86_64)
           intel-media-driver # For Intel integrated graphics (if available)
           vaapiIntel         # Hardware acceleration
+        ]) ++ [
+          # Universal packages (all architectures)
           vaapiVdpau
           libvdpau-va-gl
         ];

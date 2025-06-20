@@ -21,9 +21,28 @@ make check
 ./nix-rebuild.sh
 ```
 
-### VM Operations
+### VM Operations (UTM-based - Recommended)
 ```bash
-# VM management (recommended)
+# New UTM-based workflow (no cross-compilation issues)
+make vm-setup                       # Download NixOS ISO and show UTM setup instructions
+make vm-deploy                      # Deploy configuration to running VM via SSH
+make vm-ssh                         # SSH into running VM
+make vm-status                      # Check VM connectivity and status
+make vm-update                      # Update VM configuration
+
+# Manual workflow with helper script
+./scripts/vm-setup.sh setup         # Download ISO and show setup instructions
+./scripts/vm-setup.sh deploy        # Deploy configuration
+./scripts/vm-setup.sh ssh           # SSH to VM
+./scripts/vm-setup.sh status        # Check VM status
+
+# VM access
+ssh hrpr@localhost -p 22000         # SSH into running VM (password: nixos)
+```
+
+### VM Operations (Legacy - Cross-compilation)
+```bash
+# Legacy VM building (may have cross-compilation issues on macOS)
 make vm-build                       # Build NixOS Hyprland VM (auto-detects arch)
 make vm-run                         # Build and run NixOS Hyprland VM
 make vm-build-x86                   # Build x86_64 VM
@@ -32,14 +51,6 @@ make vm-build-arm                   # Build ARM64 VM
 # ISO building
 make iso-build                      # Build NixOS ARM64 ISO for UTM
 make iso-minimal                    # Build minimal NixOS ISO
-
-# VM access
-ssh hrpr@localhost -p 22000         # SSH into running VM (password: nixos)
-
-# Legacy scripts (still available)
-./nix-multi.sh vm-build
-./nix-multi.sh vm-run
-./vm-build.sh run
 ```
 
 ### Secret Management (Agenix)

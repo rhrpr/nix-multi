@@ -21,10 +21,12 @@ help:
 	@echo "  setup-linux    - Setup Linux with NixOS"
 	@echo ""
 	@echo "VM Commands:"
-	@echo "  vm-build       - Build NixOS VM (auto-detects architecture)"
-	@echo "  vm-run         - Build and run NixOS VM"
-	@echo "  vm-build-x86   - Build x86_64 VM"
-	@echo "  vm-build-arm   - Build ARM64 VM"
+	@echo "  vm-setup       - Download NixOS ISO and setup UTM VM"
+	@echo "  vm-deploy      - Deploy configuration to running VM via SSH"
+	@echo "  vm-create      - Create UTM VM from downloaded ISO"
+	@echo "  vm-ssh         - SSH into running VM"
+	@echo "  vm-build       - Build NixOS VM (legacy - has cross-compilation issues)"
+	@echo "  vm-run         - Build and run NixOS VM (legacy)"
 	@echo ""
 	@echo "ISO Commands:"
 	@echo "  iso-build      - Build NixOS ISO for current architecture"
@@ -132,3 +134,40 @@ clean:
 .PHONY: fmt
 fmt:
 	nix fmt
+
+# VM Management (UTM-based)
+VM_SSH_PORT = 22000
+VM_SSH_USER = hrpr
+VM_SSH_HOST = localhost
+VM_NAME = nixos-hyprland
+ISO_DIR = ./vm-iso
+NIXOS_ISO_URL = https://channels.nixos.org/nixos-unstable/latest-nixos-minimal-aarch64-linux.iso
+
+.PHONY: vm-setup
+vm-setup:
+	@./scripts/vm-setup.sh setup
+
+.PHONY: vm-download
+vm-download:
+	@./scripts/vm-setup.sh download
+
+.PHONY: vm-ssh
+vm-ssh:
+	@./scripts/vm-setup.sh ssh
+
+.PHONY: vm-deploy
+vm-deploy:
+	@./scripts/vm-setup.sh deploy
+
+.PHONY: vm-update
+vm-update:
+	@./scripts/vm-setup.sh deploy
+
+.PHONY: vm-status
+vm-status:
+	@./scripts/vm-setup.sh status
+
+.PHONY: vm-clean
+vm-clean:
+	@echo "Cleaning VM ISO downloads..."
+	@rm -rf $(ISO_DIR)

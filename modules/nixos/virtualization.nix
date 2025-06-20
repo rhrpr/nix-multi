@@ -39,8 +39,6 @@
   boot = {
     # Enable IOMMU but allow host GPU usage
     kernelParams = [
-      # Intel IOMMU
-      "intel_iommu=on"
       "iommu=pt"
       
       # Enable NVIDIA features for sharing
@@ -59,6 +57,12 @@
       "default_hugepagesz=1G"
       "hugepagesz=1G"
       "hugepages=4"  # 4GB of hugepages
+    ] ++ lib.optionals (pkgs.stdenv.hostPlatform.system == "x86_64-linux") [
+      # Intel-specific IOMMU (x86_64 only)
+      "intel_iommu=on"
+    ] ++ lib.optionals (pkgs.stdenv.hostPlatform.system == "aarch64-linux") [
+      # ARM64-specific virtualization parameters
+      "arm64.nopauth"
     ];
 
     # Load required modules for partial passthrough
@@ -72,12 +76,15 @@
 
     # Enable KVM and GPU modules
     kernelModules = [
-      "kvm-intel"  # Intel CPU virtualization
       "vhost-net"  # Network virtualization
       "nvidia"     # NVIDIA driver for host
       "nvidia_drm" # NVIDIA DRM for display
       "nvidia_modeset"
       "nvidia_uvm" # Unified Memory for CUDA
+    ] ++ lib.optionals (pkgs.stdenv.hostPlatform.system == "x86_64-linux") [
+      "kvm-intel"  # Intel CPU virtualization (x86_64 only)
+    ] ++ lib.optionals (pkgs.stdenv.hostPlatform.system == "aarch64-linux") [
+      "kvm"        # Generic KVM for ARM64
     ];
 
     # Extra module options for partial sharing
@@ -88,7 +95,7 @@
       options nvidia-drm modeset=1
       
       # KVM options
-      options kvm_intel nested=1
+      ${lib.optionalString (pkgs.stdenv.hostPlatform.system == "x86_64-linux") "options kvm_intel nested=1"}
       options kvm ignore_msrs=1
     '';
   };

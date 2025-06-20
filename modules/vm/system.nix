@@ -98,8 +98,20 @@
       enable32Bit = lib.mkIf (pkgs.stdenv.hostPlatform.system == "x86_64-linux") true;
     };
     
-    # VM doesn't need bluetooth typically
-    bluetooth.enable = lib.mkForce false;
+    # VM doesn't need bluetooth typically - force disable all bluetooth
+    bluetooth = {
+      enable = lib.mkForce false;
+      powerOnBoot = lib.mkForce false;
+    };
+  };
+
+  # Also disable bluetooth services explicitly
+  services.blueman.enable = lib.mkForce false;
+  
+  # Disable WirePlumber Bluetooth modules in VMs
+  systemd.user.services."wireplumber@bluetooth" = {
+    enable = lib.mkForce false;
+    wantedBy = lib.mkForce [];
   };
 
   # Optimize memory usage for VM

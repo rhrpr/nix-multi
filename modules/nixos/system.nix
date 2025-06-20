@@ -39,9 +39,9 @@
   # User account configuration
   users.users.${username} = {
     isNormalUser = true;
-    description = "Ryan Harper";
+    description = lib.mkDefault "Ryan Harper";
     extraGroups = [ "networkmanager" "wheel" "audio" "video" "storage" ];
-    shell = pkgs.zsh;
+    shell = lib.mkDefault pkgs.zsh;
   };
 
   # Enable essential programs
