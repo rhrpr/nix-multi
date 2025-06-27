@@ -52,13 +52,3 @@
     term = xterm-256color
   '';
 }
-    window-opacity = 0.95
-
-    # Other settings
-    scrollback-limit = 10000
-    copy-on-select = true
-    
-    # Terminal settings
-    term = xterm-256color
-  '';
-}
