@@ -64,78 +64,81 @@
       "trycua/lume"
     ];
 
+
     brews = [
       "btop" # Resource monitor showing CPU, memory, disks, network
       "ca-certificates" # Bundle of CA root certificates
-      "cask" # Extension mechanism for Homebrew
-      "coreutils" # GNU core utilities (ls, cat, etc)
-      "fastlane" # Automate beta deployment and releases for your iOS and Android apps
-      "ffmpeg" # Audio and video converter/processor
-      "gallery-dl" # Command-line downloader for image galleries
-      "gettext" # GNU internationalization (i18n) library
-      "gmp" # GNU Multiple Precision Arithmetic Library
-      "gnutls" # GNU Transport Layer Security Library
-      "htop" # Interactive process viewer
-      "jansson" # C library for encoding/decoding JSON
-      "kubernetes-cli" # Command-line tool for Kubernetes
-      "libidn2" # International domain name library
-      "lume" # Command-line tool for virtual machines
-      "mas" # Mac App Store command line interface
-      "nettle" # Low-level cryptographic library
-      "openssl@3" # Cryptography and SSL/TLS toolkit
-      "pandoc" # Universal document converter
-      "p11-kit" # Library to load and share PKCS#11 modules
-      "syncthing" # Open source continuous file synchronization tool
-      "terraform-ls" # Language server for Terraform
-      "tfenv" # Terraform version manager
-      "tmux" # Terminal multiplexer
-      "tree-sitter" # Parser generator tool and library
-      "unbound" # Validating, recursive, and caching DNS resolver
-      "yt-dlp" # YouTube video downloader
-      "xcodegen" # Command line tool to generate Xcode project files
+      "cask"           # Extension mechanism for Homebrew
+      "coreutils"      # GNU core utilities (ls, cat, etc)
+      "fastlane"       # Automate beta deployment and releases for your iOS and Android apps
+      "ffmpeg"         # Audio and video converter/processor
+      "gallery-dl"     # Command-line downloader for image galleries
+      "gettext"        # GNU internationalization (i18n) library
+      "gmp"            # GNU Multiple Precision Arithmetic Library
+      "gnutls"         # GNU Transport Layer Security Library
+      "htop"           # Interactive process viewer
+      "jansson"        # C library for encoding/decoding JSON
+      "libidn2"        # International domain name library
+      "lume"           # Command-line tool for virtual machines
+      "mas"            # Mac App Store command line interface
+      "nettle"         # Low-level cryptographic library
+      "openssl@3"      # Cryptography and SSL/TLS toolkit
+      "p11-kit"        # Library to load and share PKCS#11 modules
+      "syncthing"      # Open source continuous file synchronization tool
+      "terraform-ls"   # Language server for Terraform
+      "tfenv"          # Terraform version manager
+      "tmux"           # Terminal multiplexer
+      "tree-sitter"    # Parser generator tool and library
+      "unbound"        # Validating, recursive, and caching DNS resolver
+      "yt-dlp"         # YouTube video downloader
+      "xcodegen"       # Command line tool to generate Xcode project files
     ];
 
     casks = [
-      "aerospace" # an i3-like tiling window manager for macOS
-      "ableton-live-standard" # Ableton Live
-      "android-studio"# Android development environment
-      "aural" # audio player
-      "arturia-software-center" # Manager for Arturia VSTs
-      "betterdisplay" # Display scaling (hidpi)
+      "ableton-live-standard" # Digital audio workstation for music production
+      "aerospace"      # an i3-like tiling window manager for macOS
+      "android-studio" # Android development environment
+      "aural"          # audio player
+      "arturia-software-center" # Arturia software management tool
+      "betterdisplay"  # Display scaling (hidpi)
       "blackhole-16ch" # Virtual audio driver for routing audio between applications
-      "cursor" # Cursor AI code editor
-      "cyberduck" # FTP, SFTP, WebDAV, S3 file transfer client
-      "discord" # Voice, video, and text chat app
-      "firefox" # Web browser
-      "ghostty" # terminal emulator
-      "google-chrome" # Web browser
-      "ibkr" # Interactive Brokers trading platform
-      "iterm2" # Terminal emulator
-      #     "knockknock"    # Security tool to show persistent apps
-      "libreoffice" # Open-source office suite (mainly for ODS files)
-      "lm-studio" # Local AI model runner and chat interface
+      "cursor"         # Cursor AI code editor
+      "claude"         # Claude AI App
+      "cyberduck"      # FTP, SFTP, WebDAV, S3 file transfer client
+      "discord"        # Voice, video, and text chat app
+      "firefox"        # Web browser
+      "ghostty"        # terminal emulator
+      "google-chrome"  # Web browser
+      "github-copilot-for-xcode" # Github Copilot for xCode
+      "ibkr"           # Interactive Brokers trading platform
+      "iterm2"         # MacOS Terminal emulator
+      "knockknock"     # Security tool to show persistent apps
+      "lm-studio"      # Local AI model runner and chat interface
       "logitech-options" # Configuration tool for Logitech devices
-      #     "lulu"           # Open-source firewall for macOS
-      #     "microsoft-edge" # Web browser
-      "mixxx" # DJ software
-      "moonlight" # Game streaming client
-      "obsidian" # Markdown knowledge base and note-taking app
-      #     "oversight"      # Monitors and notifies when microphone or camera is activated
-      "proton-mail-bridge" # Bridge for ProtonMail
-      "protonvpn" # VPN client
-      "rancher" # Kubernetes management platform
-      "spotify" # Music streaming service
-      "stats" # System monitor for the menu bar
-      "steam" # Gaming platform and store
-      "transmission" # BitTorrent client
-      "utm" # Virtual machines UI using QEMU
-      "vagrant" # Tool for building and managing virtual machine environments
-      # "vagrant-vmware-utility" # Vagrant plugin for VMware
-      # "vmware-fusion"  # Virtualization software - must now be installed w Broadcom account
-      "whatsapp" # Messaging app
+      "libreoffice"   # Open-source office software
+      "lulu"           # Open-source firewall for macOS
+      # "microsoft-edge" # Web browser
+      "mixxx"          # DJ software
+      "moonlight"      # Game streaming client
+      "obsidian"       # Markdown knowledge base and note-taking app
+      # "oversight"      # Monitors and notifies when microphone or camera is activated
+      "proton-mail-bridge"  # Proton email
+      "protonvpn"      # VPN client
+      "spotify"        # Music streaming service
+      "stats"          # System monitor for the menu bar
+      "steam"          # Gaming platform and store
+      "rancher"        # Kubernetes and containers host
+      "raycast"        # Spotlight replacement on MacOS
+      "transmission"   # BitTorrent client
+      "utm"            # Virtual machines UI using QEMU
+      "vagrant"        # Tool for building and managing virtual machine environments
+      "vagrant-vmware-utility" # Vagrant plugin for VMware
+      "vox"            # Music player for macOS
+      "whatsapp"       # Messaging app
       "yubico-authenticator" # Authentication tool for YubiKey devices
-      "vanilla" # macOS app to hide menu bar icons
-      "zed" # AI-powered code editor
+      "vanilla"        # macOS app to hide menu bar icons
+      "zed"            # Next generation editor
+      "zen"            # Next generation browser
     ];
   };
 }
