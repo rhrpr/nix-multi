@@ -16,7 +16,7 @@
     
     # Media
     vlc
-    spotify
+    # spotify  # Not available on aarch64-linux
     
     # Office
     libreoffice
@@ -74,7 +74,75 @@
   # Waybar configuration
   programs.waybar = {
     enable = true;
-    settings = builtins.fromJSON (builtins.readFile ./config/waybar/config.json);
+    settings = {
+      mainBar = {
+        layer = "top";
+        position = "top";
+        height = 30;
+        spacing = 4;
+        modules-left = ["hyprland/workspaces" "hyprland/mode"];
+        modules-center = ["hyprland/window"];
+        modules-right = ["network" "pulseaudio" "clock" "tray"];
+        
+        "hyprland/workspaces" = {
+          disable-scroll = true;
+          all-outputs = true;
+          format = "{icon}";
+          format-icons = {
+            "1" = "1";
+            "2" = "2";
+            "3" = "3";
+            "4" = "4";
+            "5" = "5";
+            urgent = "";
+            focused = "";
+            default = "";
+          };
+        };
+        
+        "hyprland/window" = {
+          format = "{}";
+          max-length = 50;
+        };
+        
+        network = {
+          format-wifi = "{essid} ({signalStrength}%) ";
+          format-ethernet = "{ifname}: {ipaddr}/{cidr} ";
+          format-linked = "{ifname} (No IP) ";
+          format-disconnected = "Disconnected ⚠";
+          format-alt = "{ifname}: {ipaddr}/{cidr}";
+        };
+        
+        pulseaudio = {
+          format = "{volume}% {icon} {format_source}";
+          format-bluetooth = "{volume}% {icon} {format_source}";
+          format-bluetooth-muted = " {icon} {format_source}";
+          format-muted = " {format_source}";
+          format-source = "{volume}% ";
+          format-source-muted = "";
+          format-icons = {
+            headphone = "";
+            hands-free = "";
+            headset = "";
+            phone = "";
+            portable = "";
+            car = "";
+            default = ["" "" ""];
+          };
+          on-click = "pavucontrol";
+        };
+        
+        clock = {
+          format = "{:%Y-%m-%d %H:%M}";
+          tooltip-format = "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>";
+          format-alt = "{:%Y-%m-%d}";
+        };
+        
+        tray = {
+          spacing = 10;
+        };
+      };
+    };
     style = builtins.readFile ./config/waybar/style.css;
   };
   
@@ -88,7 +156,6 @@
   # Kitty terminal configuration
   programs.kitty = {
     enable = true;
-    theme = "Tokyo Night";
     font = {
       name = "JetBrainsMono Nerd Font";
       size = 12;
@@ -127,11 +194,11 @@
     enable = true;
     theme = {
       name = "Adwaita-dark";
-      package = pkgs.gnome.gnome-themes-extra;
+      package = pkgs.gnome-themes-extra;
     };
     iconTheme = {
       name = "Adwaita";
-      package = pkgs.gnome.adwaita-icon-theme;
+      package = pkgs.adwaita-icon-theme;
     };
   };
   

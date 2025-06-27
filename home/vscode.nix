@@ -19,6 +19,7 @@
         # continue.continue # Local LLM Copilot
         mechatroner.rainbow-csv
         dbaeumer.vscode-eslint
+        # ahmadawais.shades-of-purple # Not available in vscode-extensions
       ];
 
       userSettings = {

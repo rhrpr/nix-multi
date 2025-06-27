@@ -36,7 +36,7 @@
   services.spice-vdagentd.enable = true;
   
   # Enable hardware acceleration where possible
-  hardware.opengl.enable = true;
+  hardware.graphics.enable = true;
   
   # Networking
   networking.useDHCP = lib.mkDefault true;

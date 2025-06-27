@@ -20,25 +20,28 @@
   # Display manager with Hyprland support
   services.xserver = {
     enable = true;
-    displayManager.gdm = {
-      enable = true;
-      wayland = true;
-    };
     
     # Keep X11 support for compatibility
-    desktopManager.gnome.enable = false; # Disable GNOME to use Hyprland
     
     # VM-optimized settings
     videoDrivers = [ "virtio" ];
   };
+  
+  # Use new display manager configuration
+  services.displayManager.gdm = {
+    enable = true;
+    wayland = true;
+  };
+  
+  # Disable GNOME to use Hyprland
+  services.desktopManager.gnome.enable = false;
   
   # Wayland specific services
   services.dbus.enable = true;
   security.polkit.enable = true;
   
   # Audio with PipeWire (better for Wayland)
-  sound.enable = false; # Disable ALSA
-  hardware.pulseaudio.enable = false;
+  services.pulseaudio.enable = false;
   security.rtkit.enable = true;
   services.pipewire = {
     enable = true;
@@ -51,13 +54,15 @@
   # Fonts for Hyprland
   fonts.packages = with pkgs; [
     noto-fonts
-    noto-fonts-cjk
+    noto-fonts-cjk-sans
     noto-fonts-emoji
     liberation_ttf
     fira-code
     fira-code-symbols
     font-awesome
-    (nerdfonts.override { fonts = [ "FiraCode" "DroidSansMono" "JetBrainsMono" ]; })
+    nerd-fonts.fira-code
+    nerd-fonts.droid-sans-mono
+    nerd-fonts.jetbrains-mono
   ];
   
   # Portal for screen sharing and file dialogs
@@ -74,11 +79,11 @@
   services.spice-vdagentd.enable = true;
   services.qemuGuest.enable = true;
   
-  # Hardware acceleration
-  hardware.opengl = {
+  # Hardware acceleration - use new hardware.graphics for newer NixOS
+  hardware.graphics = {
     enable = true;
-    driSupport = true;
-    driSupport32Bit = true;
+    # Only enable 32-bit support on x86_64 systems
+    enable32Bit = pkgs.stdenv.isx86_64;
   };
   
   # Environment variables for Wayland

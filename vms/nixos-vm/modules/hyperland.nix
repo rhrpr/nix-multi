@@ -37,7 +37,7 @@
     networkmanagerapplet
     
     # Authentication
-    polkit-kde-agent
+    kdePackages.polkit-kde-agent-1
     
     # Screen locking
     swaylock-effects

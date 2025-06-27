@@ -132,10 +132,7 @@
       };
 
       packages.${system} = {
-        # VM ISO builder - fix the reference
-        vm-iso = self.nixosConfigurations.vm.config.system.build.isoImage;
-        
-        # VM management tools - fix the reference
+        # VM management tools
         vm-tools = pkgs.symlinkJoin {
           name = "vm-tools";
           paths = with pkgs; [
@@ -150,7 +147,7 @@
       nixosConfigurations.vm = nixpkgs.lib.nixosSystem {
         system = "aarch64-linux";
         modules = [
-          ./vms/nixos-vm/configuration.nix
+          ./vms/nixos-vm/modules/configuration.nix
           home-manager.nixosModules.home-manager
           {
             home-manager.useGlobalPkgs = true;

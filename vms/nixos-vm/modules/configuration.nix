@@ -2,10 +2,10 @@
 
 {
   imports = [
-    ./vm-hardware.nix
-    ./modules/system.nix
-    ./modules/development.nix
-    ./modules/hyprland.nix  # Add Hyprland module
+    ../vm-hardware.nix
+    ./system.nix
+    ./development.nix
+    ./hyperland.nix  # Add Hyprland module
   ];
 
   # System settings
