@@ -10,7 +10,7 @@
 
   boot.initrd.availableKernelModules = [ "xhci_pci" "ahci" "nvme" "usbhid" "usb_storage" "sd_mod" ];
   boot.initrd.kernelModules = [ ];
-  boot.kernelModules = lib.optionals (pkgs.stdenv.hostPlatform.system == "x86_64-linux") [ "kvm-intel" ];
+  boot.kernelModules = [ ]; # Remove conditional module loading to avoid circular dependency  
   boot.extraModulePackages = [ ];
 
   fileSystems."/" =
@@ -41,7 +41,6 @@
   # networking.interfaces.enp5s0.useDHCP = lib.mkDefault true;
   # networking.interfaces.wlo1.useDHCP = lib.mkDefault true;
 
-  nixpkgs.hostPlatform = lib.mkDefault (if pkgs.stdenv.hostPlatform.isAarch64 then "aarch64-linux" else "x86_64-linux");
-  hardware.cpu.intel.updateMicrocode = lib.mkIf (pkgs.stdenv.hostPlatform.system == "x86_64-linux") 
-    (lib.mkDefault config.hardware.enableRedistributableFirmware);
+  nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux"; # Set explicit platform to avoid circular dependency
+  hardware.cpu.intel.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
 }

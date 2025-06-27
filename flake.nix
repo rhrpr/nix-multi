@@ -156,7 +156,7 @@
     }) //
   {
     # macOS host (VM creation and management)
-    darwinConfigurations."macbook-pro" = mkSystem {
+    darwinConfigurations."Ryans-MacBook-Pro" = mkSystem {
       name = "macbook-pro";
       system = "aarch64-darwin";
       inherit user;

@@ -109,5 +109,5 @@ in {
     shellAliases = shellAliases;
   };
 
-  environment.systemPackages = [pkgs.kubectl];
+  home.packages = [pkgs.kubectl];
 }
