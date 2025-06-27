@@ -35,4 +35,6 @@ in
       };
     '';
   };
+
+  environment.systemPackages = [pkgs.kubectl];
 }
