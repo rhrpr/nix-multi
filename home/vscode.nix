@@ -16,10 +16,9 @@
         ms-python.vscode-pylance
         ms-vscode-remote.remote-ssh
         ms-vscode-remote.remote-ssh-edit
-        continue.continue
+        # continue.continue # Local LLM Copilot
         mechatroner.rainbow-csv
         dbaeumer.vscode-eslint
-        ahmadawais.shades-of-purple
       ];
 
       userSettings = {
