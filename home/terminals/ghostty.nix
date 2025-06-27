@@ -18,7 +18,7 @@
     selection-background = b362ff
     selection-foreground = c2c2c2
 
-    # ANSI colors (0-15) - Official Shades of Purple palette
+    # ANSI colors (0-15) - Official Shades of Purple palette converted from iTerm2 theme
     palette = 0=#000000
     palette = 1=#d90429
     palette = 2=#3ad900
@@ -27,14 +27,14 @@
     palette = 5=#ff2b70
     palette = 6=#00c5c7
     palette = 7=#c7c7c7
-    palette = 8=#686868
-    palette = 9=#f92672
-    palette = 10=#43d426
+    palette = 8=#676767
+    palette = 9=#f9291b
+    palette = 10=#42d425
     palette = 11=#f1d000
     palette = 12=#6871ff
-    palette = 13=#ff77ff
-    palette = 14=#79e8fb
-    palette = 15=#ffffff
+    palette = 13=#ff76ff
+    palette = 14=#79e7fa
+    palette = 15=#feffff
 
     # Font configuration
     font-family = "FiraCode Nerd Font"
@@ -42,7 +42,7 @@
 
     # Window settings
     window-decoration = true
-    
+
     # Other settings
     scrollback-limit = 10000
     copy-on-select = true

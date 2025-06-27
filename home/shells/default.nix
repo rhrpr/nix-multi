@@ -6,9 +6,9 @@
 let
   shellAliases = {
     k = "kubectl";
-    l = "ls -altr";
-    ll = "ls -altr";
-    latr = "ls -altr";
+    l = "ls -altr --color=auto";
+    ll = "ls -altr --color=auto";
+    latr = "ls -altr --color=auto";
     
     # System rebuild aliases
     rebuild = "sudo nixos-rebuild switch --flake ~/.config/nix-multi#nixos-plasma";
