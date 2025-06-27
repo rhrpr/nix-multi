@@ -7,7 +7,7 @@ let
       name = "shades-of-purple";
       publisher = "ahmadawais";
       version = "7.3.2";
-      sha256 = "sha256-0g18y8drn1jzb31x166c8w0czfi9m7syqqv9vqd8nnzxf4sg351l";
+      sha256 = "sha256-DQGKDdJHdTsxGbdW+kyZDdv6n3eIqP0aMJr3vfuFjg4=";
     };
   };
 in
