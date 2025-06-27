@@ -44,7 +44,6 @@ let
     # Modern unix tools
     cat = "bat";
     find = "fd";
-    grep = "rg";
     ls = "eza";
     top = "btop";
   };
@@ -68,7 +67,7 @@ in {
     
     initContent = ''
       # Custom functions
-      gr() {
+      rgrep() {
         rg -rnIi --colour "$1" ./
       }
       
