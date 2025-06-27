@@ -8,6 +8,10 @@
     p7zip
     claude-code # Deep terminal AI
 
+    # fonts
+    fira-code
+    nerd-fonts.fira-code
+
     # utils
     ripgrep # recursively searches directories for a regex pattern
     jq # A lightweight and flexible command-line JSON processor
