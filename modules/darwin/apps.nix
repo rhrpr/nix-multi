@@ -112,11 +112,11 @@
       "github-copilot-for-xcode" # Github Copilot for xCode
       "ibkr"           # Interactive Brokers trading platform
       "iterm2"         # MacOS Terminal emulator
-      "knockknock"     # Security tool to show persistent apps
+      # "knockknock"     # Security tool to show persistent apps
       "lm-studio"      # Local AI model runner and chat interface
       "logitech-options" # Configuration tool for Logitech devices
       "libreoffice"   # Open-source office software
-      "lulu"           # Open-source firewall for macOS
+      # "lulu"           # Open-source firewall for macOS
       # "microsoft-edge" # Web browser
       "mixxx"          # DJ software
       "moonlight"      # Game streaming client
