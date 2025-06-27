@@ -47,9 +47,6 @@ let
     grep = "rg";
     ls = "eza";
     top = "btop";
-    
-    # Custom search alias
-    gr = "rg -rnIi --colour";
   };
 in {
   # only works in bash/zsh
