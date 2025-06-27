@@ -7,7 +7,7 @@ let
       name = "shades-of-purple";
       publisher = "ahmadawais";
       version = "7.3.2";
-      sha256 = "sha256-DQGKDdJHdTsxGbdW+kyZDdv6n3eIqP0aMJr3vfuFjg4=";
+      sha256 = "sha256-m3S54YzkgAFgeKuhz+39FvkdejpLwMPaxsLCd17iBYM=";
     };
   };
 in
@@ -40,7 +40,7 @@ in
         "editor.fontSize" = 14;
         "editor.fontFamily" = "FiraCode Nerd Font, Menlo, Monaco, 'Courier New', monospace";
         "editor.tabSize" = 2;
-        "workbench.colorTheme" = "Shades of Purple";
+        "workbench.colorTheme" = "Shades of Purple (Super Dark)";
         "files.autoSave" = "afterDelay";
         "editor.fontLigatures" = true;
         "editor.cursorBlinking" = "smooth";
