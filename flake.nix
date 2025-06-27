@@ -140,7 +140,18 @@
 
       # Packages
       packages = {
-        vm-tools = import ./modules/shared/vm-tools.nix { inherit pkgs; };
+        vm-tools = pkgs.symlinkJoin {
+          name = "vm-tools";
+          paths = with pkgs; [
+            qemu
+            qemu-utils
+            socat
+            netcat
+          ] ++ lib.optionals pkgs.stdenv.isLinux [
+            qemu_kvm
+            libvirt
+          ];
+        };
       };
     }) //
   {
@@ -168,130 +179,3 @@
     };
   };
 }
-    # Import system builder
-    mkSystem = import ./lib/mksystem.nix inputs;
-    
-    # User configuration
-    user = {
-      name = "hrpr";
-      email = "ryan@hrpr.dev";
-      gpuConfig = {
-        vendor = "nvidia";
-        deviceId = "10de:2206";
-        audioId = "10de:1aef";
-        pciAddress = "01:00";
-        enablePartialPassthrough = true;
-      };
-    };
-
-  in {
-    # macOS host (VM creation and management)
-    darwinConfigurations."Ryans-MacBook-Pro" = mkSystem {
-      name = "macbook-pro";
-      system = "aarch64-darwin";
-      inherit user;
-      isDarwin = true;
-    };
-
-    # Linux desktop host with GPU passthrough
-    nixosConfigurations."nixos-plasma" = mkSystem {
-      name = "nixos-desktop";
-      system = "x86_64-linux";
-      inherit user;
-    };
-
-    # NixOS VM guests
-    nixosConfigurations."nixos-vm-hyprland" = mkSystem {
-      name = "nixos-vm";
-      system = "x86_64-linux";
-      inherit user;
-      vm = true;
-    };
-
-    nixosConfigurations."nixos-vm-hyprland-arm" = mkSystem {
-      name = "nixos-vm";
-      system = "aarch64-linux";
-      inherit user;
-      vm = true;
-    };
-
-    # VM images for direct building
-    vmImages = {
-      hyprland-vm-x86_64 = self.nixosConfigurations."nixos-vm-hyprland".config.system.build.vm;
-      hyprland-vm-aarch64 = self.nixosConfigurations."nixos-vm-hyprland-arm".config.system.build.vm;
-    };
-
-    # ISO images for UTM and other platforms
-    isoImages = {
-      nixos-hyprland-aarch64 = (nixpkgs.lib.nixosSystem {
-        system = "aarch64-linux";
-        specialArgs = {
-          username = user.name;
-          hostname = "nixos-hyprland-live";
-          isVM = true;
-        };
-        modules = [
-          "${nixpkgs}/nixos/modules/installer/cd-dvd/installation-cd-graphical-gnome.nix"
-          ./modules/vm/iso-arm64.nix
-          ./modules/nixos/nix-core.nix
-          ./modules/nixos/host-users.nix
-          ./modules/nixos/desktop.nix
-        ];
-      }).config.system.build.isoImage;
-
-      nixos-minimal-aarch64 = (nixpkgs.lib.nixosSystem {
-        system = "aarch64-linux";
-        specialArgs = {
-          username = user.name;
-          hostname = "nixos-minimal-live";
-          isVM = true;
-        };
-        modules = [
-          "${nixpkgs}/nixos/modules/installer/cd-dvd/installation-cd-minimal.nix"
-          ./modules/vm/iso-minimal-arm64.nix
-          ./modules/nixos/nix-core.nix
-        ];
-      }).config.system.build.isoImage;
-    };
-
-    # Development shells
-    devShells = nixpkgs.lib.genAttrs [ "x86_64-linux" "aarch64-darwin" ] (system:
-      let
-        pkgs = import nixpkgs {
-          inherit system;
-          config = {
-            allowUnfree = true;
-            android_sdk.accept_license = true;
-          };
-        };
-        treefmtWrapper = pkgs.treefmt;
-      in {
-        default = pkgs.mkShell {
-          packages = [ treefmtWrapper ];
-        };
-
-        flutter = import ./devshells/flutter.nix {
-          inherit pkgs treefmtWrapper;
-        };
-
-        web = import ./devshells/web.nix {
-          inherit pkgs treefmtWrapper;
-        };
-
-        python = import ./devshells/python.nix {
-          inherit pkgs treefmtWrapper;
-        };
-      }
-    );
-
-    # Formatter
-    formatter = nixpkgs.lib.genAttrs [ "x86_64-linux" "aarch64-darwin" ] (system:
-      let
-        pkgs = import nixpkgs {
-          inherit system;
-          config.allowUnfree = true;
-        };
-      in
-        pkgs.nixfmt-rfc-style
-    );
-  };
