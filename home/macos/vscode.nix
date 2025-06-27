@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, pkgs, lib, ... }:
 
 {
   programs.vscode = {
@@ -16,17 +16,17 @@
         ms-python.vscode-pylance
         ms-vscode-remote.remote-ssh
         ms-vscode-remote.remote-ssh-edit
-        # continue.continue # Local LLM Copilot
         mechatroner.rainbow-csv
         dbaeumer.vscode-eslint
-        # ahmadawais.shades-of-purple # Not available in vscode-extensions
+        github.vscode-github-actions
+        ms-azuretools.vscode-docker
       ];
 
       userSettings = {
         "editor.fontSize" = 14;
         "editor.fontFamily" = "Menlo, Monaco, 'Courier New', monospace";
         "editor.tabSize" = 2;
-        "workbench.colorTheme" = "Shades of Purple - Super Dark";
+        "workbench.colorTheme" = "Shades of Purple - Super Dark"; # Kimbie Dark
         "files.autoSave" = "afterDelay";
       };
 

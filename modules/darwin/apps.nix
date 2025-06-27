@@ -1,5 +1,4 @@
-{ pkgs, ... }:
-{
+{ pkgs, username, ... }: {
 
   ##########################################################################
   #
@@ -24,6 +23,9 @@
     treefmt
   ];
   environment.variables.EDITOR = "nano";
+
+  # Set the primary user for homebrew and user-specific settings
+  system.primaryUser = username;
 
   # TODO To make this work, homebrew need to be installed manually, see https://brew.sh
   #
@@ -56,7 +58,6 @@
     };
 
     taps = [
-      # "homebrew/services"
       "hashicorp/tap"
       "nikitabobko/tap" # aerospace - an i3-like tiling window manager for macOS
       "FelixKratz/formulae" # janky borders - highlight active window borders
@@ -95,6 +96,7 @@
     ];
 
     casks = [
+<<<<<<< HEAD:modules/apps.nix
       "aerospace" # an i3-like tiling window manager for macOS
       "ableton-live-standard" # Ableton Live
       "android-studio"# Android development environment
@@ -135,6 +137,52 @@
       "yubico-authenticator" # Authentication tool for YubiKey devices
       "vanilla" # macOS app to hide menu bar icons
       "zed" # AI-powered code editor
+=======
+      "ableton-live-standard" # Digital audio workstation for music production
+      "aerospace"      # an i3-like tiling window manager for macOS
+      "android-studio" # Android development environment
+      "aural"          # audio player
+      "arturia-software-center" # Arturia software management tool
+      "betterdisplay"  # Display scaling (hidpi)
+      "blackhole-16ch" # Virtual audio driver for routing audio between applications
+      "cursor"         # Cursor AI code editor
+      "claude"         # Claude AI App
+      "cyberduck"      # FTP, SFTP, WebDAV, S3 file transfer client
+      "discord"        # Voice, video, and text chat app
+      "firefox"        # Web browser
+      "ghostty"        # terminal emulator
+      "google-chrome"  # Web browser
+      "github-copilot-for-xcode" # Github Copilot for xCode
+      "ibkr"           # Interactive Brokers trading platform
+      "iterm2"         # MacOS Terminal emulator
+      "knockknock"     # Security tool to show persistent apps
+      "lm-studio"      # Local AI model runner and chat interface
+      "logitech-options" # Configuration tool for Logitech devices
+      "libreoffice"   # Open-source office software
+      "lulu"           # Open-source firewall for macOS
+      # "microsoft-edge" # Web browser
+      "mixxx"          # DJ software
+      "moonlight"      # Game streaming client
+      "obsidian"       # Markdown knowledge base and note-taking app
+      # "oversight"      # Monitors and notifies when microphone or camera is activated
+      "proton-mail-bridge"  # Proton email
+      "protonvpn"      # VPN client
+      "spotify"        # Music streaming service
+      "stats"          # System monitor for the menu bar
+      "steam"          # Gaming platform and store
+      "rancher"        # Kubernetes and containers host
+      "raycast"        # Spotlight replacement on MacOS
+      "transmission"   # BitTorrent client
+      "utm"            # Virtual machines UI using QEMU
+      "vagrant"        # Tool for building and managing virtual machine environments
+      "vagrant-vmware-utility" # Vagrant plugin for VMware
+      "vox"            # Music player for macOS
+      "whatsapp"       # Messaging app
+      "yubico-authenticator" # Authentication tool for YubiKey devices
+      "vanilla"        # macOS app to hide menu bar icons
+      "zed"            # Next generation editor
+      "zen"            # Next generation browser
+>>>>>>> feature/linux:modules/darwin/apps.nix
     ];
   };
 }

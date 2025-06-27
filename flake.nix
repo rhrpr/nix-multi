@@ -1,28 +1,46 @@
 {
-  description = "Nix for macOS configuration";
+  description = "Unified Nix configuration for macOS and Linux with VM support";
 
   nixConfig = {
-    substituters = [ "https://cache.nixos.org" ];
+    substituters = [ 
+      "https://cache.nixos.org"
+      "https://hyprland.cachix.org"
+      "https://nix-community.cachix.org"
+    ];
+    trusted-public-keys = [
+      "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
+      "hyprland.cachix.org-1:a7pgxzMz7+chwVL3/pzj6jIBMioiJM7ypFP8PwtkuGc="
+      "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
+    ];
   };
 
   inputs = {
-    # Use a consistent name for nixpkgs
     nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
+
+    flake-utils.url = "github:numtide/flake-utils";
+    treefmt-nix.url = "github:numtide/treefmt-nix";
+
+    darwin = {
+      url = "github:lnl7/nix-darwin";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
 
     home-manager = {
       url = "github:nix-community/home-manager/master";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    flake-utils.url = "github:numtide/flake-utils";
-    treefmt-nix.url = "github:numtide/treefmt-nix";
+    plasma-manager = {
+      url = "github:nix-community/plasma-manager";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.home-manager.follows = "home-manager";
+    };
 
-    nix-darwin = {
-      url = "github:lnl7/nix-darwin";
+    hyprland = {
+      url = "github:hyprwm/Hyprland";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # Add nix4nvchad as an input
     nvchad4nix = {
       url = "github:nix-community/nix4nvchad";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -32,129 +50,248 @@
       url = "github:ThePrimeagen/init.lua";
       flake = false; # because it's not a flake repo
     };
+
+    # Secret management
+    agenix = {
+      url = "github:ryantm/agenix";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.darwin.follows = "darwin";
+    };
   };
 
-  outputs =
-    inputs@{
-      self,
-      nixpkgs,
-      nix-darwin,
-      home-manager,
-      nvchad4nix,
-      treefmt-nix,
-      ...
-    }:
-    let
-      # User configuration
-      username = "hrpr";
-      useremail = "ryan@hrpr.dev";
-      system = "aarch64-darwin";
-      hostname = "macbook-pro";
+  outputs = inputs @ { self, nixpkgs, agenix, darwin, treefmt-nix, flake-utils, ... }:
+  let
+    # Import system builder
+    mkSystem = import ./lib/mksystem.nix inputs;
+    
+    # User configuration
+    user = {
+      name = "hrpr";
+      email = "ryan@hrpr.dev";
+      gpuConfig = {
+        vendor = "nvidia";
+        deviceId = "10de:2206";
+        audioId = "10de:1aef";
+        pciAddress = "01:00";
+        enablePartialPassthrough = true;
+      };
+    };
 
-      # Initialize pkgs properly
-      pkgs = import nixpkgs {
-        inherit system;
-        config = {
-          allowUnfree = true; # Optional, if you need unfree packages
-          android_sdk.accept_license = true;
+    # Setup treefmt-nix for both systems
+    systems = [ "aarch64-darwin" "x86_64-linux" ];
+    
+    # Helper to create treefmt config for a system
+    mkTreefmt = system: 
+      let
+        pkgs = import nixpkgs {
+          inherit system;
+          config = {
+            allowUnfree = true;
+            android_sdk.accept_license = true;
+          };
         };
-      };
-
-      # Additional arguments to pass to modules
-      specialArgs = inputs // {
-        inherit username useremail hostname;
-      };
-
-      # Setup treefmt-nix with the properly instantiated pkgs
-      treefmtEval = treefmt-nix.lib.evalModule pkgs {
+      in
+      treefmt-nix.lib.evalModule pkgs {
         projectRootFile = "flake.nix";
         programs.nixfmt.enable = true;
         programs.nixfmt.package = pkgs.nixfmt-rfc-style;
       };
 
-      # treefmt wrapper from evaluation
-      treefmtWrapper = treefmtEval.config.build.wrapper;
+  in 
+  flake-utils.lib.eachSystem systems (system:
+    let
+      treefmtEval = mkTreefmt system;
+      pkgs = import nixpkgs {
+        inherit system;
+        config = {
+          allowUnfree = true;
+          android_sdk.accept_license = true;
+        };
+      };
     in
     {
-      darwinConfigurations.${hostname} = nix-darwin.lib.darwinSystem {
-        inherit system specialArgs;
-        modules = [
-          ./modules/nix-core.nix
-          ./modules/system.nix
-          ./modules/apps.nix
-          ./modules/host-users.nix
+      # Formatters
+      formatter = treefmtEval.config.build.wrapper;
+      
+      # Checks
+      checks.formatting = treefmtEval.config.build.check self;
 
-          home-manager.darwinModules.home-manager
-          {
-            home-manager = {
-              useGlobalPkgs = true;
-              useUserPackages = true;
-              extraSpecialArgs = specialArgs;
-              users.${username} = import ./home;
-              backupFileExtension = "backup";
-            };
-          }
-
-          # Add VM management tools to your Darwin configuration
-          ./vms/utm-manager.nix
-        ];
-      };
-
-      # Updated formatter configuration using treefmt-nix
-      formatter.${system} = treefmtEval.config.build.wrapper;
-      formatter.x86_64-linux = nixpkgs.legacyPackages.x86_64-linux.nixfmt-rfc-style;
-
-      # Add checks
-      checks.${system}.formatting = treefmtEval.config.build.check self;
-
-      # Add all the devshells with treefmt support
-      devShells.${system} = {
+      # Dev shells
+      devShells = {
         default = pkgs.mkShell {
-          packages = [
-            treefmtWrapper
-          ];
+          packages = [ treefmtEval.config.build.wrapper ];
         };
         
         flutter = import ./devshells/flutter.nix { 
           inherit pkgs; 
-          inherit treefmtWrapper;
+          treefmtWrapper = treefmtEval.config.build.wrapper;
         };
         
         web = import ./devshells/web.nix { 
           inherit pkgs; 
-          inherit treefmtWrapper;
+          treefmtWrapper = treefmtEval.config.build.wrapper;
         };
         
         python = import ./devshells/python.nix { 
           inherit pkgs; 
-          inherit treefmtWrapper;
+          treefmtWrapper = treefmtEval.config.build.wrapper;
         };
       };
 
-      packages.${system} = {
-        # VM management tools
-        vm-tools = pkgs.symlinkJoin {
-          name = "vm-tools";
-          paths = with pkgs; [
-            qemu
-            openssh
-            rsync
-          ];
-        };
+      # Packages
+      packages = {
+        vm-tools = import ./modules/shared/vm-tools.nix { inherit pkgs; };
       };
+    }) //
+  {
+    # macOS host (VM creation and management)
+    darwinConfigurations."macbook-pro" = mkSystem {
+      name = "macbook-pro";
+      system = "aarch64-darwin";
+      inherit user;
+      isDarwin = true;
+    };
 
-      # Add VM configuration
-      nixosConfigurations.vm = nixpkgs.lib.nixosSystem {
-        system = "aarch64-linux";
-        modules = [
-          ./vms/nixos-vm/modules/configuration.nix
-          home-manager.nixosModules.home-manager
-          {
-            home-manager.useGlobalPkgs = true;
-            home-manager.useUserPackages = true;
-            home-manager.users.nixos = import ./vms/nixos-vm/home.nix;
-          }
-        ];
+    # Linux desktop host with GPU passthrough
+    nixosConfigurations."nixos-desktop" = mkSystem {
+      name = "nixos-desktop";
+      system = "x86_64-linux";
+      inherit user;
+    };
+
+    # NixOS VM guests
+    nixosConfigurations."vm" = mkSystem {
+      name = "nixos-vm";
+      system = "x86_64-linux";
+      inherit user;
+      vm = true;
+    };
+  };
+}
+    # Import system builder
+    mkSystem = import ./lib/mksystem.nix inputs;
+    
+    # User configuration
+    user = {
+      name = "hrpr";
+      email = "ryan@hrpr.dev";
+      gpuConfig = {
+        vendor = "nvidia";
+        deviceId = "10de:2206";
+        audioId = "10de:1aef";
+        pciAddress = "01:00";
+        enablePartialPassthrough = true;
       };
     };
-}
+
+  in {
+    # macOS host (VM creation and management)
+    darwinConfigurations."Ryans-MacBook-Pro" = mkSystem {
+      name = "macbook-pro";
+      system = "aarch64-darwin";
+      inherit user;
+      isDarwin = true;
+    };
+
+    # Linux desktop host with GPU passthrough
+    nixosConfigurations."nixos-plasma" = mkSystem {
+      name = "nixos-desktop";
+      system = "x86_64-linux";
+      inherit user;
+    };
+
+    # NixOS VM guests
+    nixosConfigurations."nixos-vm-hyprland" = mkSystem {
+      name = "nixos-vm";
+      system = "x86_64-linux";
+      inherit user;
+      vm = true;
+    };
+
+    nixosConfigurations."nixos-vm-hyprland-arm" = mkSystem {
+      name = "nixos-vm";
+      system = "aarch64-linux";
+      inherit user;
+      vm = true;
+    };
+
+    # VM images for direct building
+    vmImages = {
+      hyprland-vm-x86_64 = self.nixosConfigurations."nixos-vm-hyprland".config.system.build.vm;
+      hyprland-vm-aarch64 = self.nixosConfigurations."nixos-vm-hyprland-arm".config.system.build.vm;
+    };
+
+    # ISO images for UTM and other platforms
+    isoImages = {
+      nixos-hyprland-aarch64 = (nixpkgs.lib.nixosSystem {
+        system = "aarch64-linux";
+        specialArgs = {
+          username = user.name;
+          hostname = "nixos-hyprland-live";
+          isVM = true;
+        };
+        modules = [
+          "${nixpkgs}/nixos/modules/installer/cd-dvd/installation-cd-graphical-gnome.nix"
+          ./modules/vm/iso-arm64.nix
+          ./modules/nixos/nix-core.nix
+          ./modules/nixos/host-users.nix
+          ./modules/nixos/desktop.nix
+        ];
+      }).config.system.build.isoImage;
+
+      nixos-minimal-aarch64 = (nixpkgs.lib.nixosSystem {
+        system = "aarch64-linux";
+        specialArgs = {
+          username = user.name;
+          hostname = "nixos-minimal-live";
+          isVM = true;
+        };
+        modules = [
+          "${nixpkgs}/nixos/modules/installer/cd-dvd/installation-cd-minimal.nix"
+          ./modules/vm/iso-minimal-arm64.nix
+          ./modules/nixos/nix-core.nix
+        ];
+      }).config.system.build.isoImage;
+    };
+
+    # Development shells
+    devShells = nixpkgs.lib.genAttrs [ "x86_64-linux" "aarch64-darwin" ] (system:
+      let
+        pkgs = import nixpkgs {
+          inherit system;
+          config = {
+            allowUnfree = true;
+            android_sdk.accept_license = true;
+          };
+        };
+        treefmtWrapper = pkgs.treefmt;
+      in {
+        default = pkgs.mkShell {
+          packages = [ treefmtWrapper ];
+        };
+
+        flutter = import ./devshells/flutter.nix {
+          inherit pkgs treefmtWrapper;
+        };
+
+        web = import ./devshells/web.nix {
+          inherit pkgs treefmtWrapper;
+        };
+
+        python = import ./devshells/python.nix {
+          inherit pkgs treefmtWrapper;
+        };
+      }
+    );
+
+    # Formatter
+    formatter = nixpkgs.lib.genAttrs [ "x86_64-linux" "aarch64-darwin" ] (system:
+      let
+        pkgs = import nixpkgs {
+          inherit system;
+          config.allowUnfree = true;
+        };
+      in
+        pkgs.nixfmt-rfc-style
+    );
+  };

@@ -12,13 +12,13 @@
 ###################################################################################
 {
   system = {
-    stateVersion = 6;
-    # activationScripts now runs as root, so we use sudo to run as user
-    activationScripts.postActivation.text = ''
-      # Run this as the user using sudo
-      sudo -u ${username} /System/Library/PrivateFrameworks/SystemAdministration.framework/Resources/activateSettings -u
-      echo "Applied settings without requiring logout"
-    '';
+    stateVersion = 5;
+    
+    # Set the primary user for user-specific settings
+    primaryUser = username;  # This uses the username from flake.nix
+    
+    # Remove the deprecated postUserActivation script as it's no longer supported
+    # The activateSettings command will now be handled automatically by the system
 
     defaults = {
       # menuExtraClock.Show24Hour = true;  # show 24 hour clock
