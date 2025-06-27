@@ -1,5 +1,16 @@
 { config, pkgs, lib, ... }:
 
+let
+  # Install Shades of Purple theme from VSCode marketplace
+  shades-of-purple = pkgs.vscode-utils.buildVscodeMarketplaceExtension {
+    mktplcRef = {
+      name = "shades-of-purple";
+      publisher = "ahmadawais";
+      version = "7.3.2";
+      sha256 = "sha256-0g18y8drn1jzb31x166c8w0czfi9m7syqqv9vqd8nnzxf4sg351l";
+    };
+  };
+in
 {
   programs.vscode = {
     enable = true;
@@ -20,14 +31,20 @@
         dbaeumer.vscode-eslint
         github.vscode-github-actions
         ms-azuretools.vscode-docker
+      ] ++ [
+        # Custom extensions from marketplace
+        shades-of-purple
       ];
 
       userSettings = {
         "editor.fontSize" = 14;
-        "editor.fontFamily" = "Menlo, Monaco, 'Courier New', monospace";
+        "editor.fontFamily" = "FiraCode Nerd Font, Menlo, Monaco, 'Courier New', monospace";
         "editor.tabSize" = 2;
-        "workbench.colorTheme" = "Shades of Purple - Super Dark"; # Kimbie Dark
+        "workbench.colorTheme" = "Shades of Purple";
         "files.autoSave" = "afterDelay";
+        "editor.fontLigatures" = true;
+        "editor.cursorBlinking" = "smooth";
+        "workbench.iconTheme" = "shades-of-purple-icons";
       };
 
       keybindings = [
