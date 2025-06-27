@@ -102,7 +102,6 @@
       "arturia-software-center" # Manager for Arturia VSTs
       "betterdisplay" # Display scaling (hidpi)
       "blackhole-16ch" # Virtual audio driver for routing audio between applications
-      "blitz-gg" # Game assistant for League of Legends
       "cursor" # Cursor AI code editor
       "cyberduck" # FTP, SFTP, WebDAV, S3 file transfer client
       "discord" # Voice, video, and text chat app
@@ -117,7 +116,6 @@
       "logitech-options" # Configuration tool for Logitech devices
       #     "lulu"           # Open-source firewall for macOS
       #     "microsoft-edge" # Web browser
-      "microsoft-teams" # Collaboration platform
       "mixxx" # DJ software
       "moonlight" # Game streaming client
       "obsidian" # Markdown knowledge base and note-taking app

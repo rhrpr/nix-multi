@@ -19,13 +19,14 @@
         continue.continue
         mechatroner.rainbow-csv
         dbaeumer.vscode-eslint
+        ahmadawais.shades-of-purple
       ];
 
       userSettings = {
         "editor.fontSize" = 14;
         "editor.fontFamily" = "Menlo, Monaco, 'Courier New', monospace";
         "editor.tabSize" = 2;
-        "workbench.colorTheme" = "Kimbie Dark";
+        "workbench.colorTheme" = "Shades of Purple (Super Dark)";
         "files.autoSave" = "afterDelay";
       };
 

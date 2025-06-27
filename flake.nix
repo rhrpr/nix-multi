@@ -49,7 +49,7 @@
       username = "hrpr";
       useremail = "ryan@hrpr.dev";
       system = "aarch64-darwin";
-      hostname = "Ryans-MacBook-Pro";
+      hostname = "macbook-pro";
 
       # Initialize pkgs properly
       pkgs = import nixpkgs {
