@@ -93,8 +93,8 @@ case "$1" in
   deploy)
     log "Deploying NixOS configuration..."
     VM_IP=$(utmctl ip-address "$VM_NAME" 2>/dev/null | head -n1 | awk '{print $1}')
-    if [ -n "$VM_IP" ] && [ -d ~/.config/nix-darwin/vms/nixos-vm ]; then
-      cd ~/.config/nix-darwin/vms/nixos-vm
+    if [ -n "$VM_IP" ] && [ -d ~/.config/nix-multi/vms/nixos-vm ]; then
+      cd ~/.config/nix-multi/vms/nixos-vm
       nixos-rebuild switch --flake . --target-host nixos@"$VM_IP" --use-remote-sudo
     else
       error "Cannot deploy - check VM IP and config directory"
@@ -102,8 +102,8 @@ case "$1" in
     ;;
   rebuild)
     log "Building configuration locally..."
-    if [ -d ~/.config/nix-darwin/vms/nixos-vm ]; then
-      cd ~/.config/nix-darwin/vms/nixos-vm
+    if [ -d ~/.config/nix-multi/vms/nixos-vm ]; then
+      cd ~/.config/nix-multi/vms/nixos-vm
       nix build .#nixosConfigurations.vm.config.system.build.toplevel
       log "Build complete. Use 'vm deploy' to apply."
     else

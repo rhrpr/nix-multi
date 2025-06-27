@@ -11,8 +11,8 @@ if [ -n "$commit_message" ]; then
 else
   echo "No commit made."
 fi
-nix flake update --flake ~/.config/nix-darwin/
+nix flake update --flake ~/.config/nix-multi/
 git add flake.lock
 git commit -m "Update flake.lock"
 git push origin main
-sudo darwin-rebuild switch --flake ~/.config/nix-darwin/ --show-trace
+sudo darwin-rebuild switch --flake ~/.config/nix-multi/ --show-trace

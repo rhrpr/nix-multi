@@ -36,7 +36,7 @@ setup_ssh() {
 deploy_config() {
     log "Deploying NixOS configuration..."
     
-    cd ~/.config/nix-darwin/vms/nixos-vm
+    cd ~/.config/nix-multi/vms/nixos-vm
     nixos-rebuild switch --flake . --target-host $VM_USER@$VM_IP --use-remote-sudo
 }
 
@@ -49,7 +49,7 @@ setup_development() {
         git clone https://github.com/your-username/dotfiles.git ~/.config/dotfiles || true
         
         # Setup additional user configurations
-        home-manager switch --flake ~/.config/nix-darwin/vms/nixos-vm#$VM_USER
+        home-manager switch --flake ~/.config/nix-multi/vms/nixos-vm#$VM_USER
     "
 }
 
