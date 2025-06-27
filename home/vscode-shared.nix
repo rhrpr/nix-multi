@@ -19,6 +19,7 @@ in
     profiles.default = {
       extensions = with pkgs.vscode-extensions; [
         bbenoist.nix
+        jnoortheen.nix-ide
         davidanson.vscode-markdownlint
         github.copilot
         github.copilot-chat
