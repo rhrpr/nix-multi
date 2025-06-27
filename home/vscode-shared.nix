@@ -40,6 +40,11 @@ in
         "editor.fontSize" = 14;
         "editor.fontFamily" = "FiraCode Nerd Font, Menlo, Monaco, 'Courier New', monospace";
         "editor.tabSize" = 2;
+        "workbench.colorTheme" = "Shades of Purple (Super Dark)";
+        "workbench.iconTheme" = "shades-of-purple-icons";
+        "files.autoSave" = "afterDelay";
+        "editor.fontLigatures" = true;
+        "editor.cursorBlinking" = "smooth";
       };
     };
   };
