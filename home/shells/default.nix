@@ -42,7 +42,6 @@ let
     "...." = "cd ../../..";
     
     # Modern unix tools
-    cat = "bat";
     find = "fd";
     top = "btop";
   };
@@ -70,7 +69,7 @@ in {
     initContent = ''
       # Custom functions
       rgrep() {
-        rg -rnIi --colour "$1" ./
+        rg -rnIi --color "$1" ./
       }
       
       # Quick directory jumps
