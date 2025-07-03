@@ -134,7 +134,7 @@ setup_macos() {
 setup_linux() {
     log_section "Setting up Linux host configuration"
     
-    local hostname="${1:-nixos-plasma}"
+    local hostname="${1:-nixos-hyprland}"
     
     log_info "Building NixOS configuration for hostname: $hostname"
     
@@ -311,7 +311,7 @@ USAGE:
 COMMANDS:
     setup               Setup host configuration (auto-detects OS)
     setup-macos         Setup macOS host with nix-darwin
-    setup-linux [HOST]  Setup Linux host with NixOS (default: nixos-plasma)
+    setup-linux [HOST]  Setup Linux host with NixOS (default: nixos-hyprland)
     
     vm-build [ARCH]     Build NixOS Hyprland VM (x86_64 or aarch64)
     vm-run              Run NixOS Hyprland VM
@@ -367,7 +367,7 @@ main() {
             if [[ "$host_os" == "macos" ]]; then
                 setup_macos
             elif [[ "$host_os" == "linux" ]]; then
-                setup_linux "${2:-nixos-plasma}"
+                setup_linux "${2:-nixos-hyprland}"
             fi
             ;;
         setup-macos)
@@ -378,7 +378,7 @@ main() {
         setup-linux)
             check_nix
             check_flakes
-            setup_linux "${2:-nixos-plasma}"
+            setup_linux "${2:-nixos-hyprland}"
             ;;
         vm-build)
             check_nix
