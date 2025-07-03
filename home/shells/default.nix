@@ -65,6 +65,9 @@ in {
       share = true;
     };
     
+    sessionVariables = {
+      PATH = "$PATH:$HOME/.rd/bin";
+    };
     initContent = ''
       # Custom functions
       rgrep() {
