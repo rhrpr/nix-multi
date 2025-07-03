@@ -6,32 +6,36 @@ let
 in
 {
   # Cross-platform VM creation and management tools
-  environment.systemPackages = with pkgs; [
-    # Core QEMU for all platforms
-    qemu              # QEMU emulator and virtualizer
-    qemu-utils        # QEMU disk image utilities
-    
-    # Cross-platform utilities
-    socat             # Socket relay for VM networking
-    netcat            # Network utility for testing VM connectivity
-  ] ++ lib.optionals isLinux [
-    # Linux-specific VM tools
-    qemu_kvm          # KVM-accelerated QEMU
-    qemu_full         # Full QEMU with all features
-    libvirt           # Virtualization management daemon
-    libguestfs        # Tools for accessing VM disk images
-    virt-manager      # GUI for managing VMs
-    virt-viewer       # Viewer for VMs
-    spice-gtk         # Spice GTK client
-    spice-protocol    # Spice protocol definitions
-    spice-vdagent     # Spice guest agent
-    looking-glass-client # For GPU passthrough with shared display
-  ] ++ lib.optionals isDarwin [
-    # macOS-specific VM tools
-    lima              # Lima for Linux VMs on macOS
-    colima            # Container runtime for macOS
-    # Note: UTM should be installed separately from the App Store or website
-  ];
+  environment.systemPackages =
+    with pkgs;
+    [
+      # Core QEMU for all platforms
+      qemu # QEMU emulator and virtualizer
+      qemu-utils # QEMU disk image utilities
+
+      # Cross-platform utilities
+      socat # Socket relay for VM networking
+      netcat # Network utility for testing VM connectivity
+    ]
+    ++ lib.optionals isLinux [
+      # Linux-specific VM tools
+      qemu_kvm # KVM-accelerated QEMU
+      qemu_full # Full QEMU with all features
+      libvirt # Virtualization management daemon
+      libguestfs # Tools for accessing VM disk images
+      virt-manager # GUI for managing VMs
+      virt-viewer # Viewer for VMs
+      spice-gtk # Spice GTK client
+      spice-protocol # Spice protocol definitions
+      spice-vdagent # Spice guest agent
+      looking-glass-client # For GPU passthrough with shared display
+    ]
+    ++ lib.optionals isDarwin [
+      # macOS-specific VM tools
+      lima # Lima for Linux VMs on macOS
+      colima # Container runtime for macOS
+      # Note: UTM should be installed separately from the App Store or website
+    ];
 
   # Platform-specific environment variables
   environment.variables = lib.mkMerge [
@@ -42,39 +46,42 @@ in
       QEMU_SYSTEM_AARCH64 = "${pkgs.qemu}/bin/qemu-system-aarch64";
       QEMU_IMG = "${pkgs.qemu}/bin/qemu-img";
     }
-    
+
     # Linux-specific variables
     (lib.mkIf isLinux {
       LIBVIRT_DEFAULT_URI = "qemu:///system";
       QEMU_AUDIO_DRV = "pipewire";
       VM_ACCEL = "kvm";
     })
-    
-    # macOS-specific variables  
+
+    # macOS-specific variables
     (lib.mkIf isDarwin {
       QEMU_AUDIO_DRV = "coreaudio";
       VM_ACCEL = "hvf";
       VM_NETWORK_MODE = "user";
     })
   ];
-  
+
   # Shell aliases for VM management (cross-platform)
-  environment.shellAliases = {
-    # QEMU utilities (work on both platforms)
-    qemu-img-create = "qemu-img create -f qcow2";
-    qemu-img-info = "qemu-img info";
-    qemu-img-convert = "qemu-img convert";
-    qemu-config = "~/.config/nix-multi/scripts/qemu-config.sh";
-    
-    # VM management shortcuts
-    vm-config-test = "~/.config/nix-multi/scripts/qemu-config.sh test";
-    vm-config-show = "~/.config/nix-multi/scripts/qemu-config.sh config";
-  } // lib.optionalAttrs isLinux {
-    # Linux-specific aliases
-    vm-manager = "virt-manager";
-    vm-viewer = "virt-viewer";
-  } // lib.optionalAttrs isDarwin {
-    # macOS-specific aliases  
-    vm-list = "ls -la ~/VMs/";
-  };
+  environment.shellAliases =
+    {
+      # QEMU utilities (work on both platforms)
+      qemu-img-create = "qemu-img create -f qcow2";
+      qemu-img-info = "qemu-img info";
+      qemu-img-convert = "qemu-img convert";
+      qemu-config = "~/.config/nix-multi/scripts/qemu-config.sh";
+
+      # VM management shortcuts
+      vm-config-test = "~/.config/nix-multi/scripts/qemu-config.sh test";
+      vm-config-show = "~/.config/nix-multi/scripts/qemu-config.sh config";
+    }
+    // lib.optionalAttrs isLinux {
+      # Linux-specific aliases
+      vm-manager = "virt-manager";
+      vm-viewer = "virt-viewer";
+    }
+    // lib.optionalAttrs isDarwin {
+      # macOS-specific aliases
+      vm-list = "ls -la ~/VMs/";
+    };
 }

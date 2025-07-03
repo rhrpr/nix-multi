@@ -1,24 +1,27 @@
-{ pkgs ? import <nixpkgs> {}, treefmtWrapper }:
+{
+  pkgs ? import <nixpkgs> { },
+  treefmtWrapper,
+}:
 
 pkgs.mkShell {
   name = "web-development";
-  
+
   packages = with pkgs; [
     nodejs
     yarn
     git
-    
+
     # Additional web development tools
     nodePackages.typescript
     nodePackages.prettier
     nodePackages.eslint
-    
+
     # Add treefmt and formatters
     treefmtWrapper
     nixfmt-rfc-style
     shfmt
   ];
-  
+
   shellHook = ''
     echo "Web development devshell activated!"
     echo "Node.js version: $(node --version)"

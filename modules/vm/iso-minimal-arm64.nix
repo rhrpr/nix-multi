@@ -1,6 +1,11 @@
 # Minimal ARM64 NixOS ISO Configuration for UTM
 # Lightweight configuration for Apple Silicon Macs
-{ pkgs, lib, modulesPath, ... }:
+{
+  pkgs,
+  lib,
+  modulesPath,
+  ...
+}:
 
 {
   imports = [
@@ -12,17 +17,17 @@
   isoImage = {
     # Optimize for ARM64
     isoName = "nixos-minimal-aarch64.iso";
-    
+
     # Aggressive compression for smaller ISO
     squashfsCompression = "zstd -Xcompression-level 15";
-    
+
     # Make the ISO bootable on ARM64 systems
     makeEfiBootable = true;
     makeUsbBootable = true;
-    
+
     # Minimize ISO size
     includeSystemBuildDependencies = false;
-    
+
     # Custom menu label
     appendToMenuLabel = " (Minimal ARM64 for UTM)";
     grubTheme = null;
@@ -40,21 +45,21 @@
     vim
     nano
     htop
-    
+
     # Basic development tools
     gcc
-    
+
     # Network utilities
     openssh
-    
+
     # File utilities
     unzip
     zip
-    
+
     # Text processing
     gnused
     gawk
-    
+
     # System utilities
     lshw
     pciutils
@@ -66,7 +71,7 @@
     # Use systemd-networkd for minimal networking
     useNetworkd = true;
     useDHCP = lib.mkDefault true;
-    
+
     # Enable SSH for remote management
     firewall = {
       enable = true;
@@ -79,14 +84,17 @@
     enable = true;
     settings = {
       PasswordAuthentication = true;
-      PermitRootLogin = "yes";  # For installation convenience
+      PermitRootLogin = "yes"; # For installation convenience
     };
   };
 
   # Minimal user configuration
   users.users.nixos = {
     isNormalUser = true;
-    extraGroups = [ "wheel" "networkmanager" ];
+    extraGroups = [
+      "wheel"
+      "networkmanager"
+    ];
     initialPassword = "nixos";
     shell = pkgs.bash;
   };
@@ -113,18 +121,18 @@
   services.pulseaudio.enable = lib.mkForce false;
   sound.enable = lib.mkForce false;
   hardware.bluetooth.enable = lib.mkForce false;
-  
+
   # Disable desktop environment
   services.displayManager.gdm.enable = lib.mkForce false;
-  
+
   # Minimal boot configuration
   boot = {
     # Minimal kernel modules
     kernelModules = [ ];
-    
+
     # Faster boot
     plymouth.enable = false;
-    
+
     # Minimal initrd
     initrd = {
       systemd.enable = true;
@@ -155,7 +163,7 @@
 
   # System optimization for minimal footprint
   system.extraDependencies = [ ];
-  
+
   # Reduce closure size
   environment.defaultPackages = lib.mkForce [
     pkgs.nano

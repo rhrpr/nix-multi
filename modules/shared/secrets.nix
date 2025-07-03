@@ -1,5 +1,12 @@
 # NixOS secret management module using agenix
-{ config, lib, pkgs, agenix, username, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  agenix,
+  username,
+  ...
+}:
 
 {
   imports = [
@@ -44,7 +51,7 @@
     };
 
     # Age keys (will be set per system)
-    identityPaths = [ 
+    identityPaths = [
       "/etc/ssh/ssh_host_ed25519_key"
       "/home/${username}/.ssh/id_ed25519"
     ];

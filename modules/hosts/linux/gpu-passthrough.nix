@@ -1,6 +1,13 @@
 # RTX 3080 Partial GPU Passthrough Module
 # Enables sharing RTX 3080 between host and VMs simultaneously
-{ pkgs, lib, config, username, gpuConfig, ... }:
+{
+  pkgs,
+  lib,
+  config,
+  username,
+  gpuConfig,
+  ...
+}:
 
 let
   # Extract GPU configuration
@@ -38,13 +45,13 @@ in
         };
       };
       spiceUSBRedirection.enable = true;
-      
+
       # Enable Docker for container-based GPU sharing
       docker = {
         enable = true;
       };
     };
-    
+
     # NVIDIA container toolkit for Docker GPU access
     hardware.nvidia-container-toolkit.enable = true;
 
@@ -55,23 +62,23 @@ in
         # Intel IOMMU
         "intel_iommu=on"
         "iommu=pt"
-        
+
         # Enable NVIDIA features for sharing
         "nvidia-drm.modeset=1"
         "nvidia.NVreg_EnableGpuFirmware=0"
-        
+
         # Enable SR-IOV and virtualization features
         "pci=realloc"
         "pcie_aspm=off"
-        
+
         # KVM optimizations
         "kvm.ignore_msrs=1"
         "kvm.report_ignored_msrs=0"
-        
+
         # Hugepages for better VM performance
         "default_hugepagesz=1G"
         "hugepagesz=1G"
-        "hugepages=4"  # 4GB of hugepages
+        "hugepages=4" # 4GB of hugepages
       ];
 
       # Load required modules for partial passthrough
@@ -85,9 +92,9 @@ in
 
       # Enable KVM and GPU modules
       kernelModules = [
-        "kvm-intel"  # Intel CPU virtualization
-        "vhost-net"  # Network virtualization
-        "nvidia"     # NVIDIA driver for host
+        "kvm-intel" # Intel CPU virtualization
+        "vhost-net" # Network virtualization
+        "nvidia" # NVIDIA driver for host
         "nvidia_drm" # NVIDIA DRM for display
         "nvidia_modeset"
         "nvidia_uvm" # Unified Memory for CUDA
@@ -99,11 +106,11 @@ in
         options nvidia NVreg_OpenRmEnableUnsupportedGpus=1
         options nvidia NVreg_EnableGpuFirmware=0
         options nvidia-drm modeset=1
-        
+
         # VFIO options for partial passthrough
         options vfio enable_unsafe_noiommu_mode=1
         options vfio_iommu_type1 allow_unsafe_interrupts=1
-        
+
         # KVM options
         options kvm_intel nested=1
         options kvm ignore_msrs=1
@@ -115,16 +122,19 @@ in
       # Enable graphics for host (replaces deprecated opengl)
       graphics = {
         enable = true;
-        enable32Bit = lib.mkIf (pkgs.stdenv.hostPlatform.system == "x86_64-linux") true;  # Replaces driSupport32Bit
-        extraPackages = with pkgs; (lib.optionals (pkgs.stdenv.hostPlatform.system == "x86_64-linux") [
-          # Intel-specific packages (only for x86_64)
-          intel-media-driver # For Intel integrated graphics (if available)
-          vaapiIntel         # Hardware acceleration
-        ]) ++ [
-          # Universal packages (all architectures)
-          vaapiVdpau
-          libvdpau-va-gl
-        ];
+        enable32Bit = lib.mkIf (pkgs.stdenv.hostPlatform.system == "x86_64-linux") true; # Replaces driSupport32Bit
+        extraPackages =
+          with pkgs;
+          (lib.optionals (pkgs.stdenv.hostPlatform.system == "x86_64-linux") [
+            # Intel-specific packages (only for x86_64)
+            intel-media-driver # For Intel integrated graphics (if available)
+            vaapiIntel # Hardware acceleration
+          ])
+          ++ [
+            # Universal packages (all architectures)
+            vaapiVdpau
+            libvdpau-va-gl
+          ];
       };
 
       # NVIDIA configuration for sharing
@@ -132,7 +142,7 @@ in
         modesetting.enable = true;
         powerManagement.enable = true;
         powerManagement.finegrained = false;
-        open = false;  # Use proprietary driver for better VM support
+        open = false; # Use proprietary driver for better VM support
         nvidiaSettings = true;
         package = config.boot.kernelPackages.nvidiaPackages.stable;
       };
@@ -148,19 +158,19 @@ in
         spice-protocol
         win-virtio
         win-spice
-        
+
         # GPU monitoring and management
         nvidia-system-monitor-qt
-        
+
         # VFIO tools
         pciutils
         libvirt
         qemu_kvm
-        
+
         # Looking Glass for low-latency desktop sharing
         looking-glass-client
       ];
-      
+
       # Ensure NVIDIA container runtime is available
       variables = {
         NVIDIA_VISIBLE_DEVICES = "all";
@@ -175,17 +185,17 @@ in
         enable = true;
         videoDrivers = [ "nvidia" ];
       };
-      
+
       # NVIDIA persistence is handled by hardware.nvidia.nvidiaPersistenced
       # nvidia-persistenced.enable = true;  # This option doesn't exist in newer NixOS
-      
+
       # Enable udev rules for VFIO
       udev.extraRules = ''
         # NVIDIA GPU devices for partial passthrough
         SUBSYSTEM=="vfio", GROUP="kvm"
         KERNEL=="nvidia*", GROUP="video", MODE="0664"
         KERNEL=="nvidia_uvm", GROUP="video", MODE="0664"
-        
+
         # Allow libvirt access to devices
         KERNEL=="vfio-*", GROUP="libvirt", MODE="0660"
       '';
@@ -194,19 +204,19 @@ in
     # User and group configuration
     users = {
       users.${username} = {
-        extraGroups = [ 
-          "libvirt" 
-          "kvm" 
-          "input" 
-          "disk" 
+        extraGroups = [
+          "libvirt"
+          "kvm"
+          "input"
+          "disk"
           "video"
-          "docker"  # For NVIDIA container runtime
+          "docker" # For NVIDIA container runtime
         ];
       };
-      
+
       groups = {
-        libvirt = {};
-        kvm = {};
+        libvirt = { };
+        kvm = { };
       };
     };
 
@@ -230,7 +240,7 @@ in
         isSystemUser = true;
         group = "nvidia-persistenced";
       };
-      groups.nvidia-persistenced = {};
+      groups.nvidia-persistenced = { };
     };
 
     # Systemd configuration
@@ -246,7 +256,10 @@ in
       services = {
         # Ensure libvirtd starts after network and GPU services
         libvirtd = {
-          after = [ "network.target" "systemd-udev-settle.service" ];
+          after = [
+            "network.target"
+            "systemd-udev-settle.service"
+          ];
           wants = [ "systemd-udev-settle.service" ];
         };
       };

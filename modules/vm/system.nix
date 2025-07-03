@@ -1,27 +1,27 @@
-{ 
-  config, 
-  pkgs, 
+{
+  config,
+  pkgs,
   lib,
   hostname,
   username,
-  ... 
+  ...
 }:
 
 {
   # VM-optimized system configuration - standalone without importing base system
-  
+
   # Basic system configuration for VM
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
-  
+
   # Networking
   networking = {
     hostName = hostname;
     networkmanager.enable = true;
     firewall = {
       enable = true;
-      # Open ports for potential VM services  
-      allowedTCPPorts = [ 22 ];  # SSH
+      # Open ports for potential VM services
+      allowedTCPPorts = [ 22 ]; # SSH
     };
   };
 
@@ -57,10 +57,10 @@
   services = {
     # Enable SPICE agent for better integration
     spice-vdagentd.enable = true;
-    
+
     # Enable QEMU guest agent
     qemuGuest.enable = true;
-    
+
     # Disable unnecessary services for VM
     udisks2.enable = lib.mkForce false;
     power-profiles-daemon.enable = lib.mkForce false;
@@ -76,13 +76,13 @@
       "systemd.show_status=auto"
       "rd.udev.log_level=3"
     ];
-    
+
     # Optimize initrd
     initrd = {
       verbose = false;
       systemd.enable = true;
     };
-    
+
     # Plymouth for better boot experience
     plymouth = {
       enable = true;
@@ -97,7 +97,7 @@
       enable = true;
       enable32Bit = lib.mkIf (pkgs.stdenv.hostPlatform.system == "x86_64-linux") true;
     };
-    
+
     # VM doesn't need bluetooth typically - force disable all bluetooth
     bluetooth = {
       enable = lib.mkForce false;
@@ -107,11 +107,11 @@
 
   # Also disable bluetooth services explicitly
   services.blueman.enable = lib.mkForce false;
-  
+
   # Disable WirePlumber Bluetooth modules in VMs
   systemd.user.services."wireplumber@bluetooth" = {
     enable = lib.mkForce false;
-    wantedBy = lib.mkForce [];
+    wantedBy = lib.mkForce [ ];
   };
 
   # Optimize memory usage for VM

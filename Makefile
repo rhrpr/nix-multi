@@ -1,9 +1,12 @@
 # Nix Multi-Platform Configuration Management
 # Inspired by mitchellh/nixos-config
 
-# Detect the operating system
+# Detect the operating system and environment
 UNAME := $(shell uname)
 ARCH := $(shell uname -m)
+
+# Detect if running in a VM
+IS_VM := $(shell if [ -f /sys/class/dmi/id/product_name ] && grep -qi "qemu\|kvm\|virtual\|vmware" /sys/class/dmi/id/product_name 2>/dev/null; then echo "true"; else echo "false"; fi)
 
 # Configuration names
 MACOS_CONFIG = Ryans-MacBook-Pro
@@ -49,15 +52,13 @@ help:
 setup:
 ifeq ($(UNAME),Darwin)
 	@$(MAKE) setup-macos
+else ifeq ($(IS_VM),true)
+	@echo "Detected VM environment, using VM configuration..."
+	@$(MAKE) setup-vm
 else
+	@echo "Detected hardware environment, using desktop configuration..."
 	@$(MAKE) setup-linux
 endif
-
-# macOS setup
-.PHONY: setup-macos
-setup-macos:
-	@echo "Setting up macOS configuration..."
-	nix run nix-darwin -- switch --flake .#$(MACOS_CONFIG)
 
 # Linux setup  
 .PHONY: setup-linux
@@ -66,6 +67,7 @@ setup-linux: enable-flakes
 	nix build .#nixosConfigurations.$(LINUX_CONFIG).config.system.build.toplevel --no-link
 	sudo nixos-rebuild switch --flake .#$(LINUX_CONFIG)
 
+.PHONY: enable-flakes
 enable-flakes:
 	@echo "Enabling Nix experimental features..."
 	@mkdir -p ~/.config/nix
@@ -76,20 +78,30 @@ enable-flakes:
 		echo "✓ Experimental features already enabled for user"; \
 	fi
 	@if command -v sudo >/dev/null 2>&1; then \
-		sudo mkdir -p /etc/nix; \
-		if ! sudo grep -q "experimental-features.*nix-command.*flakes" /etc/nix/nix.conf 2>/dev/null; then \
-			echo "experimental-features = nix-command flakes" | sudo tee -a /etc/nix/nix.conf >/dev/null; \
-			echo "✓ Experimental features enabled system-wide"; \
+		if sudo mkdir -p /etc/nix 2>/dev/null; then \
+			if ! sudo grep -q "experimental-features.*nix-command.*flakes" /etc/nix/nix.conf 2>/dev/null; then \
+				if echo "experimental-features = nix-command flakes" | sudo tee -a /etc/nix/nix.conf >/dev/null 2>&1; then \
+					echo "✓ Experimental features enabled system-wide"; \
+				else \
+					echo "! Could not write to /etc/nix/nix.conf (read-only filesystem?)"; \
+				fi; \
+			else \
+				echo "✓ Experimental features already enabled system-wide"; \
+			fi; \
 		else \
-			echo "✓ Experimental features already enabled system-wide"; \
+			echo "! Could not create /etc/nix directory (read-only filesystem?)"; \
 		fi; \
+	else \
+		echo "! sudo not available, skipping system-wide configuration"; \
 	fi
 
+.PHONY: setup-macos
 setup-macos: enable-flakes
 	@echo "Setting up macOS configuration..."
 	nix build .#darwinConfigurations.$(MACOS_CONFIG).system
 	sudo ./result/sw/bin/darwin-rebuild switch --flake .#$(MACOS_CONFIG)
 
+.PHONY: setup-vm
 setup-vm: enable-flakes
 	@echo "Setting up NixOS VM configuration..."
 	nix build .#nixosConfigurations.$(VM_CONFIG).config.system.build.toplevel --no-link

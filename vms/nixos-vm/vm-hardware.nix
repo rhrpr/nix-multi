@@ -1,5 +1,11 @@
 # Hardware configuration for UTM VM
-{ config, lib, pkgs, modulesPath, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  modulesPath,
+  ...
+}:
 
 {
   imports = [ (modulesPath + "/profiles/qemu-guest.nix") ];
@@ -7,12 +13,17 @@
   # Boot configuration optimized for VM
   boot = {
     initrd = {
-      availableKernelModules = [ "virtio_pci" "virtio_scsi" "ahci" "usbhid" ];
+      availableKernelModules = [
+        "virtio_pci"
+        "virtio_scsi"
+        "ahci"
+        "usbhid"
+      ];
       kernelModules = [ ];
     };
     kernelModules = [ ];
     extraModulePackages = [ ];
-    
+
     # Use systemd-boot for UEFI
     loader = {
       systemd-boot.enable = true;
@@ -34,12 +45,12 @@
   # VM optimizations
   services.qemuGuest.enable = true;
   services.spice-vdagentd.enable = true;
-  
+
   # Enable hardware acceleration where possible
   hardware.graphics.enable = true;
-  
+
   # Networking
   networking.useDHCP = lib.mkDefault true;
-  
+
   nixpkgs.hostPlatform = lib.mkDefault "aarch64-linux";
 }

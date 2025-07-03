@@ -1,4 +1,9 @@
-{ config, pkgs, lib, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  ...
+}:
 
 {
   # Hyprland configuration
@@ -194,9 +199,24 @@
         height = 30;
         spacing = 4;
 
-        modules-left = ["hyprland/workspaces" "hyprland/mode" "hyprland/scratchpad"];
-        modules-center = ["hyprland/window"];
-        modules-right = ["idle_inhibitor" "pulseaudio" "network" "cpu" "memory" "temperature" "backlight" "battery" "clock" "tray"];
+        modules-left = [
+          "hyprland/workspaces"
+          "hyprland/mode"
+          "hyprland/scratchpad"
+        ];
+        modules-center = [ "hyprland/window" ];
+        modules-right = [
+          "idle_inhibitor"
+          "pulseaudio"
+          "network"
+          "cpu"
+          "memory"
+          "temperature"
+          "backlight"
+          "battery"
+          "clock"
+          "tray"
+        ];
 
         "hyprland/workspaces" = {
           disable-scroll = true;
@@ -240,12 +260,26 @@
         temperature = {
           critical-threshold = 80;
           format = "{temperatureC}°C {icon}";
-          format-icons = ["" "" ""];
+          format-icons = [
+            ""
+            ""
+            ""
+          ];
         };
 
         backlight = {
           format = "{percent}% {icon}";
-          format-icons = ["" "" "" "" "" "" "" "" ""];
+          format-icons = [
+            ""
+            ""
+            ""
+            ""
+            ""
+            ""
+            ""
+            ""
+            ""
+          ];
         };
 
         battery = {
@@ -257,7 +291,13 @@
           format-charging = "{capacity}% ";
           format-plugged = "{capacity}% ";
           format-alt = "{time} {icon}";
-          format-icons = ["" "" "" "" ""];
+          format-icons = [
+            ""
+            ""
+            ""
+            ""
+            ""
+          ];
         };
 
         network = {
@@ -283,7 +323,11 @@
             phone = "";
             portable = "";
             car = "";
-            default = ["" "" ""];
+            default = [
+              ""
+              ""
+              ""
+            ];
           };
           on-click = "pavucontrol";
         };

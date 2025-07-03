@@ -1,5 +1,12 @@
 # Darwin (macOS) secret management using agenix
-{ config, lib, pkgs, username, agenix, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  username,
+  agenix,
+  ...
+}:
 
 {
   imports = [
@@ -26,7 +33,7 @@
     };
 
     # Age identity paths for decryption
-    identityPaths = [ 
+    identityPaths = [
       "/Users/${username}/.ssh/id_ed25519"
     ];
   };
@@ -51,7 +58,10 @@
     serviceConfig = {
       Label = "ssh-agent";
       Program = "${pkgs.openssh}/bin/ssh-agent";
-      ProgramArguments = [ "${pkgs.openssh}/bin/ssh-agent" "-D" ];
+      ProgramArguments = [
+        "${pkgs.openssh}/bin/ssh-agent"
+        "-D"
+      ];
       RunAtLoad = true;
       KeepAlive = true;
     };

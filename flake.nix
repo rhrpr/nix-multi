@@ -2,7 +2,7 @@
   description = "Unified Nix configuration for macOS and Linux with VM support";
 
   nixConfig = {
-    substituters = [ 
+    substituters = [
       "https://cache.nixos.org"
       "https://hyprland.cachix.org"
       "https://nix-community.cachix.org"
@@ -59,30 +59,62 @@
     };
   };
 
-  outputs = inputs @ { self, nixpkgs, agenix, darwin, treefmt-nix, flake-utils, ... }:
-  let
-    # Import system builder
-    mkSystem = import ./lib/mksystem.nix inputs;
-    
-    # User configuration
-    user = {
-      name = "hrpr";
-      email = "ryan@hrpr.dev";
-      gpuConfig = {
-        vendor = "nvidia";
-        deviceId = "10de:2206";
-        audioId = "10de:1aef";
-        pciAddress = "01:00";
-        enablePartialPassthrough = true;
-      };
-    };
+  outputs =
+    inputs@{
+      self,
+      nixpkgs,
+      agenix,
+      darwin,
+      treefmt-nix,
+      flake-utils,
+      ...
+    }:
+    let
+      # Import system builder
+      mkSystem = import ./lib/mksystem.nix inputs;
 
-    # Setup treefmt-nix for both systems
-    systems = [ "aarch64-darwin" "x86_64-linux" ];
-    
-    # Helper to create treefmt config for a system
-    mkTreefmt = system: 
+      # User configuration
+      user = {
+        name = "hrpr";
+        email = "ryan@hrpr.dev";
+        gpuConfig = {
+          vendor = "nvidia";
+          deviceId = "10de:2206";
+          audioId = "10de:1aef";
+          pciAddress = "01:00";
+          enablePartialPassthrough = true;
+        };
+      };
+
+      # Setup treefmt-nix for both systems
+      systems = [
+        "aarch64-darwin"
+        "x86_64-linux"
+      ];
+
+      # Helper to create treefmt config for a system
+      mkTreefmt =
+        system:
+        let
+          pkgs = import nixpkgs {
+            inherit system;
+            config = {
+              allowUnfree = true;
+              android_sdk.accept_license = true;
+            };
+          };
+        in
+        treefmt-nix.lib.evalModule pkgs {
+          projectRootFile = "flake.nix";
+          programs.nixfmt.enable = true;
+          programs.nixfmt.package = pkgs.nixfmt-rfc-style;
+        };
+
+    in
+    flake-utils.lib.eachSystem systems (
+      system:
       let
+        treefmtEval = mkTreefmt system;
         pkgs = import nixpkgs {
           inherit system;
           config = {
@@ -91,91 +123,92 @@
           };
         };
       in
-      treefmt-nix.lib.evalModule pkgs {
-        projectRootFile = "flake.nix";
-        programs.nixfmt.enable = true;
-        programs.nixfmt.package = pkgs.nixfmt-rfc-style;
+      {
+        # Formatters
+        formatter = treefmtEval.config.build.wrapper;
+
+        # Checks
+        checks.formatting = treefmtEval.config.build.check self;
+
+        # Dev shells
+        devShells = {
+          default = pkgs.mkShell {
+            packages = [ treefmtEval.config.build.wrapper ];
+          };
+
+          flutter = import ./devshells/flutter.nix {
+            inherit pkgs;
+            treefmtWrapper = treefmtEval.config.build.wrapper;
+          };
+
+          web = import ./devshells/web.nix {
+            inherit pkgs;
+            treefmtWrapper = treefmtEval.config.build.wrapper;
+          };
+
+          python = import ./devshells/python.nix {
+            inherit pkgs;
+            treefmtWrapper = treefmtEval.config.build.wrapper;
+          };
+        };
+
+        # Packages
+        packages = {
+          vm-tools = pkgs.symlinkJoin {
+            name = "vm-tools";
+            paths =
+              with pkgs;
+              [
+                qemu
+                qemu-utils
+                socat
+                netcat
+              ]
+              ++ lib.optionals pkgs.stdenv.isLinux [
+                qemu_kvm
+                libvirt
+              ];
+          };
+        };
+      }
+    )
+    // {
+      # macOS host (VM creation and management)
+      darwinConfigurations."Ryans-MacBook-Pro" = mkSystem {
+        name = "macbook-pro";
+        system = "aarch64-darwin";
+        inherit user;
+        isDarwin = true;
       };
 
-  in 
-  flake-utils.lib.eachSystem systems (system:
-    let
-      treefmtEval = mkTreefmt system;
-      pkgs = import nixpkgs {
-        inherit system;
-        config = {
-          allowUnfree = true;
-          android_sdk.accept_license = true;
-        };
-      };
-    in
-    {
-      # Formatters
-      formatter = treefmtEval.config.build.wrapper;
-      
-      # Checks
-      checks.formatting = treefmtEval.config.build.check self;
-
-      # Dev shells
-      devShells = {
-        default = pkgs.mkShell {
-          packages = [ treefmtEval.config.build.wrapper ];
-        };
-        
-        flutter = import ./devshells/flutter.nix { 
-          inherit pkgs; 
-          treefmtWrapper = treefmtEval.config.build.wrapper;
-        };
-        
-        web = import ./devshells/web.nix { 
-          inherit pkgs; 
-          treefmtWrapper = treefmtEval.config.build.wrapper;
-        };
-        
-        python = import ./devshells/python.nix { 
-          inherit pkgs; 
-          treefmtWrapper = treefmtEval.config.build.wrapper;
-        };
+      # Linux desktop host with GPU passthrough (Plasma)
+      nixosConfigurations."nixos-desktop" = mkSystem {
+        name = "nixos-desktop";
+        system = "x86_64-linux";
+        inherit user;
       };
 
-      # Packages
-      packages = {
-        vm-tools = pkgs.symlinkJoin {
-          name = "vm-tools";
-          paths = with pkgs; [
-            qemu
-            qemu-utils
-            socat
-            netcat
-          ] ++ lib.optionals pkgs.stdenv.isLinux [
-            qemu_kvm
-            libvirt
-          ];
-        };
+      # Linux desktop host alias (expected by scripts)
+      nixosConfigurations."nixos-plasma" = mkSystem {
+        name = "nixos-desktop";
+        system = "x86_64-linux";
+        inherit user;
       };
-    }) //
-  {
-    # macOS host (VM creation and management)
-    darwinConfigurations."Ryans-MacBook-Pro" = mkSystem {
-      name = "macbook-pro";
-      system = "aarch64-darwin";
-      inherit user;
-      isDarwin = true;
+
+      # NixOS VM guests (Hyprland)
+      nixosConfigurations."vm" = mkSystem {
+        name = "nixos-vm";
+        system = "x86_64-linux";
+        inherit user;
+        vm = true;
+      };
+
+      # NixOS VM alias (expected by scripts)
+      nixosConfigurations."nixos-vm-hyprland" = mkSystem {
+        name = "nixos-vm";
+        system = "x86_64-linux";
+        inherit user;
+        vm = true;
+      };
     };
-
-    # Linux desktop host with GPU passthrough
-    nixosConfigurations."nixos-desktop" = mkSystem {
-      name = "nixos-desktop";
-      system = "x86_64-linux";
-      inherit user;
-    };
-
-    # NixOS VM guests
-    nixosConfigurations."vm" = mkSystem {
-      name = "nixos-vm";
-      system = "x86_64-linux";
-      inherit user;
-      vm = true;
-    };
-  };
 }

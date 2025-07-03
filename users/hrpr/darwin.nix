@@ -1,5 +1,11 @@
 # macOS user configuration
-{ config, pkgs, lib, username, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  username,
+  ...
+}:
 
 {
   # User account
@@ -17,7 +23,7 @@
 
   # macOS-specific user environment
   programs.zsh.enable = true;
-  
+
   # Homebrew integration (optional)
   homebrew = {
     enable = true;

@@ -9,11 +9,18 @@
     };
   };
 
-  outputs = { self, nixpkgs, home-manager, ... }:
+  outputs =
+    {
+      self,
+      nixpkgs,
+      home-manager,
+      ...
+    }:
     let
       system = "aarch64-linux"; # For Apple Silicon, use "x86_64-linux" for Intel
       pkgs = nixpkgs.legacyPackages.${system};
-    in {
+    in
+    {
       nixosConfigurations.vm = nixpkgs.lib.nixosSystem {
         inherit system;
         modules = [

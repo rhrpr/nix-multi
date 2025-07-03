@@ -5,13 +5,14 @@ let
   createVMScript = pkgs.writeShellScriptBin "create-nixos-vm" ''
     ${builtins.readFile ./utm-scripts/create-vm.sh}
   '';
-  
+
   # Enhanced VM management with UTM CLI best practices
   manageVMScript = pkgs.writeShellScriptBin "manage-nixos-vm" ''
-      ${builtins.readFile ./utm-scripts/manage-nixos-vm.sh}
+    ${builtins.readFile ./utm-scripts/manage-nixos-vm.sh}
   '';
 
-in {
+in
+{
   environment.systemPackages = with pkgs; [
     qemu
     createVMScript
@@ -19,7 +20,7 @@ in {
     openssh
     rsync
   ];
-  
+
   environment.shellAliases = {
     vm = "manage-nixos-vm";
     vm-create = "manage-nixos-vm create";

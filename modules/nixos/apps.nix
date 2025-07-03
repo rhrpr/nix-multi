@@ -1,7 +1,8 @@
-{ pkgs, ... }: {
+{ pkgs, ... }:
+{
 
   ##########################################################################
-  # 
+  #
   #  Install all apps and packages from nix's official package repository.
   #
   ##########################################################################
@@ -39,7 +40,7 @@
     tree-sitter
     unbound
     yt-dlp
-    
+
     # GUI applications that have Nix equivalents
     android-studio
     code-cursor

@@ -1,9 +1,14 @@
-{ config, pkgs, lib, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  ...
+}:
 
 {
   programs.plasma = {
     enable = true;
-    
+
     # Import existing plasma configuration
     shortcuts = (import ../plasma/plasma.conf).programs.plasma.shortcuts;
     configFile = (import ../plasma/plasma.conf).programs.plasma.configFile;

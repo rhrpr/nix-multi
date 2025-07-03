@@ -1,8 +1,24 @@
 # System configuration builder function
 # Inspired by mitchellh/nixos-config
-{ nixpkgs, home-manager, darwin, plasma-manager, hyprland, nvchad4nix, primeagenInit, agenix, ... }:
+{
+  nixpkgs,
+  home-manager,
+  darwin,
+  plasma-manager,
+  hyprland,
+  nvchad4nix,
+  primeagenInit,
+  agenix,
+  ...
+}:
 
-{ name, system, user, isDarwin ? false, vm ? false }:
+{
+  name,
+  system,
+  user,
+  isDarwin ? false,
+  vm ? false,
+}:
 
 let
   # System flags
@@ -12,27 +28,45 @@ let
   # User configuration
   username = user.name;
   useremail = user.email;
-  
+
   # GPU configuration for passthrough (only relevant for Linux hosts)
-  gpuConfig = user.gpuConfig or {};
+  gpuConfig = user.gpuConfig or { };
 
   # Common special arguments for all configurations
   specialArgs = {
     inherit username useremail gpuConfig;
-    inherit nixpkgs home-manager darwin plasma-manager hyprland nvchad4nix primeagenInit agenix;
+    inherit
+      nixpkgs
+      home-manager
+      darwin
+      plasma-manager
+      hyprland
+      nvchad4nix
+      primeagenInit
+      agenix
+      ;
     inherit isDarwin isLinux isVM;
     hostname = name;
     currentSystem = system;
-    desktopManager = if isVM then "hyprland" else if isDarwin then "none" else "plasma";
+    desktopManager =
+      if isVM then
+        "hyprland"
+      else if isDarwin then
+        "none"
+      else
+        "plasma";
   };
 
   # Home Manager configuration
   mkHomeManagerConfig = extraSpecialArgs: {
     useGlobalPkgs = true;
     useUserPackages = true;
-    extraSpecialArgs = specialArgs // extraSpecialArgs // {
-      inherit isDarwin isLinux;
-    };
+    extraSpecialArgs =
+      specialArgs
+      // extraSpecialArgs
+      // {
+        inherit isDarwin isLinux;
+      };
     users.${username} = import ../users/${user.name}/home-manager.nix;
     backupFileExtension = "backup";
   };
@@ -47,8 +81,9 @@ if isDarwin then
       { nixpkgs.config.allowUnfree = true; }
       ../machines/${name}.nix
       ../users/${user.name}/darwin.nix
-      home-manager.darwinModules.home-manager {
-        home-manager = mkHomeManagerConfig {};
+      home-manager.darwinModules.home-manager
+      {
+        home-manager = mkHomeManagerConfig { };
       }
     ];
   }
@@ -61,12 +96,18 @@ else
       { nixpkgs.config.allowUnfree = true; }
       ../machines/${name}.nix
       ../users/${user.name}/nixos.nix
-      home-manager.nixosModules.home-manager {
-        home-manager = (mkHomeManagerConfig {}) // (
-          if isVM then {} else {
-            sharedModules = [ plasma-manager.homeManagerModules.plasma-manager ];
-          }
-        );
+      home-manager.nixosModules.home-manager
+      {
+        home-manager =
+          (mkHomeManagerConfig { })
+          // (
+            if isVM then
+              { }
+            else
+              {
+                sharedModules = [ plasma-manager.homeManagerModules.plasma-manager ];
+              }
+          );
       }
     ];
   }

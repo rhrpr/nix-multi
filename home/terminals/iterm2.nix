@@ -3,7 +3,7 @@
 {
   # iTerm2 configuration with official Shades of Purple theme
   # Creates the .itermcolors file for manual import
-  
+
   home.file.".config/iterm2/shades-of-purple.itermcolors".text = ''
     <?xml version="1.0" encoding="UTF-8"?>
     <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd"\>

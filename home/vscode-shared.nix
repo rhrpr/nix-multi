@@ -1,4 +1,9 @@
-{ config, pkgs, lib, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  ...
+}:
 
 let
   # Install Shades of Purple theme from VSCode marketplace
@@ -17,24 +22,27 @@ in
     package = pkgs.vscode;
 
     profiles.default = {
-      extensions = with pkgs.vscode-extensions; [
-        bbenoist.nix
-        davidanson.vscode-markdownlint
-        github.copilot
-        github.copilot-chat
-        ms-python.debugpy
-        ms-python.python
-        ms-python.vscode-pylance
-        ms-vscode-remote.remote-ssh
-        ms-vscode-remote.remote-ssh-edit
-        mechatroner.rainbow-csv
-        dbaeumer.vscode-eslint
-        github.vscode-github-actions
-        ms-azuretools.vscode-docker
-      ] ++ [
-        # Custom extensions from marketplace
-        shades-of-purple
-      ];
+      extensions =
+        with pkgs.vscode-extensions;
+        [
+          bbenoist.nix
+          davidanson.vscode-markdownlint
+          github.copilot
+          github.copilot-chat
+          ms-python.debugpy
+          ms-python.python
+          ms-python.vscode-pylance
+          ms-vscode-remote.remote-ssh
+          ms-vscode-remote.remote-ssh-edit
+          mechatroner.rainbow-csv
+          dbaeumer.vscode-eslint
+          github.vscode-github-actions
+          ms-azuretools.vscode-docker
+        ]
+        ++ [
+          # Custom extensions from marketplace
+          shades-of-purple
+        ];
 
       userSettings = {
         "editor.fontSize" = 14;

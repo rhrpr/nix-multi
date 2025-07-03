@@ -1,21 +1,34 @@
 # Linux VM Management Module
 # Provides VM creation and management tools for Linux hosts
-{ pkgs, lib, config, username, gpuConfig, ... }:
+{
+  pkgs,
+  lib,
+  config,
+  username,
+  gpuConfig,
+  ...
+}:
 
 {
   # Boot configuration for better VM performance (Linux only)
   boot = {
-    kernelModules = [ "vfio-pci" ] ++ lib.optionals (pkgs.stdenv.hostPlatform.system == "x86_64-linux") [
-      "kvm-intel" "kvm-amd"
-    ] ++ lib.optionals (pkgs.stdenv.hostPlatform.system == "aarch64-linux") [
-      "kvm"
-    ];
-    kernelParams = lib.optionals (pkgs.stdenv.hostPlatform.system == "x86_64-linux") [
-      "intel_iommu=on"
-      "amd_iommu=on"
-    ] ++ lib.optionals (pkgs.stdenv.hostPlatform.system == "aarch64-linux") [
-      "iommu.passthrough=1"
-    ];
+    kernelModules =
+      [ "vfio-pci" ]
+      ++ lib.optionals (pkgs.stdenv.hostPlatform.system == "x86_64-linux") [
+        "kvm-intel"
+        "kvm-amd"
+      ]
+      ++ lib.optionals (pkgs.stdenv.hostPlatform.system == "aarch64-linux") [
+        "kvm"
+      ];
+    kernelParams =
+      lib.optionals (pkgs.stdenv.hostPlatform.system == "x86_64-linux") [
+        "intel_iommu=on"
+        "amd_iommu=on"
+      ]
+      ++ lib.optionals (pkgs.stdenv.hostPlatform.system == "aarch64-linux") [
+        "iommu.passthrough=1"
+      ];
   };
 
   # Enable virtualization services
@@ -32,7 +45,7 @@
         };
       };
     };
-    
+
     # Enable SPICE USB redirection
     spiceUSBRedirection.enable = lib.mkDefault true;
   };
@@ -40,37 +53,37 @@
   # VM creation and management tools for Linux
   environment.systemPackages = with pkgs; [
     # Core virtualization tools
-    qemu_kvm         # KVM acceleration
-    qemu_full        # Full QEMU with all features
-    libvirt          # Virtualization management daemon
-    virt-manager     # GUI for managing VMs
-    virt-viewer      # Viewer for VMs
+    qemu_kvm # KVM acceleration
+    qemu_full # Full QEMU with all features
+    libvirt # Virtualization management daemon
+    virt-manager # GUI for managing VMs
+    virt-viewer # Viewer for VMs
 
     # QEMU utilities
-    qemu             # QEMU user tools
-    qemu-utils       # QEMU disk/image utilities
+    qemu # QEMU user tools
+    qemu-utils # QEMU disk/image utilities
 
     # Spice (remote desktop) support
-    spice-gtk        # Spice GTK client
-    spice-protocol   # Spice protocol definitions
-    spice-vdagent    # Spice guest agent
+    spice-gtk # Spice GTK client
+    spice-protocol # Spice protocol definitions
+    spice-vdagent # Spice guest agent
 
     # Windows guest drivers
-    win-virtio       # VirtIO drivers for Windows
-    win-spice        # Spice guest tools for Windows
+    win-virtio # VirtIO drivers for Windows
+    win-spice # Spice guest tools for Windows
 
     # GPU passthrough and sharing tools
     looking-glass-client # Client for Looking Glass
-    scream           # Network audio for Windows VMs
-    barrier          # Share mouse/keyboard between host and guest
-    
+    scream # Network audio for Windows VMs
+    barrier # Share mouse/keyboard between host and guest
+
     # NVIDIA tools for monitoring and management
     nvidia-system-monitor-qt # GUI for NVIDIA monitoring
     nvtopPackages.nvidia # Terminal-based GPU monitoring
-    
+
     # VFIO tools
-    pciutils         # For lspci to identify devices
-    usbutils         # For lsusb
+    pciutils # For lspci to identify devices
+    usbutils # For lsusb
   ];
 
   # Note: virtualization.libvirtd configuration is handled by gpu-passthrough.nix
@@ -78,11 +91,11 @@
 
   # Add users to required groups (complementary to gpu-passthrough.nix)
   users.users.${username} = {
-    extraGroups = [ 
-      "libvirtd" 
-      "kvm" 
-      "input"     # For input devices passthrough
-      "disk"      # For disk management
+    extraGroups = [
+      "libvirtd"
+      "kvm"
+      "input" # For input devices passthrough
+      "disk" # For disk management
     ];
   };
 
@@ -93,7 +106,7 @@
       # Allow libvirt networks
       trustedInterfaces = [ "virbr0" ];
       # Allow specific ports if needed
-      allowedTCPPorts = [ 
+      allowedTCPPorts = [
         # 5900  # VNC (uncomment if using VNC)
         # 5901  # Additional VNC displays
       ];
@@ -117,7 +130,7 @@
   environment.variables = {
     # LibVirt default URI
     LIBVIRT_DEFAULT_URI = "qemu:///system";
-    
+
     # Looking Glass shared memory
     LOOKING_GLASS_SHARED_MEM = "/dev/shm/looking-glass";
   };

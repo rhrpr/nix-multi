@@ -1,6 +1,12 @@
 # VM Guest GPU Configuration
 # Optimizes GPU usage when running as a guest in a VM with GPU passthrough
-{ config, pkgs, lib, gpuConfig, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  gpuConfig,
+  ...
+}:
 
 let
   isNvidia = gpuConfig.vendor == "nvidia";
@@ -14,11 +20,11 @@ in
     hardware = {
       # Enable OpenGL for guest (updated options)
       graphics = {
-      enable = true;
-      enable32Bit = lib.mkIf isX86_64 true;
-      extraPackages = with pkgs; [
-        vaapiVdpau
-        libvdpau-va-gl
+        enable = true;
+        enable32Bit = lib.mkIf isX86_64 true;
+        extraPackages = with pkgs; [
+          vaapiVdpau
+          libvdpau-va-gl
         ];
       };
 
@@ -29,7 +35,7 @@ in
         powerManagement.finegrained = false;
         open = false; # Use proprietary driver for better compatibility
         nvidiaSettings = true;
-        
+
         # Use stable driver for VMs
         package = config.boot.kernelPackages.nvidiaPackages.stable;
       };

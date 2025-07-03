@@ -13,10 +13,10 @@
 {
   system = {
     stateVersion = 5;
-    
+
     # Set the primary user for user-specific settings
-    primaryUser = username;  # This uses the username from flake.nix
-    
+    primaryUser = username; # This uses the username from flake.nix
+
     # Remove the deprecated postUserActivation script as it's no longer supported
     # The activateSettings command will now be handled automatically by the system
 

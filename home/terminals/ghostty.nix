@@ -1,4 +1,9 @@
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
 {
   home.file.".config/ghostty/config".text = ''
@@ -46,7 +51,7 @@
     # Other settings
     scrollback-limit = 10000
     copy-on-select = true
-    
+
     # Terminal settings
     term = xterm-256color
   '';

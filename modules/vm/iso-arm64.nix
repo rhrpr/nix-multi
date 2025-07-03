@@ -1,6 +1,12 @@
 # ARM64 NixOS ISO Configuration for UTM
 # Optimized for Apple Silicon Macs running UTM
-{ pkgs, lib, modulesPath, username, ... }:
+{
+  pkgs,
+  lib,
+  modulesPath,
+  username,
+  ...
+}:
 
 {
   imports = [
@@ -12,17 +18,17 @@
   isoImage = {
     # Optimize for ARM64
     isoName = "nixos-hyprland-aarch64.iso";
-    
+
     # Set reasonable ISO size limits
     squashfsCompression = "zstd -Xcompression-level 6";
-    
+
     # Make the ISO bootable on ARM64 systems
     makeEfiBootable = true;
     makeUsbBootable = true;
-    
+
     # Append custom kernel parameters for VM optimization
     appendToMenuLabel = " (ARM64 for UTM)";
-    grubTheme = null;  # Use default theme for compatibility
+    grubTheme = null; # Use default theme for compatibility
   };
 
   # System configuration for live environment
@@ -49,7 +55,7 @@
     # Terminal and shell
     kitty
     alacritty
-    
+
     # System utilities
     git
     curl
@@ -58,31 +64,31 @@
     nano
     htop
     btop
-    
+
     # Development tools
     gcc
     nodejs
     python3
-    
+
     # GUI applications
     firefox
-    
+
     # File management
     thunar
     ranger
-    
+
     # System tools
     gparted
     gnome.gnome-disk-utility
-    
+
     # Archive tools
     unzip
     zip
     p7zip
-    
+
     # Network tools
     networkmanagerapplet
-    
+
     # Hyprland utilities
     waybar
     wofi
@@ -96,8 +102,8 @@
   # Enable networking
   networking = {
     networkmanager.enable = true;
-    wireless.enable = false;  # Conflicts with NetworkManager
-    
+    wireless.enable = false; # Conflicts with NetworkManager
+
     # Enable SSH for remote management
     firewall = {
       enable = true;
@@ -124,16 +130,26 @@
   users.users = {
     nixos = {
       isNormalUser = true;
-      extraGroups = [ "wheel" "networkmanager" "audio" "video" ];
+      extraGroups = [
+        "wheel"
+        "networkmanager"
+        "audio"
+        "video"
+      ];
       # Set a default password for the live environment
       initialPassword = "nixos";
       shell = pkgs.bash;
     };
-    
+
     # Add the configured user as well
     ${username} = {
       isNormalUser = true;
-      extraGroups = [ "wheel" "networkmanager" "audio" "video" ];
+      extraGroups = [
+        "wheel"
+        "networkmanager"
+        "audio"
+        "video"
+      ];
       initialPassword = "nixos";
       shell = pkgs.bash;
     };
@@ -147,13 +163,13 @@
     # Enable all firmware
     enableAllFirmware = true;
     enableRedistributableFirmware = true;
-    
+
     # OpenGL support for ARM64
     opengl = {
       enable = true;
       driSupport = true;
     };
-    
+
     # Bluetooth support
     bluetooth = {
       enable = true;
@@ -168,13 +184,13 @@
       layout = "us";
       variant = "";
     };
-    
+
     # Enable CUPS for printing
     printing.enable = true;
-    
+
     # Enable sound
-    pulseaudio.enable = false;  # Using PipeWire instead
-    
+    pulseaudio.enable = false; # Using PipeWire instead
+
     # Bluetooth service
     blueman.enable = true;
   };
@@ -183,12 +199,12 @@
   environment.sessionVariables = {
     # Enable Wayland for supported applications
     NIXOS_OZONE_WL = "1";
-    
+
     # Set default terminal
     TERMINAL = "kitty";
-    
+
     # Hyprland specific
-    WLR_NO_HARDWARE_CURSORS = "1";  # Helps with VM cursor issues
+    WLR_NO_HARDWARE_CURSORS = "1"; # Helps with VM cursor issues
   };
 
   # Fonts for better text rendering

@@ -17,23 +17,26 @@ in
     package = pkgs.vscode;
 
     profiles.default = {
-      extensions = with pkgs.vscode-extensions; [
-        bbenoist.nix
-        davidanson.vscode-markdownlint
-        github.copilot
-        github.copilot-chat
-        ms-python.debugpy
-        ms-python.python
-        ms-python.vscode-pylance
-        ms-vscode-remote.remote-ssh
-        ms-vscode-remote.remote-ssh-edit
-        # continue.continue # Local LLM Copilot
-        mechatroner.rainbow-csv
-        dbaeumer.vscode-eslint
-      ] ++ [
-        # Custom extensions from marketplace
-        shades-of-purple
-      ];
+      extensions =
+        with pkgs.vscode-extensions;
+        [
+          bbenoist.nix
+          davidanson.vscode-markdownlint
+          github.copilot
+          github.copilot-chat
+          ms-python.debugpy
+          ms-python.python
+          ms-python.vscode-pylance
+          ms-vscode-remote.remote-ssh
+          ms-vscode-remote.remote-ssh-edit
+          # continue.continue # Local LLM Copilot
+          mechatroner.rainbow-csv
+          dbaeumer.vscode-eslint
+        ]
+        ++ [
+          # Custom extensions from marketplace
+          shades-of-purple
+        ];
 
       userSettings = {
         "editor.fontSize" = 14;
