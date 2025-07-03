@@ -44,7 +44,6 @@ let
     # Modern unix tools
     cat = "bat";
     find = "fd";
-    ls = "eza";
     top = "btop";
   };
 in {

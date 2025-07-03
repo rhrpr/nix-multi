@@ -27,7 +27,6 @@ in
     ranger
     fd
     bat
-    eza
   ];
 
   # Enable XDG
