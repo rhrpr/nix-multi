@@ -67,33 +67,33 @@ setup-linux: enable-flakes
 	sudo nixos-rebuild switch --flake .#$(LINUX_CONFIG)
 
 enable-flakes:
-    @echo "Enabling Nix experimental features..."
-    @mkdir -p ~/.config/nix
-    @if ! grep -q "experimental-features.*nix-command.*flakes" ~/.config/nix/nix.conf 2>/dev/null; then \
-        echo "experimental-features = nix-command flakes" >> ~/.config/nix/nix.conf; \
-        echo "✓ Experimental features enabled for user"; \
-    else \
-        echo "✓ Experimental features already enabled for user"; \
-    fi
-    @if command -v sudo >/dev/null 2>&1; then \
-        sudo mkdir -p /etc/nix; \
-        if ! sudo grep -q "experimental-features.*nix-command.*flakes" /etc/nix/nix.conf 2>/dev/null; then \
-            echo "experimental-features = nix-command flakes" | sudo tee -a /etc/nix/nix.conf >/dev/null; \
-            echo "✓ Experimental features enabled system-wide"; \
-        else \
-            echo "✓ Experimental features already enabled system-wide"; \
-        fi; \
-    fi
+	@echo "Enabling Nix experimental features..."
+	@mkdir -p ~/.config/nix
+	@if ! grep -q "experimental-features.*nix-command.*flakes" ~/.config/nix/nix.conf 2>/dev/null; then \
+		echo "experimental-features = nix-command flakes" >> ~/.config/nix/nix.conf; \
+		echo "✓ Experimental features enabled for user"; \
+	else \
+		echo "✓ Experimental features already enabled for user"; \
+	fi
+	@if command -v sudo >/dev/null 2>&1; then \
+		sudo mkdir -p /etc/nix; \
+		if ! sudo grep -q "experimental-features.*nix-command.*flakes" /etc/nix/nix.conf 2>/dev/null; then \
+			echo "experimental-features = nix-command flakes" | sudo tee -a /etc/nix/nix.conf >/dev/null; \
+			echo "✓ Experimental features enabled system-wide"; \
+		else \
+			echo "✓ Experimental features already enabled system-wide"; \
+		fi; \
+	fi
 
 setup-macos: enable-flakes
-    @echo "Setting up macOS configuration..."
-    nix build .#darwinConfigurations.$(MACOS_CONFIG).system
-    sudo ./result/sw/bin/darwin-rebuild switch --flake .#$(MACOS_CONFIG)
+	@echo "Setting up macOS configuration..."
+	nix build .#darwinConfigurations.$(MACOS_CONFIG).system
+	sudo ./result/sw/bin/darwin-rebuild switch --flake .#$(MACOS_CONFIG)
 
 setup-vm: enable-flakes
-    @echo "Setting up NixOS VM configuration..."
-    nix build .#nixosConfigurations.$(VM_CONFIG).config.system.build.toplevel --no-link
-    sudo nixos-rebuild switch --flake .#$(VM_CONFIG)
+	@echo "Setting up NixOS VM configuration..."
+	nix build .#nixosConfigurations.$(VM_CONFIG).config.system.build.toplevel --no-link
+	sudo nixos-rebuild switch --flake .#$(VM_CONFIG)
 
 # VM building
 .PHONY: vm-build
