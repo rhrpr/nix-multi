@@ -8,6 +8,7 @@
 let
   isPlasma = desktopManager == "plasma";
   isHyprland = desktopManager == "hyprland";
+  isEnd4Hyprland = desktopManager == "end4-hyprland";
 in
 {
   imports =
@@ -19,6 +20,9 @@ in
     ]
     ++ lib.optionals isHyprland [
       ./hyprland.nix
+    ]
+    ++ lib.optionals isEnd4Hyprland [
+      ./end4-hyprland.nix
     ];
 
   # Linux-specific packages

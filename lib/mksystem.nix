@@ -50,7 +50,10 @@ let
     currentSystem = system;
     desktopManager =
       if isVM then
-        "hyprland"
+        if name == "nixos-vm-end4" then
+          "end4-hyprland"
+        else
+          "hyprland"
       else if isDarwin then
         "none"
       else

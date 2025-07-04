@@ -210,5 +210,13 @@
         inherit user;
         vm = true;
       };
+
+      # NixOS VM with end-4 dots-hyprland
+      nixosConfigurations."nixos-vm-end4" = mkSystem {
+        name = "nixos-vm-end4";
+        system = "x86_64-linux";
+        inherit user;
+        vm = true;
+      };
     };
 }
