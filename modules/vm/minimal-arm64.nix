@@ -34,6 +34,7 @@
     # Development tools
     nodejs
     python3
+    gnumake
 
     # GUI applications (ARM64 compatible)
     firefox

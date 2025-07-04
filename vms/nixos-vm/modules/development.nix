@@ -18,6 +18,7 @@
     go
     rustc
     cargo
+    gnumake
 
     # System tools
     htop

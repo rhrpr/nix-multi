@@ -26,6 +26,7 @@
 
     # Development tools (essential subset)
     vscode
+    gnumake
 
     # Media and utilities
     mpv # Video player
