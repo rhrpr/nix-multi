@@ -62,8 +62,12 @@ endif
 
 # Linux setup  
 .PHONY: setup-linux
-setup-linux: enable-flakes
+setup-linux: enable-flakes  
 	@echo "Setting up NixOS configuration..."
+	@# Fix Git ownership issue when running with sudo
+	@if [ "$$EUID" -eq 0 ]; then \
+		git config --global --add safe.directory /home/hrpr/.config/nix-multi; \
+	fi
 	nix build .#nixosConfigurations.$(LINUX_CONFIG).config.system.build.toplevel --no-link
 	sudo nixos-rebuild switch --flake .#$(LINUX_CONFIG)
 
@@ -104,6 +108,10 @@ setup-macos: enable-flakes
 .PHONY: setup-vm
 setup-vm: enable-flakes
 	@echo "Setting up NixOS VM configuration..."
+	@# Fix Git ownership issue when running with sudo
+	@if [ "$$EUID" -eq 0 ]; then \
+		git config --global --add safe.directory /home/hrpr/.config/nix-multi; \
+	fi
 	nix build .#nixosConfigurations.$(VM_CONFIG).config.system.build.toplevel --no-link
 	sudo nixos-rebuild switch --flake .#$(VM_CONFIG)
 
