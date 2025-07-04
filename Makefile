@@ -12,6 +12,7 @@ IS_VM := $(shell if [ -f /sys/class/dmi/id/product_name ] && grep -qi "qemu\|kvm
 MACOS_CONFIG = Ryans-MacBook-Pro
 LINUX_CONFIG = nixos-plasma
 VM_CONFIG = nixos-vm-hyprland
+END4_VM_CONFIG = nixos-vm-end4
 
 # Default target
 .PHONY: help
@@ -114,6 +115,16 @@ setup-vm: enable-flakes
 	fi
 	nix build .#nixosConfigurations.$(VM_CONFIG).config.system.build.toplevel --no-link
 	sudo nixos-rebuild switch --flake .#$(VM_CONFIG)
+
+.PHONY: setup-vm-end4
+setup-vm-end4: enable-flakes
+	@echo "Setting up NixOS VM END4 configuration..."
+	@# Fix Git ownership issue when running with sudo
+	@if [ "$$EUID" -eq 0 ]; then \
+		git config --global --add safe.directory /home/hrpr/.config/nix-multi; \
+	fi
+	nix build .#nixosConfigurations.$(END4_VM_CONFIG).config.system.build.toplevel --no-link
+	sudo nixos-rebuild switch --flake .#$(END4_VM_CONFIG)
 
 # VM building
 .PHONY: vm-build
