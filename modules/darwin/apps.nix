@@ -73,6 +73,7 @@
       "fastlane" # Automate beta deployment and releases for your iOS and Android apps
       "ffmpeg" # Audio and video converter/processor
       "gallery-dl" # Command-line downloader for image galleries
+      "gemini-cli" # Google Gemini AI CLI tool for code assistance
       "gettext" # GNU internationalization (i18n) library
       "gmp" # GNU Multiple Precision Arithmetic Library
       "gnutls" # GNU Transport Layer Security Library
