@@ -52,7 +52,7 @@
     };
 
     # Only include zen-browser for NixOS (Linux)
-    zen-browser = nixpkgs.lib.optionalAttrs (nixpkgs.lib.hasSuffix "linux" nixpkgs.system) {
+    zen-browser = {
       url = "github:0xc000022070/zen-browser-flake";
       inputs.nixpkgs.follows = "nixpkgs";
     };
