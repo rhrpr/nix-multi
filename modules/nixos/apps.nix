@@ -25,6 +25,7 @@
     gallery-dl
     gettext
     gmp
+    gnumake
     gnutls
     htop
     pciutils
