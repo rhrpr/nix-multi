@@ -9,6 +9,7 @@
   nvchad4nix,
   primeagenInit,
   agenix,
+  zen-browser,
   ...
 }:
 
@@ -44,6 +45,7 @@ let
       nvchad4nix
       primeagenInit
       agenix
+      zen-browser
       ;
     inherit isDarwin isLinux isVM;
     hostname = name;

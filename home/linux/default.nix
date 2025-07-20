@@ -2,7 +2,6 @@
   pkgs,
   lib,
   desktopManager ? "plasma",
-  zen-browser.homeModules.beta,
   ...
 }:
 
@@ -14,6 +13,7 @@ in
   imports =
     [
       ./vscode.nix
+      ./browser.nix  # Always import browser config for Linux
     ]
     ++ lib.optionals isPlasma [
       ./plasma.nix
@@ -39,14 +39,6 @@ in
       fd
       bat
     ];
-
-  # Enable Zen Browser
-  programs.zen-browser.enable = true;
-  programs.zen-browser.settings = {
-    # Example settings, adjust as needed
-    theme = "dark";
-    extensions = [ "uBlockOrigin" "PrivacyBadger" ];
-  };
 
   # Enable XDG
   xdg.enable = true;
