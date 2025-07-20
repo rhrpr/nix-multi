@@ -51,6 +51,12 @@
       flake = false; # because it's not a flake repo
     };
 
+    # Only include zen-browser for NixOS (Linux)
+    zen-browser = nixpkgs.lib.optionalAttrs (nixpkgs.lib.hasSuffix "linux" nixpkgs.system) {
+      url = "github:0xc000022070/zen-browser-flake";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     # Secret management
     agenix = {
       url = "github:ryantm/agenix";

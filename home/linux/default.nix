@@ -2,6 +2,7 @@
   pkgs,
   lib,
   desktopManager ? "plasma",
+  zen-browser.homeModules.beta,
   ...
 }:
 
@@ -38,6 +39,14 @@ in
       fd
       bat
     ];
+
+  # Enable Zen Browser
+  programs.zen-browser.enable = true;
+  programs.zen-browser.settings = {
+    # Example settings, adjust as needed
+    theme = "dark";
+    extensions = [ "uBlockOrigin" "PrivacyBadger" ];
+  };
 
   # Enable XDG
   xdg.enable = true;
