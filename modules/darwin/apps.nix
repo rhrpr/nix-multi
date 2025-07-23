@@ -56,6 +56,7 @@
       "Pages" = 409201541; # Apple's word processing software
       "Keynote" = 409183694; # Apple's presentation software
       "Numbers" = 409203825; # Apple's spreadsheet software
+      "CrystalFetch ISO Downloader" = 6454431289; # Download ISO images for Windows
     };
 
     taps = [
