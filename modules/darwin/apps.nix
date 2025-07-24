@@ -93,6 +93,7 @@
       "tree-sitter" # Parser generator tool and library
       "unbound" # Validating, recursive, and caching DNS resolver
       "yt-dlp" # YouTube video downloader
+      "wget" # Command-line utility for downloading files from the web
       "xcodegen" # Command line tool to generate Xcode project files
     ];
 
