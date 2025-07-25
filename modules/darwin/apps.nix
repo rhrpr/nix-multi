@@ -66,7 +66,6 @@
     ];
 
     brews = [
-      "battery" # Battery management tool
       "btop" # Resource monitor showing CPU, memory, disks, network
       "ca-certificates" # Bundle of CA root certificates
       "cask" # Extension mechanism for Homebrew
@@ -103,6 +102,7 @@
       "android-studio" # Android development environment
       "aural" # audio player
       "arturia-software-center" # Arturia software management tool
+      "battery" # Battery management tool
       "betterdisplay" # Display scaling (hidpi)
       "blackhole-16ch" # Virtual audio driver for routing audio between applications
       "cursor" # Cursor AI code editor
