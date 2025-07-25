@@ -66,6 +66,7 @@
     ];
 
     brews = [
+      "battery" # Battery management tool
       "btop" # Resource monitor showing CPU, memory, disks, network
       "ca-certificates" # Bundle of CA root certificates
       "cask" # Extension mechanism for Homebrew
