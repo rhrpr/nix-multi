@@ -38,6 +38,7 @@ in
           dbaeumer.vscode-eslint
           github.vscode-github-actions
           ms-azuretools.vscode-docker
+          ms-vscode-remote.remote-ssh
         ]
         ++ [
           # Custom extensions from marketplace

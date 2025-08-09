@@ -32,6 +32,7 @@ in
           # continue.continue # Local LLM Copilot
           mechatroner.rainbow-csv
           dbaeumer.vscode-eslint
+          ms-vscode-remote.remote-ssh
         ]
         ++ [
           # Custom extensions from marketplace
