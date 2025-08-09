@@ -116,6 +116,7 @@
       "github-copilot-for-xcode" # Github Copilot for xCode
       "ibkr" # Interactive Brokers trading platform
       "iterm2" # MacOS Terminal emulator
+      "iina" # Modern media player for macOS
       # "knockknock"     # Security tool to show persistent apps
       "lm-studio" # Local AI model runner and chat interface
       "logitech-options" # Configuration tool for Logitech devices
@@ -133,6 +134,7 @@
       "steam" # Gaming platform and store
       "rancher" # Kubernetes and containers host
       "raycast" # Spotlight replacement on MacOS
+      "reamp" # WinAMP reimplementation for macOS
       "telegram" # Messaging app
       "transmission" # BitTorrent client
       "utm" # Virtual machines UI using QEMU
