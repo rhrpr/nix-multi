@@ -85,7 +85,7 @@
       "nettle" # Low-level cryptographic library
       "openssl@3" # Cryptography and SSL/TLS toolkit
       "p11-kit" # Library to load and share PKCS#11 modules
-      "pytaglib" # Python bindings for the TagLib library
+      "taglib" # TagLib library
       "syncthing" # Open source continuous file synchronization tool
       "terraform-ls" # Language server for Terraform
       "tfenv" # Terraform version manager
@@ -124,11 +124,13 @@
       # "lulu"           # Open-source firewall for macOS
       "microsoft-edge" # Web browser
       "mixxx" # DJ software
+      "mixed-in-key" # Key detection and management tool for DJs
       "moonlight" # Game streaming client
       "obsidian" # Markdown knowledge base and note-taking app
       # "oversight"      # Monitors and notifies when microphone or camera is activated
       "proton-mail-bridge" # Proton email
       "protonvpn" # VPN client
+      "rekordbox" # DJ software
       "spotify" # Music streaming service
       "stats" # System monitor for the menu bar
       "steam" # Gaming platform and store
