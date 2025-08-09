@@ -85,6 +85,7 @@
       "nettle" # Low-level cryptographic library
       "openssl@3" # Cryptography and SSL/TLS toolkit
       "p11-kit" # Library to load and share PKCS#11 modules
+      "pytaglib" # Python bindings for the TagLib library
       "syncthing" # Open source continuous file synchronization tool
       "terraform-ls" # Language server for Terraform
       "tfenv" # Terraform version manager
@@ -132,6 +133,7 @@
       "steam" # Gaming platform and store
       "rancher" # Kubernetes and containers host
       "raycast" # Spotlight replacement on MacOS
+      "telegram" # Messaging app
       "transmission" # BitTorrent client
       "utm" # Virtual machines UI using QEMU
       "vagrant" # Tool for building and managing virtual machine environments
