@@ -132,6 +132,7 @@
       "protonvpn" # VPN client
       "rekordbox" # DJ software
       "spotify" # Music streaming service
+      "spicetify-cli" # Spotify customiser
       "stats" # System monitor for the menu bar
       "steam" # Gaming platform and store
       "rancher" # Kubernetes and containers host
