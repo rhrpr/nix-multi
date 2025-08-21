@@ -66,6 +66,7 @@
     ];
 
     brews = [
+      "anytime" # Decentralised encrypted notes
       "btop" # Resource monitor showing CPU, memory, disks, network
       "ca-certificates" # Bundle of CA root certificates
       "cask" # Extension mechanism for Homebrew
@@ -86,6 +87,7 @@
       "openssl@3" # Cryptography and SSL/TLS toolkit
       "p11-kit" # Library to load and share PKCS#11 modules
       "taglib" # TagLib library
+      "spicetify-cli" # Spotify customiser
       "syncthing" # Open source continuous file synchronization tool
       "terraform-ls" # Language server for Terraform
       "tfenv" # Terraform version manager
@@ -106,6 +108,7 @@
       "battery" # Battery management tool
       "betterdisplay" # Display scaling (hidpi)
       "blackhole-16ch" # Virtual audio driver for routing audio between applications
+      "brave" # Privacy focused browser
       "cursor" # Cursor AI code editor
       "claude" # Claude AI App
       "cyberduck" # FTP, SFTP, WebDAV, S3 file transfer client
@@ -121,6 +124,7 @@
       "lm-studio" # Local AI model runner and chat interface
       "logitech-options" # Configuration tool for Logitech devices
       "libreoffice" # Open-source office software
+      "little-snitch" # Firewall App
       # "lulu"           # Open-source firewall for macOS
       "microsoft-edge" # Web browser
       "mixxx" # DJ software
@@ -132,9 +136,9 @@
       "protonvpn" # VPN client
       "rekordbox" # DJ software
       "spotify" # Music streaming service
-      "spicetify-cli" # Spotify customiser
       "stats" # System monitor for the menu bar
       "steam" # Gaming platform and store
+      "microsoft-teams" # MS Teams
       "rancher" # Kubernetes and containers host
       "raycast" # Spotlight replacement on MacOS
       "reamp" # WinAMP reimplementation for macOS
