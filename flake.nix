@@ -156,6 +156,11 @@
             inherit pkgs;
             treefmtWrapper = treefmtEval.config.build.wrapper;
           };
+
+          rust = import ./devshells/rust.nix {
+            inherit pkgs;
+            treefmtWrapper = treefmtEval.config.build.wrapper;
+          };
         };
 
         # Packages
