@@ -66,7 +66,6 @@
     ];
 
     brews = [
-      "anytime" # Decentralised encrypted notes
       "btop" # Resource monitor showing CPU, memory, disks, network
       "ca-certificates" # Bundle of CA root certificates
       "cask" # Extension mechanism for Homebrew
@@ -108,10 +107,11 @@
       "battery" # Battery management tool
       "betterdisplay" # Display scaling (hidpi)
       "blackhole-16ch" # Virtual audio driver for routing audio between applications
-      "brave" # Privacy focused browser
+      "brave-browser" # Privacy focused browser
       "cursor" # Cursor AI code editor
       "claude" # Claude AI App
       "cyberduck" # FTP, SFTP, WebDAV, S3 file transfer client
+      "cog" # Music App
       "discord" # Voice, video, and text chat app
       "firefox" # Web browser
       "ghostty" # terminal emulator
@@ -124,12 +124,13 @@
       "lm-studio" # Local AI model runner and chat interface
       "logitech-options" # Configuration tool for Logitech devices
       "libreoffice" # Open-source office software
-      "little-snitch" # Firewall App
+      # "little-snitch" # Firewall App
       # "lulu"           # Open-source firewall for macOS
-      "microsoft-edge" # Web browser
+      # "microsoft-edge" # Web browser
       "mixxx" # DJ software
       "mixed-in-key" # Key detection and management tool for DJs
       "moonlight" # Game streaming client
+      "musicbrainz-picard" # Audio Tagger
       "obsidian" # Markdown knowledge base and note-taking app
       # "oversight"      # Monitors and notifies when microphone or camera is activated
       "proton-mail-bridge" # Proton email
