@@ -40,6 +40,7 @@ help:
 	@echo "  dev-flutter    - Enter Flutter development shell"
 	@echo "  dev-web        - Enter Web development shell"
 	@echo "  dev-python     - Enter Python development shell"
+	@echo "  dev-rust       - Enter Rust development shell"
 	@echo ""
 	@echo "Maintenance:"
 	@echo "  check          - Check flake configuration"
@@ -166,6 +167,10 @@ dev-web:
 .PHONY: dev-python
 dev-python:
 	nix develop .#python
+
+.PHONY: dev-rust
+dev-rust:
+	nix develop .#rust
 
 # Maintenance
 .PHONY: check
