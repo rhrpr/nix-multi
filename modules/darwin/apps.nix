@@ -22,6 +22,7 @@
     nodejs_latest
     nixfmt-rfc-style # Nix formatter
     treefmt
+    libfido2
   ];
   environment.variables.EDITOR = "nano";
 
@@ -106,12 +107,11 @@
       "arturia-software-center" # Arturia software management tool
       "battery" # Battery management tool
       "betterdisplay" # Display scaling (hidpi)
-      "blackhole-16ch" # Virtual audio driver for routing audio between applications
       "brave-browser" # Privacy focused browser
+      "blockblock" # BlockBlock provides continual protection by monitoring persistence locations. Any new persistent component will trigger a BlockBlock alert, allowing malicious items be blocked.
       "cursor" # Cursor AI code editor
       "claude" # Claude AI App
       "cyberduck" # FTP, SFTP, WebDAV, S3 file transfer client
-      "cog" # Music App
       "discord" # Voice, video, and text chat app
       "firefox" # Web browser
       "ghostty" # terminal emulator
@@ -119,20 +119,20 @@
       "github-copilot-for-xcode" # Github Copilot for xCode
       "ibkr" # Interactive Brokers trading platform
       "iterm2" # MacOS Terminal emulator
-      "iina" # Modern media player for macOS
-      # "knockknock"     # Security tool to show persistent apps
+      "knockknock"     # Security tool to show persistent apps
       "lm-studio" # Local AI model runner and chat interface
+      "logitech-g-hub" # Logitech gaming configuration app
       "logitech-options" # Configuration tool for Logitech devices
       "libreoffice" # Open-source office software
-      # "little-snitch" # Firewall App
-      # "lulu"           # Open-source firewall for macOS
-      # "microsoft-edge" # Web browser
+      # "little-snitch" # Paid Firewall App
+      "lulu"           # Open-source firewall for macOS
       "mixxx" # DJ software
       "mixed-in-key" # Key detection and management tool for DJs
       "moonlight" # Game streaming client
       "musicbrainz-picard" # Audio Tagger
       "obsidian" # Markdown knowledge base and note-taking app
-      # "oversight"      # Monitors and notifies when microphone or camera is activated
+      "oversight"      # Monitors and notifies when microphone or camera is activated
+      "philips-hue-sync" # Phillips Hue Sync App
       "proton-mail-bridge" # Proton email
       "protonvpn" # VPN client
       "rekordbox" # DJ software
@@ -141,19 +141,16 @@
       "steam" # Gaming platform and store
       "microsoft-teams" # MS Teams
       "rancher" # Kubernetes and containers host
-      "raycast" # Spotlight replacement on MacOS
       "reamp" # WinAMP reimplementation for macOS
       "telegram" # Messaging app
       "transmission" # BitTorrent client
       "utm" # Virtual machines UI using QEMU
       "vagrant" # Tool for building and managing virtual machine environments
       "vagrant-vmware-utility" # Vagrant plugin for VMware
-      "vox" # Music player for macOS
       "whatsapp" # Messaging app
       "yubico-authenticator" # Authentication tool for YubiKey devices
       "vanilla" # macOS app to hide menu bar icons
-      "zed" # Next generation editor
-      "zen" # Next generation browser
+      "xbar" # Bar Display Tool
     ];
   };
 }
