@@ -64,50 +64,13 @@
     blueman.enable = true; # Bluetooth manager GUI for KDE/GNOME
   };
 
-  # SystemD sleep configuration and NVIDIA suspend/resume services
+  # SystemD sleep configuration
   systemd = {
     sleep.extraConfig = ''
       HibernateDelaySec=30min
       SuspendState=mem
       SuspendMode=platform
     '';
-
-    services = {
-      nvidia-suspend = {
-        description = "NVIDIA system suspend actions";
-        wantedBy = [ "sleep.target" ];
-        before = [ "systemd-suspend.service" ];
-        script = ''
-          # Save NVIDIA state before suspend
-          if [ -f /proc/driver/nvidia/suspend ]; then
-            echo suspend > /proc/driver/nvidia/suspend
-          fi
-        '';
-        serviceConfig = {
-          Type = "oneshot";
-          User = "root";
-        };
-      };
-
-      nvidia-resume = {
-        description = "NVIDIA system resume actions";  
-        after = [ "systemd-suspend.service" ];
-        wantedBy = [ "suspend.target" ];
-        script = ''
-          # Restore NVIDIA state after resume
-          if [ -f /proc/driver/nvidia/suspend ]; then
-            echo resume > /proc/driver/nvidia/suspend
-          fi
-          
-          # Restart display manager if needed
-          systemctl try-restart display-manager.service
-        '';
-        serviceConfig = {
-          Type = "oneshot";
-          User = "root";
-        };
-      };
-    };
   };
 
   # NVIDIA configuration (optional - uncomment if you have NVIDIA GPU)
