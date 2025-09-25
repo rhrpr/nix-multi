@@ -48,8 +48,9 @@ help:
 	@echo "  clean          - Clean build artifacts"
 	@echo "  fmt            - Format Nix files"
 	@echo ""
-	@echo "Debugging:"
+	@echo "Debugging & Maintenance:"
 	@echo "  debug-sleep    - Debug sleep/wake issues (run after failed wake)"
+	@echo "  wake-sources   - Manage ACPI wake sources for better sleep/wake"
 	@echo "  gpu-check      - Check RTX 3080 passthrough status"
 
 # Auto-detect setup
@@ -193,6 +194,29 @@ clean:
 .PHONY: fmt
 fmt:
 	nix fmt
+
+# Debugging and maintenance targets
+.PHONY: debug-sleep
+debug-sleep:
+	@echo "Running sleep/wake diagnostic script..."
+	@./scripts/debug-sleep.sh
+
+.PHONY: wake-sources
+wake-sources:
+	@echo "Managing ACPI wake sources..."
+	@./scripts/manage-wake-sources.sh show
+
+.PHONY: wake-fix
+wake-fix:
+	@echo "Applying recommended wake source settings..."
+	@sudo ./scripts/manage-wake-sources.sh recommend
+
+.PHONY: gpu-check
+gpu-check:
+	@echo "Checking RTX 3080 GPU status..."
+	@lspci | grep -i nvidia || echo "No NVIDIA GPU found"
+	@nvidia-smi 2>/dev/null || echo "nvidia-smi not available or GPU not accessible"
+	@cat /proc/driver/nvidia/version 2>/dev/null || echo "NVIDIA driver not loaded"
 
 # VM Management (UTM-based)
 VM_SSH_PORT = 22000
