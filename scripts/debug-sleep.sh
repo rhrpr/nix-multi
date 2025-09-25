@@ -16,7 +16,7 @@ echo ""
 
 echo "=== NVIDIA Driver Info ==="
 if command -v nvidia-smi &> /dev/null; then
-    nvidia-smi --query-gpu=name,driver_version,power.state,persistence_mode --format=csv,noheader,nounits
+    nvidia-smi --query-gpu=name,driver_version,persistence_mode --format=csv,noheader,nounits
 else
     echo "nvidia-smi not available"
 fi
