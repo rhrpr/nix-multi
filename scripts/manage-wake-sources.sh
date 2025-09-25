@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Wake Source Management Script for NixOS
 # Helps manage ACPI wake sources for better sleep/wake reliability
@@ -114,8 +114,8 @@ After=multi-user.target
 [Service]
 Type=oneshot
 RemainAfterExit=yes
-ExecStart=/bin/bash -c 'echo PEGP > /proc/acpi/wakeup 2>/dev/null || true'
-ExecStart=/bin/bash -c 'if ! grep -q \"XHCI.*enabled\" /proc/acpi/wakeup; then echo XHCI > /proc/acpi/wakeup; fi'
+ExecStart=/usr/bin/env bash -c 'echo PEGP > /proc/acpi/wakeup 2>/dev/null || true'
+ExecStart=/usr/bin/env bash -c 'if ! grep -q \"XHCI.*enabled\" /proc/acpi/wakeup; then echo XHCI > /proc/acpi/wakeup; fi'
 
 [Install]
 WantedBy=multi-user.target"
@@ -139,8 +139,8 @@ systemd.services.acpi-wake-config = {
     Type = "oneshot";
     RemainAfterExit = "yes";
     ExecStart = [
-      "/bin/bash -c 'echo PEGP > /proc/acpi/wakeup 2>/dev/null || true'"
-      "/bin/bash -c 'if ! grep -q \"XHCI.*enabled\" /proc/acpi/wakeup; then echo XHCI > /proc/acpi/wakeup; fi'"
+      "/usr/bin/env bash -c 'echo PEGP > /proc/acpi/wakeup 2>/dev/null || true'"
+      "/usr/bin/env bash -c 'if ! grep -q \"XHCI.*enabled\" /proc/acpi/wakeup; then echo XHCI > /proc/acpi/wakeup; fi'"
     ];
   };
 };
