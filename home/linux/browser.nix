@@ -1,21 +1,11 @@
 {
   pkgs,
   lib,
-  zen-browser,
   ...
-}: 
-let
-  # Get the system from pkgs
-  currentSystem = pkgs.system;
-  zenPkg = zen-browser.packages.${currentSystem}.default or zen-browser.packages.${currentSystem}.zen-browser or null;
-in {
-  # Install zen-browser from the flake input
-  home.packages = with pkgs; [
-  ] ++ lib.optionals (zenPkg != null) [ zenPkg ];
-
+}: {
   # XDG mime associations for web browsing
   xdg.mimeApps = let
-    browserDesktop = "zen-browser.desktop";
+    browserDesktop = "firefox.desktop";
     webAssociations = [
       "application/x-extension-shtml"
       "application/x-extension-xhtml"
