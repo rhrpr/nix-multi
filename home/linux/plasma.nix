@@ -23,5 +23,6 @@
     kdePackages.kcolorchooser
     kdePackages.kruler
     kdePackages.kmag
+    kdePackages.bluedevil  # KDE Bluetooth support
   ];
 }
