@@ -47,6 +47,10 @@ help:
 	@echo "  update         - Update flake inputs"
 	@echo "  clean          - Clean build artifacts"
 	@echo "  fmt            - Format Nix files"
+	@echo ""
+	@echo "Debugging:"
+	@echo "  debug-sleep    - Debug sleep/wake issues (run after failed wake)"
+	@echo "  gpu-check      - Check RTX 3080 passthrough status"
 
 # Auto-detect setup
 .PHONY: setup
