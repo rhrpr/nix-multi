@@ -103,8 +103,31 @@ echo "2. echo PEG1 | sudo tee /proc/acpi/wakeup  # Toggle PCIe slot wake"
 echo ""
 
 echo "=== Recommendations ==="
-echo "Based on your ACPI wakeup output:"
-echo "- PEG1 (PCIe slot) is enabled but PEGP (GPU) is disabled"
-echo "- This can cause wake conflicts with NVIDIA GPUs"
-echo "- Try disabling PEG1 wake: echo PEG1 | sudo tee /proc/acpi/wakeup"
-echo "- Or enabling PEGP wake: echo PEGP | sudo tee /proc/acpi/wakeup"
+echo "Analyzing current ACPI wake sources..."
+
+# Get current status
+xhci_status=$(awk '/XHCI/ {print $3}' /proc/acpi/wakeup 2>/dev/null || echo "not_found")
+pegp_gpu_status=$(awk '/PEGP.*pci:0000:01:00.0/ {print $3}' /proc/acpi/wakeup 2>/dev/null || echo "not_found")
+peg1_status=$(awk '/PEG1/ {print $3}' /proc/acpi/wakeup 2>/dev/null || echo "not_found")
+
+echo ""
+if [[ "$xhci_status" == "*enabled" && "$pegp_gpu_status" == "*disabled" ]]; then
+    echo "✅ Your wake sources are optimally configured:"
+    echo "   - XHCI (USB) enabled for keyboard/mouse wake"
+    echo "   - PEGP (NVIDIA GPU) disabled for sleep stability"
+    echo "   - Current configuration should provide reliable sleep/wake"
+    echo ""
+    echo "If you're still experiencing issues:"
+    echo "1. Try: make wake-sources  # Check detailed status"
+    echo "2. Test: systemctl suspend  # Verify suspend/wake works"
+    echo "3. Consider disabling PEG1 only if problems persist:"
+    echo "   echo PEG1 | sudo tee /proc/acpi/wakeup"
+elif [[ "$pegp_gpu_status" == "*enabled" ]]; then
+    echo "⚠️  NVIDIA GPU wake is enabled - this may cause issues:"
+    echo "   - Disable GPU wake: echo PEGP | sudo tee /proc/acpi/wakeup"
+elif [[ "$xhci_status" != "*enabled" ]]; then
+    echo "⚠️  USB controller wake is disabled:"
+    echo "   - Enable keyboard/mouse wake: echo XHCI | sudo tee /proc/acpi/wakeup"
+else
+    echo "ℹ️  Run 'make wake-sources' for detailed analysis and recommendations"
+fi
