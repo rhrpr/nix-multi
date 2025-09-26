@@ -44,6 +44,7 @@
 
     # GUI applications that have Nix equivalents
     android-studio
+    cider
     code-cursor
     discord
     firefox
