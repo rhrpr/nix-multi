@@ -44,12 +44,12 @@
 
     # GUI applications that have Nix equivalents
     android-studio
-    cider
     code-cursor
     discord
     firefox
     ghostty
     google-chrome
+    gparted
     obsidian
     protonvpn-gui
     spotify
