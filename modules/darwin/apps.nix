@@ -48,15 +48,15 @@
     # otherwise Apple Store will refuse to install them.
     # For details, see https://github.com/mas-cli/mas
     masApps = {
-      "Amphetamine" = 937984704; # Keep-awake utility to prevent Mac from sleeping
+      #"Amphetamine" = 937984704; # Keep-awake utility to prevent Mac from sleeping
       "Bitwarden" = 1352778147; # Password manager application
-      "Ferromagnetic" = 1546537151; # Utility for managing magnet links
-      "Magnet" = 441258766; # Window management tool for arranging windows
-      "iMovie" = 408981434; # Apple's video editing software
-      "Xcode" = 497799835; # Apple xCode
-      "Pages" = 409201541; # Apple's word processing software
-      "Keynote" = 409183694; # Apple's presentation software
-      "Numbers" = 409203825; # Apple's spreadsheet software
+      #"Ferromagnetic" = 1546537151; # Utility for managing magnet links
+      #"Magnet" = 441258766; # Window management tool for arranging windows
+      #"iMovie" = 408981434; # Apple's video editing software
+      #"Xcode" = 497799835; # Apple xCode
+      #"Pages" = 409201541; # Apple's word processing software
+      #"Keynote" = 409183694; # Apple's presentation software
+      #"Numbers" = 409203825; # Apple's spreadsheet software
     };
 
     taps = [
@@ -102,12 +102,12 @@
     casks = [
       "ableton-live-standard" # Digital audio workstation for music production
       "aerospace" # an i3-like tiling window manager for macOS
-      "android-studio" # Android development environment
+      #"android-studio" # Android development environment
       "aural" # audio player
       "arturia-software-center" # Arturia software management tool
       "battery" # Battery management tool
       "betterdisplay" # Display scaling (hidpi)
-      "brave-browser" # Privacy focused browser
+      #"brave-browser" # Privacy focused browser
       "blockblock" # BlockBlock provides continual protection by monitoring persistence locations. Any new persistent component will trigger a BlockBlock alert, allowing malicious items be blocked.
       "cursor" # Cursor AI code editor
       "claude" # Claude AI App
@@ -116,41 +116,43 @@
       "firefox" # Web browser
       "ghostty" # terminal emulator
       "google-chrome" # Web browser
-      "github-copilot-for-xcode" # Github Copilot for xCode
-      "ibkr" # Interactive Brokers trading platform
+      # "github-copilot-for-xcode" # Github Copilot for xCode
+      # "ibkr" # Interactive Brokers trading platform
       "iterm2" # MacOS Terminal emulator
-      "knockknock"     # Security tool to show persistent apps
-      "lm-studio" # Local AI model runner and chat interface
-      "logitech-g-hub" # Logitech gaming configuration app
-      "logitech-options" # Configuration tool for Logitech devices
-      "libreoffice" # Open-source office software
+      #"knockknock"     # Security tool to show persistent apps
+      #"lm-studio" # Local AI model runner and chat interface
+      #"logitech-g-hub" # Logitech gaming configuration app
+      #"logitech-options" # Configuration tool for Logitech devices
+      #"libreoffice" # Open-source office software
       # "little-snitch" # Paid Firewall App
-      "lulu"           # Open-source firewall for macOS
-      "mixxx" # DJ software
-      "mixed-in-key" # Key detection and management tool for DJs
-      "moonlight" # Game streaming client
-      "musicbrainz-picard" # Audio Tagger
+      #"lulu"           # Open-source firewall for macOS
+      #"mixxx" # DJ software
+      #"mixed-in-key" # Key detection and management tool for DJs
+      #"moonlight" # Game streaming client
+      #"musicbrainz-picard" # Audio Tagger
       "obsidian" # Markdown knowledge base and note-taking app
-      "oversight"      # Monitors and notifies when microphone or camera is activated
-      "philips-hue-sync" # Phillips Hue Sync App
+      #"oversight"      # Monitors and notifies when microphone or camera is activated
+      #"philips-hue-sync" # Phillips Hue Sync App
       "proton-mail-bridge" # Proton email
       "protonvpn" # VPN client
-      "rekordbox" # DJ software
-      "spotify" # Music streaming service
-      "stats" # System monitor for the menu bar
-      "steam" # Gaming platform and store
-      "microsoft-teams" # MS Teams
-      "rancher" # Kubernetes and containers host
-      "reamp" # WinAMP reimplementation for macOS
-      "telegram" # Messaging app
+      "postman" # API Client
+      #"rekordbox" # DJ software
+      #"spotify" # Music streaming service
+      #"stats" # System monitor for the menu bar
+      #"steam" # Gaming platform and store
+      #"microsoft-teams" # MS Teams
+      #"rancher" # Kubernetes and containers host
+      #"reamp" # WinAMP reimplementation for macOS
+      "rectangle" # OSS Window snapping for MacOS
+      #"telegram" # Messaging app
       "transmission" # BitTorrent client
-      "utm" # Virtual machines UI using QEMU
-      "vagrant" # Tool for building and managing virtual machine environments
-      "vagrant-vmware-utility" # Vagrant plugin for VMware
+      #"utm" # Virtual machines UI using QEMU
+      #"vagrant" # Tool for building and managing virtual machine environments
+      #"vagrant-vmware-utility" # Vagrant plugin for VMware
       "whatsapp" # Messaging app
       "yubico-authenticator" # Authentication tool for YubiKey devices
-      "vanilla" # macOS app to hide menu bar icons
-      "xbar" # Bar Display Tool
+      #"vanilla" # macOS app to hide menu bar icons
+      #"xbar" # Bar Display Tool
     ];
   };
 }
