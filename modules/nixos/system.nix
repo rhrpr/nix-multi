@@ -13,25 +13,13 @@
     ./hardware-configuration.nix
   ];
 
-  # Bootloader with Secure Boot support (Lanzaboote handles PKI keys)
-  boot.loader.systemd-boot.enable = lib.mkForce false;
-  boot.lanzaboote = {
-    enable = true;
-    pkiBundle = "/etc/secureboot";
-  };
+  # Bootloader with manual Secure Boot support
+  boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
-
-  # Alternative: Manual secure boot with sbctl
-  # boot.loader.systemd-boot.enable = true;
-  # boot.loader.efi.canTouchEfiVariables = true;
-  # environment.systemPackages = with pkgs; [ sbctl ];
-  # 
-  # Then manually run:
-  # sudo sbctl create-keys
-  # sudo sbctl enroll-keys --microsoft
-  # sudo sbctl sign -s /boot/EFI/systemd/systemd-bootx64.efi
-  # sudo sbctl sign -s /boot/EFI/BOOT/BOOTX64.EFI
-
+  boot.loader.secureBoot.enable = true;
+  boot.loader.secureBoot.keysDir = "/etc/secureboot";
+  boot.loader.secureBoot.keySize = 2048;
+  
   # Kernel parameters for NVIDIA sleep/wake fixes
   boot.kernelParams = [
     # NVIDIA sleep/wake fixes
@@ -75,7 +63,13 @@
 
   # Services
   services = {
+    pcscd.enable = true;
   };
+
+  # System packages for secure boot management
+  environment.systemPackages = with pkgs; [
+    sbctl  # Secure Boot key management tool
+  ];
 
   # Hardware firmware
   hardware.enableRedistributableFirmware = true;
