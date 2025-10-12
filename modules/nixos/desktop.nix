@@ -187,6 +187,18 @@ in
     pulse.enable = true;
     jack.enable = true;
     wireplumber.enable = true;
+    
+    # Bluetooth audio support
+    wireplumber.configPackages = [
+      (pkgs.writeTextDir "share/wireplumber/bluetooth.lua.d/51-bluez-config.lua" ''
+        bluez_monitor.properties = {
+          ["bluez5.enable-sbc-xq"] = true,
+          ["bluez5.enable-msbc"] = true,
+          ["bluez5.enable-hw-volume"] = true,
+          ["bluez5.headset-roles"] = "[ hsp_hs hsp_ag hfp_hf hfp_ag ]"
+        }
+      '')
+    ];
   };
 
   # Graphics and hardware acceleration
@@ -288,8 +300,15 @@ in
   hardware.bluetooth = lib.mkIf (!isVM) {
     enable = true;
     powerOnBoot = true;
+    # Additional settings for better compatibility
+    settings = {
+      General = {
+        Enable = "Source,Sink,Media,Socket";
+        Experimental = true;
+      };
+    };
   };
-  services.blueman.enable = lib.mkIf (isHyprland && !isVM) true;
+  services.blueman.enable = lib.mkIf (!isVM) true;
 
   # Printing support
   services.printing = {

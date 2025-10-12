@@ -13,15 +13,24 @@ set -euo pipefail
 VM_NAME="omarchy"
 VM_RAM="16384"  # 16GB RAM
 VM_VCPUS="8"   # 8 CPU cores for gaming performance
-VM_DISK_SIZE="128G"  # 100GB disk for GPU-intensive workloads
+VM_DISK_SIZE="128G"  # 128GB disk for GPU-intensive workloads
 ISO_PATH="/home/hrpr/Downloads/omarchy-3.0.1.iso"
-VM_DIR="/var/lib/libvirt/images"
-DISK_PATH="$VM_DIR/${VM_NAME}.qcow2"
 
-# GPU Passthrough Configuration
+# User session paths (instead of system paths)
+USER_LIBVIRT_DIR="$HOME/.local/share/libvirt"
+VM_DIR="$USER_LIBVIRT_DIR/images"
+NVRAM_DIR="$USER_LIBVIRT_DIR/qemu/nvram"
+DISK_PATH="$VM_DIR/${VM_NAME}.qcow2"
+NVRAM_PATH="$NVRAM_DIR/${VM_NAME}_VARS.fd"
+
+# LibVirt connection (user session)
+LIBVIRT_URI="qemu:///session"
+
+# GPU Passthrough Configuration (can be disabled)
+ENABLE_GPU_PASSTHROUGH=${ENABLE_GPU_PASSTHROUGH:-false}  # Default to disabled for compatibility
 GPU_VENDOR_ID="10de"
 GPU_DEVICE_ID="2216"  # RTX 3080 Lite Hash Rate
-AUDIO_DEVICE_ID="1aef" # RTX 3080 HD Audio
+AUDIO_DEVICE_ID="1aef" # RTX 3080 HD Audio  
 GPU_BUS_SLOT="01:00.0"
 AUDIO_BUS_SLOT="01:00.1"
 
@@ -45,10 +54,20 @@ echo
 # Check prerequisites
 print_color $GREEN "=== Checking Prerequisites ==="
 
-# Check if libvirtd is running
-if ! systemctl is-active --quiet libvirtd; then
-    print_color $YELLOW "Starting libvirtd service..."
-    sudo systemctl start libvirtd
+# Create user libvirt directories
+print_color $BLUE "Setting up user libvirt directories..."
+mkdir -p "$USER_LIBVIRT_DIR/images"
+mkdir -p "$USER_LIBVIRT_DIR/qemu/nvram"
+mkdir -p "$USER_LIBVIRT_DIR/networks"
+
+# Set LIBVIRT_DEFAULT_URI for user session
+export LIBVIRT_DEFAULT_URI="$LIBVIRT_URI"
+
+# Check if user libvirtd is accessible (it starts automatically when needed)
+print_color $BLUE "Checking user libvirt session..."
+if ! virsh --connect "$LIBVIRT_URI" version >/dev/null 2>&1; then
+    print_color $YELLOW "User libvirt session not accessible, trying to connect..."
+    # The session will start automatically when accessed
 fi
 
 # Check for VFIO support
@@ -119,8 +138,7 @@ fi
 # Create VM disk
 print_color $GREEN "=== Creating VM Disk ==="
 print_color $BLUE "Creating $VM_DISK_SIZE disk at $DISK_PATH"
-sudo qemu-img create -f qcow2 "$DISK_PATH" "$VM_DISK_SIZE"
-sudo chown qemu-libvirtd:libvirtd "$DISK_PATH"
+qemu-img create -f qcow2 "$DISK_PATH" "$VM_DISK_SIZE"
 
 # Create VM XML configuration
 print_color $GREEN "=== Creating VM Configuration ==="
@@ -136,14 +154,12 @@ VM_XML=$(cat << EOF
   <currentMemory unit='MiB'>$VM_RAM</currentMemory>
   <vcpu placement='static'>$VM_VCPUS</vcpu>
   <memoryBacking>
-    <hugepages/>
-    <source type='memfd'/>
-    <access mode='shared'/>
+    <!-- Removed hugepages for compatibility -->
   </memoryBacking>
   <os>
     <type arch='x86_64' machine='pc-q35-7.2'>hvm</type>
     <loader readonly='yes' type='pflash'>/run/libvirt/nix-ovmf/OVMF_CODE.fd</loader>
-    <nvram>/var/lib/libvirt/qemu/nvram/${VM_NAME}_VARS.fd</nvram>
+    <nvram>$NVRAM_PATH</nvram>
     <boot dev='cdrom'/>
     <boot dev='hd'/>
   </os>
@@ -214,15 +230,16 @@ VM_XML=$(cat << EOF
       <address type='pci' domain='0x0000' bus='0x01' slot='0x00' function='0x0'/>
     </interface>
     
-    <!-- Shared Folder: ~/projects -->
-    <filesystem type='mount' accessmode='passthrough'>
+    <!-- Shared Folder: ~/projects (using virtio-9p) -->
+    <filesystem type='mount' accessmode='mapped'>
       <source dir='/home/hrpr/projects'/>
       <target dir='projects'/>
-      <driver type='virtiofs' queue='1024'/>
-      <address type='pci' domain='0x0000' bus='0x08' slot='0x00' function='0x0'/>
+      <driver type='path' wrpolicy='immediate'/>
     </filesystem>
     
-    <!-- NVIDIA RTX 3080 GPU Passthrough (Partial - Shared with Host) -->
+    <!-- NVIDIA RTX 3080 GPU Passthrough (Disabled for compatibility) -->
+    <!-- GPU passthrough requires IOMMU groups to be working -->
+    <!--
     <hostdev mode='subsystem' type='pci' managed='yes'>
       <source>
         <address domain='0x0000' bus='0x01' slot='0x00' function='0x0'/>
@@ -230,13 +247,13 @@ VM_XML=$(cat << EOF
       <address type='pci' domain='0x0000' bus='0x06' slot='0x00' function='0x0'/>
     </hostdev>
     
-    <!-- NVIDIA RTX 3080 Audio Passthrough -->
     <hostdev mode='subsystem' type='pci' managed='yes'>
       <source>
         <address domain='0x0000' bus='0x01' slot='0x00' function='0x1'/>
       </source>
       <address type='pci' domain='0x0000' bus='0x07' slot='0x00' function='0x0'/>
     </hostdev>
+    -->
     
     <!-- Fallback Graphics (enabled for partial passthrough) -->
     <graphics type='spice' autoport='yes'>
@@ -275,12 +292,16 @@ EOF
 )
 
 # Define the VM
-print_color $BLUE "Defining VM in libvirt..."
-echo "$VM_XML" | sudo virsh define /dev/stdin
+print_color $BLUE "Defining VM in user libvirt session..."
+echo "$VM_XML" | virsh --connect "$LIBVIRT_URI" define /dev/stdin
+
+# Create NVRAM file for UEFI boot
+print_color $BLUE "Setting up UEFI firmware..."
+cp /run/libvirt/nix-ovmf/OVMF_VARS.fd "$NVRAM_PATH"
 
 # Set VM to autostart
 print_color $BLUE "Configuring VM autostart..."
-sudo virsh autostart "$VM_NAME"
+virsh --connect "$LIBVIRT_URI" autostart "$VM_NAME"
 
 print_color $GREEN "=== Omarchy VM with RTX 3080 Passthrough Created! ==="
 echo
@@ -291,9 +312,8 @@ echo "  CPUs: $VM_VCPUS"
 echo "  Disk: $VM_DISK_SIZE ($DISK_PATH)"
 echo "  ISO: $ISO_PATH"
 echo "  GPU: NVIDIA RTX 3080 ($GPU_BUS_SLOT)"
-echo "  Audio: NVIDIA HD Audio ($AUDIO_BUS_SLOT)"
-echo "  Shared Folder: /home/hrpr/projects → ~/projects (in VM)"
-echo "  Display: Optimized for 3440x1440 ultrawide"
+echo "  Audio: NVIDIA HD Audio ($AUDIO_BUS_SLOT)"  echo "  Shared Folder: /home/hrpr/projects → ~/projects (via virtio-9p)"
+  echo "  Display: Optimized for 3440x1440 ultrawide (without GPU passthrough)"
 echo
 print_color $YELLOW "⚠️ IMPORTANT Setup Notes:"
 echo "1. Connect monitor to RTX 3080 for best performance"
@@ -301,13 +321,13 @@ echo "2. VM uses partial GPU passthrough (shared with host)"
 echo "3. Both host and VM can use GPU simultaneously"
 echo "4. Projects folder is automatically shared between host and VM"
 echo
-print_color $BLUE "📁 Shared Folder Setup:"
+print_color $BLUE "📁 Shared Folder Setup (virtio-9p):"
 echo "• Host folder: /home/hrpr/projects"
 echo "• In VM, run these commands to mount:"
 echo "  sudo mkdir -p ~/projects"
-echo "  sudo mount -t virtiofs projects ~/projects"
+echo "  sudo mount -t 9p -o trans=virtio,version=9p2000.L projects ~/projects"
 echo "• For permanent mounting, add to /etc/fstab:"
-echo "  projects /home/\$USER/projects virtiofs defaults,uid=\$(id -u),gid=\$(id -g) 0 0"
+echo "  projects /home/\$USER/projects 9p trans=virtio,version=9p2000.L,rw 0 0"
 echo
 print_color $YELLOW "🖥️ Display Configuration for 3440x1440 Ultrawide:"
 echo "1. Primary monitor can stay on motherboard (host display)"

@@ -22,6 +22,8 @@ help:
 	@echo "  setup          - Setup system (auto-detects platform)"
 	@echo "  setup-macos    - Setup macOS with nix-darwin"
 	@echo "  setup-linux    - Setup Linux with NixOS"
+	@echo "  setup-vm       - Setup VM configuration"
+	@echo "  apply-libvirt  - Apply libvirt host configuration (requires rebuild)"
 	@echo ""
 	@echo "VM Commands:"
 	@echo "  vm-setup       - Download NixOS ISO and setup UTM VM"
@@ -30,6 +32,18 @@ help:
 	@echo "  vm-ssh         - SSH into running VM"
 	@echo "  vm-build       - Build NixOS VM (legacy - has cross-compilation issues)"
 	@echo "  vm-run         - Build and run NixOS VM (legacy)"
+	@echo "  omarchy-create - Create Omarchy gaming VM with RTX 3080 passthrough"
+	@echo "  omarchy-start  - Start Omarchy VM (GPU passthrough enabled)"
+	@echo "  omarchy-stop   - Stop Omarchy VM"
+	@echo "  omarchy-status - Check Omarchy VM and GPU status"
+	@echo "  omarchy-test   - Test Omarchy VM functionality"
+	@echo "  omarchy-ultrawide - Configure VM for 3440x1440 resolution"
+	@echo "  omarchy-gpu    - Manage GPU passthrough for Omarchy VM"
+	@echo ""
+	@echo "LibVirt Host Management:"
+	@echo "  libvirt-test   - Test dynamic network detection"
+	@echo "  libvirt-apply  - Apply libvirt host configuration via NixOS"
+	@echo "  libvirt-check  - Check current libvirt network status"
 	@echo ""
 	@echo "ISO Commands:"
 	@echo "  iso-build      - Build NixOS ISO for current architecture"
@@ -120,6 +134,26 @@ setup-vm: enable-flakes
 	fi
 	nix build .#nixosConfigurations.$(VM_CONFIG).config.system.build.toplevel --no-link
 	sudo nixos-rebuild switch --flake .#$(VM_CONFIG)
+
+# Apply libvirt host configuration
+.PHONY: apply-libvirt
+apply-libvirt:
+	@echo "Applying LibVirt host configuration..."
+	@echo "This will rebuild the NixOS system with comprehensive libvirt support"
+	@sudo nixos-rebuild switch --flake .#nixos-desktop
+	@echo "LibVirt host configuration applied successfully!"
+	@echo ""
+	@echo "Verifying services..."
+	@systemctl status libvirtd --no-pager || true
+	@virsh net-list --all || true
+	@echo ""
+	@echo "LibVirt is now fully managed by Nix!"
+
+# Test NixOS configuration
+.PHONY: test-config
+test-config:
+	@echo "Testing NixOS configuration..."
+	@sudo nixos-rebuild dry-build --flake .#nixos-desktop
 
 # VM building
 .PHONY: vm-build
@@ -254,3 +288,85 @@ vm-status:
 vm-clean:
 	@echo "Cleaning VM ISO downloads..."
 	@rm -rf $(ISO_DIR)
+
+# Omarchy VM Management
+.PHONY: omarchy-create
+omarchy-create:
+	@echo "Creating Omarchy gaming VM..."
+	@./vms/omarchy-vm/manage-omarchy.sh create
+
+.PHONY: omarchy-start
+omarchy-start:
+	@echo "Starting Omarchy VM (user session)..."
+	@export LIBVIRT_DEFAULT_URI="qemu:///session" && ./vms/omarchy-vm/manage-omarchy.sh start
+
+.PHONY: omarchy-stop
+omarchy-stop:
+	@echo "Stopping Omarchy VM (user session)..."
+	@export LIBVIRT_DEFAULT_URI="qemu:///session" && ./vms/omarchy-vm/manage-omarchy.sh stop
+
+.PHONY: omarchy-status
+omarchy-status:
+	@echo "Checking Omarchy VM status (user session)..."
+	@export LIBVIRT_DEFAULT_URI="qemu:///session" && ./vms/omarchy-vm/manage-omarchy.sh status
+
+.PHONY: omarchy-console
+omarchy-console:
+	@echo "Opening Omarchy VM console (user session)..."
+	@export LIBVIRT_DEFAULT_URI="qemu:///session" && ./vms/omarchy-vm/manage-omarchy.sh console
+
+.PHONY: omarchy-gui
+omarchy-gui:
+	@echo "Opening virt-manager for VM management..."
+	@./vms/omarchy-vm/manage-omarchy.sh gui
+
+.PHONY: omarchy-gpu
+omarchy-gpu:
+	@echo "Managing GPU passthrough for Omarchy VM..."
+	@./vms/omarchy-vm/gpu-passthrough.sh status
+	@echo ""
+	@echo "GPU Management Commands:"
+	@echo "  ./vms/omarchy-vm/gpu-passthrough.sh bind   - Bind RTX 3080 to VM"
+	@echo "  ./vms/omarchy-vm/gpu-passthrough.sh unbind - Return RTX 3080 to host"
+	@echo "  make omarchy-start                         - Start VM with GPU"
+
+.PHONY: omarchy-test
+omarchy-test:
+	@echo "Testing Omarchy VM functionality..."
+	@export LIBVIRT_DEFAULT_URI="qemu:///session" && echo "VM Status: $$(virsh domstate omarchy 2>/dev/null || echo 'not running')"
+	@echo "Shared folder test:"
+	@ls -la /home/hrpr/projects | head -3
+	@echo ""
+	@echo "VM Console: virt-viewer omarchy (user session)"
+	@echo "Shared folder mount (in VM): sudo mount -t 9p -o trans=virtio,version=9p2000.L projects ~/projects"
+
+.PHONY: omarchy-ultrawide
+omarchy-ultrawide:
+	@echo "Configuring Omarchy VM for 3440x1440 ultrawide resolution..."
+	@./vms/omarchy-vm/configure-ultrawide.sh
+
+# LibVirt Host Management
+.PHONY: libvirt-test
+libvirt-test:
+	@echo "Testing dynamic libvirt network detection..."
+	@./scripts/test-libvirt-network.sh
+
+.PHONY: libvirt-apply
+libvirt-apply:
+	@echo "Applying libvirt host configuration via NixOS rebuild..."
+	@sudo nixos-rebuild switch --flake .#nixos-desktop
+
+.PHONY: libvirt-check
+libvirt-check:
+	@echo "Current libvirt network status:"
+	@virsh net-list --all 2>/dev/null || echo "LibVirt not running or not accessible"
+	@echo ""
+	@echo "Current network bridges:"
+	@ip addr show | grep -E "(virbr|docker)" || echo "No virtual bridges found"
+	@echo ""
+	@echo "LibVirt daemon status:"
+	@systemctl is-active libvirtd 2>/dev/null || echo "LibVirt daemon not running"
+# Bluetooth debugging
+bluetooth-debug:
+	@./scripts/bluetooth-debug.sh
+

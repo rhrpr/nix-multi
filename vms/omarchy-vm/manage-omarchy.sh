@@ -8,6 +8,10 @@ set -euo pipefail
 VM_NAME="omarchy"
 ISO_PATH="/home/hrpr/Downloads/omarchy-3.0.1.iso"
 
+# LibVirt connection (user session)
+LIBVIRT_URI="qemu:///session"
+export LIBVIRT_DEFAULT_URI="$LIBVIRT_URI"
+
 # Colors
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -48,7 +52,7 @@ show_usage() {
 }
 
 vm_exists() {
-    virsh dominfo "$VM_NAME" >/dev/null 2>&1
+    virsh --connect "$LIBVIRT_URI" dominfo "$VM_NAME" >/dev/null 2>&1
 }
 
 case "${1:-help}" in

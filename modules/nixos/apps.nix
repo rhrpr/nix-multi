@@ -51,11 +51,13 @@
     google-chrome
     gparted
     obsidian
+    postman
     protonvpn-gui
     spotify
     steam
     transmission_4
     whatsapp-for-linux
+    yubioath-flutter
   ];
   environment.variables.EDITOR = "nano";
 
@@ -73,4 +75,7 @@
     shortcut = "a";
     terminal = "screen-256color";
   };
+
+  # PC/SC Smart Card daemon for smart card support
+  services.pcscd.enable = true;
 }

@@ -13,9 +13,13 @@
       # Allow unprivileged user access for virt-manager
       allowUnprivileged = true;
       
+      # Enable user sessions for proper desktop integration
+      onBoot = "ignore";  # Don't auto-start system VMs
+      onShutdown = "shutdown";
+      
       qemu = {
         package = pkgs.qemu_kvm;
-        runAsRoot = true;
+        runAsRoot = false;  # Changed to false for user session support
         swtpm.enable = true;
         
         # OVMF UEFI firmware for modern VMs
@@ -24,9 +28,9 @@
           packages = [ pkgs.OVMFFull.fd ];
         };
         
-        # QEMU configuration for GPU passthrough and virtiofs
+        # QEMU configuration for user session support
         verbatimConfig = ''
-          # Device access control list for partial GPU passthrough
+          # Device access control list for user sessions
           cgroup_device_acl = [
             "/dev/null", "/dev/full", "/dev/zero",
             "/dev/random", "/dev/urandom",
@@ -36,12 +40,13 @@
             "/dev/nvidia-uvm", "/dev/nvidia-uvm-tools"
           ]
           
+          # Allow unprivileged users to manage VMs
+          unix_sock_group = "libvirtd"
+          unix_sock_ro_perms = "0777"  
+          unix_sock_rw_perms = "0770"
+          
           # VirtIO filesystem configuration for folder sharing
           memory_backing_dir = "/dev/shm"
-          
-          # User and group for QEMU processes
-          user = "qemu-libvirtd"
-          group = "libvirtd"
         '';
       };
     };
@@ -392,5 +397,69 @@
         ${pkgs.coreutils}/bin/chown hrpr:kvm /dev/shm/looking-glass || true
       '';
     };
+
+    # Setup default user network for libvirt user sessions
+    libvirt-user-network = {
+      description = "Create LibVirt User Session Default Network";
+      wantedBy = [ "default.target" ];
+      after = [ "libvirtd.service" ];
+      serviceConfig = {
+        Type = "oneshot";
+        RemainAfterExit = true;
+        ExecStart = let
+          networkXml = pkgs.writeText "user-default-network.xml" ''
+            <network>
+              <name>default</name>
+              <uuid>41ff3e11-3f2b-4a2f-8253-a3a482e445f6</uuid>
+              <forward mode='nat'/>
+              <bridge name='virbr1' stp='on' delay='0'/>
+              <mac address='52:54:00:1a:cd:22'/>
+              <ip address='192.168.100.1' netmask='255.255.255.0'>
+                <dhcp>
+                  <range start='192.168.100.2' end='192.168.100.254'/>
+                </dhcp>
+              </ip>
+            </network>
+          '';
+        in pkgs.writeShellScript "setup-user-network" ''
+          export LIBVIRT_DEFAULT_URI="qemu:///session"
+          
+          # Wait for user libvirt session to be available
+          timeout=30
+          while [ $timeout -gt 0 ]; do
+            if ${pkgs.libvirt}/bin/virsh version >/dev/null 2>&1; then
+              break
+            fi
+            sleep 1
+            timeout=$((timeout - 1))
+          done
+          
+          # Create default network if it doesn't exist
+          if ! ${pkgs.libvirt}/bin/virsh net-info default >/dev/null 2>&1; then
+            ${pkgs.libvirt}/bin/virsh net-define ${networkXml}
+            ${pkgs.libvirt}/bin/virsh net-autostart default
+            ${pkgs.libvirt}/bin/virsh net-start default
+          fi
+        '';
+      };
+      environment = {
+        LIBVIRT_DEFAULT_URI = "qemu:///session";
+      };
+    };
+  };
+
+  # User session configuration for libvirt  
+  # NixOS provides built-in user session support
+  # Just set the environment variable to use user sessions by default
+
+  # Environment configuration for user sessions
+  environment.sessionVariables = {
+    LIBVIRT_DEFAULT_URI = "qemu:///session";
+  };
+  
+  # Set shell aliases for common libvirt commands to use user session
+  environment.shellAliases = {
+    virt-viewer = "LIBVIRT_DEFAULT_URI=qemu:///session virt-viewer";
+    virt-manager = "LIBVIRT_DEFAULT_URI=qemu:///session virt-manager";
   };
 }

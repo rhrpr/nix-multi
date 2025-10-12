@@ -13,9 +13,24 @@
     ./hardware-configuration.nix
   ];
 
-  # Bootloader
-  boot.loader.systemd-boot.enable = true;
+  # Bootloader with Secure Boot support (Lanzaboote handles PKI keys)
+  boot.loader.systemd-boot.enable = lib.mkForce false;
+  boot.lanzaboote = {
+    enable = true;
+    pkiBundle = "/etc/secureboot";
+  };
   boot.loader.efi.canTouchEfiVariables = true;
+
+  # Alternative: Manual secure boot with sbctl
+  # boot.loader.systemd-boot.enable = true;
+  # boot.loader.efi.canTouchEfiVariables = true;
+  # environment.systemPackages = with pkgs; [ sbctl ];
+  # 
+  # Then manually run:
+  # sudo sbctl create-keys
+  # sudo sbctl enroll-keys --microsoft
+  # sudo sbctl sign -s /boot/EFI/systemd/systemd-bootx64.efi
+  # sudo sbctl sign -s /boot/EFI/BOOT/BOOTX64.EFI
 
   # Kernel parameters for NVIDIA sleep/wake fixes
   boot.kernelParams = [
@@ -60,9 +75,17 @@
 
   # Services
   services = {
-    # Enable Bluetooth
-    blueman.enable = true; # Bluetooth manager GUI for KDE/GNOME
   };
+
+  # Hardware firmware
+  hardware.enableRedistributableFirmware = true;
+  
+  # Add comprehensive firmware packages
+  hardware.firmware = with pkgs; [
+    linux-firmware
+    # Remove intel2200BGFirmware as it's for old WiFi cards
+    # rtl8761b-firmware
+  ];
 
   # SystemD sleep configuration
   systemd = {
@@ -76,12 +99,6 @@
   # NVIDIA configuration (optional - uncomment if you have NVIDIA GPU)
   hardware = {
     graphics.enable = true;
-    
-    # Enable Bluetooth
-    bluetooth = {
-      enable = true;
-      powerOnBoot = true;
-    };
     
     nvidia = {
       modesetting.enable = true;
