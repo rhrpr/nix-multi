@@ -16,9 +16,8 @@
   # Bootloader with manual Secure Boot support
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
-  # Secure boot handled by sbctl, required initrd for sbctl
-  initrd.system.enable = true;
-  
+  boot.initrd.systemd.enable = true;
+
   # Kernel parameters for NVIDIA sleep/wake fixes
   boot.kernelParams = [
     # NVIDIA sleep/wake fixes
