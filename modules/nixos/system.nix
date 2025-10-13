@@ -13,10 +13,29 @@
     ./hardware-configuration.nix
   ];
 
-  # Bootloader with manual Secure Boot support
+  # systemd-boot with ESP mounted at /boot (change if yours is /boot/efi)
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
+  boot.loader.efi.efiSysMountPoint = "/boot";
+
+  # Required to build UKIs on NixOS
   boot.initrd.systemd.enable = true;
+  boot.uki.enable = true;
+
+  # Ensure sbctl is available at build time
+  environment.systemPackages = [ pkgs.sbctl ];
+
+  # Automatically sign all EFI binaries (UKI, systemd-boot, BOOTX64.EFI) on every rebuild
+  # Runs AFTER the bootloader/files are copied, so signatures persist.
+  system.activationScripts.secureBootSign = {
+    deps = [ "installBootLoader" ];
+    text = ''
+      echo "[secureboot] Signing EFI binaries with sbctl…"
+      # If you haven’t created keys yet, the first run below will fail harmlessly.
+      ${pkgs.sbctl}/bin/sbctl sign-all || true
+      ${pkgs.sbctl}/bin/sbctl verify || true
+    '';
+  };
 
   # Kernel parameters for NVIDIA sleep/wake fixes
   boot.kernelParams = [
