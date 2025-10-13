@@ -16,9 +16,8 @@
   # Bootloader with manual Secure Boot support
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
-  boot.loader.secureBoot.enable = true;
-  boot.loader.secureBoot.keysDir = "/etc/secureboot";
-  boot.loader.secureBoot.keySize = 2048;
+  # Secure boot handled by sbctl, required initrd for sbctl
+  initrd.system.enable = true;
   
   # Kernel parameters for NVIDIA sleep/wake fixes
   boot.kernelParams = [
