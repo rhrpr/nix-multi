@@ -13,24 +13,61 @@
     ./hardware-configuration.nix
   ];
 
-  # System packages for secure boot management
-  environment.systemPackages = with pkgs; [
-    sbctl  # Secure Boot key management tool
-  ];
-
-  # systemd-boot with ESP mounted at /boot (change if yours is /boot/efi)
+  # UEFI + systemd-boot
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
   boot.loader.efi.efiSysMountPoint = "/boot";
-
-  # Required to build UKIs on NixOS
   boot.initrd.systemd.enable = true;
 
-  # Automatically sign all EFI binaries (UKI, systemd-boot, BOOTX64.EFI) on every rebuild
-  # Runs AFTER the bootloader/files are copied, so signatures persist.
-  system.activationScripts.secureBootSign = lib.mkAfter ''
-    echo "[secureboot] Signing EFI binaries with sbctl…"
-    ${pkgs.sbctl}/bin/sbctl sign-all || true
+  # Tools we need
+  environment.systemPackages = with pkgs; [
+    sbctl efibootmgr sbsigntools
+  ];
+
+  # Export & sign on every switch. Idempotent, safe to re-run.
+  system.activationScripts.secureBootSetup.text = ''
+    set -euo pipefail
+
+    # Make sure ESP path exists
+    mkdir -p /boot/EFI/nixos/keys
+
+    # 1) Create keys once, if missing
+    if [ ! -f /var/lib/sbctl/keys/PK.key ]; then
+      echo "[sbctl] Creating Secure Boot keys..."
+      ${pkgs.sbctl}/bin/sbctl create-keys
+    fi
+
+    # 2) Enroll keys (include Microsoft so Windows still works)
+    # If PK not in firmware, enroll.
+    if ! ls /sys/firmware/efi/efivars/PK-* >/dev/null 2>&1; then
+      echo "[sbctl] Enrolling keys (with Microsoft)..."
+      ${pkgs.sbctl}/bin/sbctl enroll-keys --microsoft || true
+    fi
+
+    # 3) Export keys to ESP for reuse by Arch/others
+    echo "[sbctl] Exporting keys to ESP..."
+    install -Dm600 /var/lib/sbctl/keys/* /boot/EFI/nixos/keys/
+
+    # 4) Sign executable EFI binaries (do NOT sign initrd)
+    sign_if_present() {
+      local f="$1"
+      if [ -f "$f" ]; then
+        echo "[sbctl] Signing $f"
+        ${pkgs.sbctl}/bin/sbctl sign -s "$f" || true
+      fi
+    }
+
+    # systemd-boot + fallback
+    sign_if_present /boot/EFI/systemd/systemd-bootx64.efi
+    sign_if_present /boot/EFI/BOOT/BOOTX64.EFI
+
+    # NixOS stub-kernel(s)
+    for k in /boot/EFI/nixos/linux-*.efi /boot/EFI/nixos/*-bzImage.efi; do
+      [ -e "$k" ] && sign_if_present "$k"
+    done
+
+    # 5) Show a quick verification summary (non-fatal if something's missing)
+    echo "[sbctl] Verification summary:"
     ${pkgs.sbctl}/bin/sbctl verify || true
   '';
 
