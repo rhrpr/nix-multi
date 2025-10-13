@@ -21,7 +21,7 @@
 
   # Tools we need
   environment.systemPackages = with pkgs; [
-    sbctl efibootmgr sbsigntools
+    sbctl efibootmgr
   ];
 
   # Export & sign on every switch. Idempotent, safe to re-run.
@@ -46,7 +46,9 @@
 
     # 3) Export keys to ESP for reuse by Arch/others
     echo "[sbctl] Exporting keys to ESP..."
-    install -Dm600 /var/lib/sbctl/keys/* /boot/EFI/nixos/keys/
+    mkdir -p /boot/EFI/nixos/keys
+    cp -r /var/lib/sbctl/keys/* /boot/EFI/nixos/keys/ 2>/dev/null || true
+    chmod -R 600 /boot/EFI/nixos/keys/* 2>/dev/null || true
 
     # 4) Sign executable EFI binaries (do NOT sign initrd)
     sign_if_present() {
