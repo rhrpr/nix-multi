@@ -136,7 +136,7 @@
       "proton-mail-bridge" # Proton email
       "protonvpn" # VPN client
       "postman" # API Client
-      #"rekordbox" # DJ software
+      "rekordbox" # DJ software
       #"spotify" # Music streaming service
       #"stats" # System monitor for the menu bar
       #"steam" # Gaming platform and store
