@@ -101,7 +101,6 @@
 
     casks = [
       "ableton-live-standard" # Digital audio workstation for music production
-      "aerospace" # an i3-like tiling window manager for macOS
       #"android-studio" # Android development environment
       "aural" # audio player
       "arturia-software-center" # Arturia software management tool
@@ -113,6 +112,7 @@
       "claude" # Claude AI App
       "cyberduck" # FTP, SFTP, WebDAV, S3 file transfer client
       "discord" # Voice, video, and text chat app
+      "docker-desktop" # Docker Desktop App
       "firefox" # Web browser
       "ghostty" # terminal emulator
       "google-chrome" # Web browser
@@ -137,7 +137,7 @@
       "protonvpn" # VPN client
       "postman" # API Client
       "rekordbox" # DJ software
-      #"spotify" # Music streaming service
+      "spotify" # Music streaming service
       #"stats" # System monitor for the menu bar
       #"steam" # Gaming platform and store
       #"microsoft-teams" # MS Teams
