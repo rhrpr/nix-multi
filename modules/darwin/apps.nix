@@ -85,6 +85,7 @@
       "mas" # Mac App Store command line interface
       "nettle" # Low-level cryptographic library
       "openssl@3" # Cryptography and SSL/TLS toolkit
+      "openspec" # OpenAPI/Swagger spec tooling
       "p11-kit" # Library to load and share PKCS#11 modules
       "taglib" # TagLib library
       "spicetify-cli" # Spotify customiser
@@ -141,6 +142,7 @@
       #"stats" # System monitor for the menu bar
       #"steam" # Gaming platform and store
       #"microsoft-teams" # MS Teams
+      "microsoft-edge" # Web browser
       #"rancher" # Kubernetes and containers host
       #"reamp" # WinAMP reimplementation for macOS
       "rectangle" # OSS Window snapping for MacOS

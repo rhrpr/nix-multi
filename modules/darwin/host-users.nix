@@ -19,6 +19,8 @@
     description = username;
   };
 
+  users.groups.docker.members = [ username ];
+
   # Set the primary user for user-specific configurations
   system.primaryUser = username;
 
