@@ -10,6 +10,7 @@
   primeagenInit,
   agenix,
   zen-browser,
+  nix-openclaw,
   ...
 }:
 
@@ -46,6 +47,7 @@ let
       primeagenInit
       agenix
       zen-browser
+      nix-openclaw
       ;
     inherit isDarwin isLinux isVM;
     hostname = name;
@@ -84,6 +86,7 @@ if isDarwin then
       ../machines/${name}.nix
       ../users/${user.name}/darwin.nix
       home-manager.darwinModules.home-manager
+      nix-openclaw.darwinModules.openclaw
       {
         home-manager = mkHomeManagerConfig { };
       }

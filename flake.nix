@@ -63,6 +63,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.darwin.follows = "darwin";
     };
+
+    nix-openclaw = {
+      url = "github:openclaw/nix-openclaw";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
