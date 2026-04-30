@@ -1,0 +1,3 @@
+[submodule "modules/darwin/ALBATOR"]
+	path = modules/darwin/ALBATOR
+	url = https://github.com/cluster2600/ALBATOR

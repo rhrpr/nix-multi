@@ -109,6 +109,7 @@
       "betterdisplay" # Display scaling (hidpi)
       #"brave-browser" # Privacy focused browser
       "blockblock" # BlockBlock provides continual protection by monitoring persistence locations. Any new persistent component will trigger a BlockBlock alert, allowing malicious items be blocked.
+      "blender" # Blender app for video editing
       "cursor" # Cursor AI code editor
       "claude" # Claude AI App
       "cyberduck" # FTP, SFTP, WebDAV, S3 file transfer client
