@@ -107,7 +107,7 @@
       "arturia-software-center" # Arturia software management tool
       "battery" # Battery management tool
       "betterdisplay" # Display scaling (hidpi)
-      #"brave-browser" # Privacy focused browser
+      "brave-browser" # Privacy focused browser
       "blockblock" # BlockBlock provides continual protection by monitoring persistence locations. Any new persistent component will trigger a BlockBlock alert, allowing malicious items be blocked.
       "blender" # Blender app for video editing
       "cursor" # Cursor AI code editor
@@ -143,7 +143,6 @@
       #"stats" # System monitor for the menu bar
       #"steam" # Gaming platform and store
       #"microsoft-teams" # MS Teams
-      "microsoft-edge" # Web browser
       #"rancher" # Kubernetes and containers host
       #"reamp" # WinAMP reimplementation for macOS
       "rectangle" # OSS Window snapping for MacOS
