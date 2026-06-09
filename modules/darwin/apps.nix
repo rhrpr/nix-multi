@@ -1,4 +1,4 @@
-{ pkgs, username, ... }:
+{ lib, pkgs, username, ... }:
 {
 
   ##########################################################################
@@ -40,7 +40,9 @@
       autoUpdate = true; # Fetch the newest stable branch of Homebrew's git repo
       upgrade = true; # Upgrade outdated casks, formulae, and App Store apps
       # 'zap': uninstalls all formulae(and related files) not listed in the generated Brewfile
-      cleanup = "zap";
+      # NOTE: changed from "zap" to "none" — newer Homebrew requires --force for --cleanup,
+      # which nix-darwin doesn't pass yet. Run `brew bundle cleanup --force --zap` manually.
+      cleanup = lib.mkForce "none";
     };
 
     # Applications to install from Mac App Store using mas.
