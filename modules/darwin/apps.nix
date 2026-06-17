@@ -69,12 +69,15 @@
     ];
 
     brews = [
+      "awk" # Pattern-directed scanning and processing language
+      "azure-cli" # Azure CLI (az)
       "btop" # Resource monitor showing CPU, memory, disks, network
       "ca-certificates" # Bundle of CA root certificates
       "cask" # Extension mechanism for Homebrew
       "coreutils" # GNU core utilities (ls, cat, etc)
       "fastlane" # Automate beta deployment and releases for your iOS and Android apps
       "ffmpeg" # Audio and video converter/processor
+      "jq" # Command-line JSON processor
       "gallery-dl" # Command-line downloader for image galleries
       "gemini-cli" # Google Gemini AI CLI tool for code assistance
       "gettext" # GNU internationalization (i18n) library
@@ -89,6 +92,7 @@
       "openssl@3" # Cryptography and SSL/TLS toolkit
       "openspec" # OpenAPI/Swagger spec tooling
       "p11-kit" # Library to load and share PKCS#11 modules
+      "regclient" # Docker registry synchronization utility
       "taglib" # TagLib library
       "spicetify-cli" # Spotify customiser
       "syncthing" # Open source continuous file synchronization tool
@@ -110,7 +114,6 @@
       "battery" # Battery management tool
       "betterdisplay" # Display scaling (hidpi)
       "brave-browser" # Privacy focused browser
-      "blockblock" # BlockBlock provides continual protection by monitoring persistence locations. Any new persistent component will trigger a BlockBlock alert, allowing malicious items be blocked.
       "blender" # Blender app for video editing
       "cursor" # Cursor AI code editor
       "claude" # Claude AI App
@@ -124,7 +127,7 @@
       # "ibkr" # Interactive Brokers trading platform
       "iterm2" # MacOS Terminal emulator
       #"knockknock"     # Security tool to show persistent apps
-      #"lm-studio" # Local AI model runner and chat interface
+      "lm-studio" # Local AI model runner and chat interface
       #"logitech-g-hub" # Logitech gaming configuration app
       #"logitech-options" # Configuration tool for Logitech devices
       #"libreoffice" # Open-source office software
