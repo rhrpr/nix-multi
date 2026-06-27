@@ -156,7 +156,6 @@
       #"utm" # Virtual machines UI using QEMU
       #"vagrant" # Tool for building and managing virtual machine environments
       #"vagrant-vmware-utility" # Vagrant plugin for VMware
-      "whatsapp" # Messaging app
       "yubico-authenticator" # Authentication tool for YubiKey devices
       #"vanilla" # macOS app to hide menu bar icons
       #"xbar" # Bar Display Tool
