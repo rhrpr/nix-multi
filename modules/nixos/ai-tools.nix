@@ -1,0 +1,1 @@
+../darwin/ai-tools.nix

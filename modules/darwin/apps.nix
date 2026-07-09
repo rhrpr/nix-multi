@@ -79,7 +79,7 @@
       "ffmpeg" # Audio and video converter/processor
       "jq" # Command-line JSON processor
       "gallery-dl" # Command-line downloader for image galleries
-      "gemini-cli" # Google Gemini AI CLI tool for code assistance
+      # gemini-cli moved to modules/darwin/ai-tools.nix (llm-agents.nix)
       "gettext" # GNU internationalization (i18n) library
       "gmp" # GNU Multiple Precision Arithmetic Library
       "gnutls" # GNU Transport Layer Security Library
@@ -90,7 +90,7 @@
       "mas" # Mac App Store command line interface
       "nettle" # Low-level cryptographic library
       "openssl@3" # Cryptography and SSL/TLS toolkit
-      "openspec" # OpenAPI/Swagger spec tooling
+      # openspec moved to modules/darwin/ai-tools.nix (llm-agents.nix)
       "p11-kit" # Library to load and share PKCS#11 modules
       "regclient" # Docker registry synchronization utility
       "taglib" # TagLib library
@@ -116,7 +116,7 @@
       "brave-browser" # Privacy focused browser
       "blender" # Blender app for video editing
       "cursor" # Cursor AI code editor
-      "claude" # Claude AI App
+      "claude" # Claude AI desktop app (.app bundle via homebrew)
       "cyberduck" # FTP, SFTP, WebDAV, S3 file transfer client
       "discord" # Voice, video, and text chat app
       "docker-desktop" # Docker Desktop App

@@ -1,0 +1,152 @@
+##############################################################################
+#
+#  AI Tools — installed via llm-agents.nix (github:numtide/llm-agents.nix)
+#
+#  All packages come from the llm-agents overlay applied below.
+#  Access them as pkgs.llm-agents.<name>.
+#
+#  Categories:
+#    - AI Coding Agents       CLI agents that write / edit code
+#    - Claude Code Ecosystem  Orchestration and routing layers for Claude
+#    - AI Assistants          Desktop / ambient AI companions
+#    - Workflow & Planning    Issue trackers, kanban, and project managers
+#    - Analytics & Context    Session viewers, code intelligence, doc search
+#
+##############################################################################
+{
+  pkgs,
+  lib,
+  llm-agents,
+  ...
+}:
+{
+  # Pull the llm-agents binary cache overlay into this system's nixpkgs so
+  # all pkgs.llm-agents.* references resolve against pre-built binaries.
+  nixpkgs.overlays = [ llm-agents.overlays.default ];
+
+  environment.systemPackages =
+    let
+      ai = pkgs.llm-agents;
+    in
+    [
+
+      ##########################################################################
+      # AI Coding Agents
+      ##########################################################################
+
+      # claude-code — Anthropic's terminal-based agentic coding assistant.
+      # Understands your codebase, writes and edits files, runs commands, and
+      # iterates until tasks are complete. Primary driver for most AI work here.
+      ai.claude-code
+
+      # copilot-cli — GitHub Copilot in the terminal. Autocompletes shell
+      # commands, explains error output, and drafts code snippets inline.
+      ai.copilot-cli
+
+      # gemini-cli — Google Gemini brought to the terminal. Useful as a
+      # second-opinion agent or for tasks that benefit from Gemini's long
+      # context window (e.g. large repo summarisation).
+      ai.gemini-cli
+
+      ##########################################################################
+      # Claude Code Ecosystem
+      ##########################################################################
+
+      # claude-code-router — Proxy layer that routes Claude Code requests to
+      # alternative model providers (OpenRouter, Bedrock, local models).
+      # Lets you swap the backend without changing your claude-code workflow.
+      ai.claude-code-router
+
+      # oh-my-claudecode — Multi-agent orchestration harness for Claude Code.
+      # Spawns and coordinates parallel claude-code workers, manages shared
+      # context, and aggregates results into a single coherent output.
+      ai.oh-my-claudecode
+
+      ##########################################################################
+      # AI Assistants
+      ##########################################################################
+
+      # hermes-agent — Self-improving agent from Nous Research. Capable of
+      # recursive self-refinement; useful for long, autonomous research tasks.
+      ai.hermes-agent
+
+      # hermes-desktop — Desktop companion GUI for Hermes. Provides a visual
+      # interface for managing Hermes sessions and reviewing agent outputs.
+      ai.hermes-desktop
+
+      # hermes-hud — TUI heads-up display that shows live Hermes agent state:
+      # current task, memory contents, tool calls in-flight, token budget.
+      ai.hermes-hud
+
+      # openclaw — Personal AI assistant that runs on any platform. Provides
+      # a gateway daemon for routing requests to multiple AI backends.
+      # Note: full launchd service integration is handled by the nix-openclaw
+      # darwin module already imported in lib/mksystem.nix.
+      ai.openclaw
+
+      ##########################################################################
+      # Workflow & Project Management
+      ##########################################################################
+
+      # herdr — Terminal workspace manager for AI coding agents (herdr.dev).
+      # Creates named workspaces, tracks which agents are running where, and
+      # provides unified session navigation. Central coordinator for multi-agent
+      # projects — see docs/ai-tools-with-herdr.md for example workflows.
+      ai.herdr
+
+      # backlog-md — Git-native project collaboration between humans and AI.
+      # Stores tasks as markdown files committed to the repo; agents read and
+      # update backlog items directly, keeping work in version control.
+      ai.backlog-md
+
+      # beads — Distributed issue tracker designed for AI-assisted workflows.
+      # Issues live in the repo as structured data; multiple agents can claim,
+      # update, and close issues concurrently without conflicts.
+      ai.beads
+
+      # vibe-kanban — Kanban board for orchestrating AI coding agents.
+      # Provides a visual board where each card can be assigned to claude-code,
+      # codex, gemini-cli, or a human; tracks agent progress in real-time.
+      ai.vibe-kanban
+
+      # gitbutler — Git client for managing multiple simultaneous feature
+      # branches (virtual branches). Lets each AI agent work on its own branch
+      # without traditional stashing or worktrees.
+      ai.gitbutler
+
+      # openspec — OpenAPI / Swagger spec tooling. Generate, validate, and
+      # diff API specs from the CLI; useful for spec-first development where
+      # agents implement against a contract.
+      ai.openspec
+
+      # trellis — Out-of-the-box engineering framework for AI coding.
+      # Scaffolds projects with conventions that AI agents understand natively,
+      # reducing prompt engineering overhead for standard patterns.
+      ai.trellis
+
+      # paseo-desktop — Voice-controlled desktop environment / self-hosted
+      # daemon for AI coding agents (paseo.sh). Accepts voice commands and
+      # forwards them to the appropriate agent in the active herdr workspace.
+      ai.paseo-desktop
+
+      ##########################################################################
+      # Analytics & Context
+      ##########################################################################
+
+      # agentsview — Local-first viewer and analytics for AI coding agent
+      # sessions. Browse past sessions, diff before/after states, and audit
+      # what each agent changed during a run.
+      ai.agentsview
+
+      # codegraph — Semantic code intelligence for AI coding agents. Builds a
+      # graph of symbols, call chains, and module relationships; agents query
+      # it to understand impact before making changes.
+      ai.codegraph
+
+      # context-hub — CLI for searching and retrieving LLM-optimised docs and
+      # skills (github.com/andrewyng/context-hub). Agents call it to fetch
+      # relevant documentation snippets without bloating the main prompt.
+      ai.context-hub
+
+    ];
+}

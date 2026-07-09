@@ -11,6 +11,7 @@
   agenix,
   zen-browser,
   nix-openclaw,
+  llm-agents,
   ...
 }:
 
@@ -48,6 +49,7 @@ let
       agenix
       zen-browser
       nix-openclaw
+      llm-agents
       ;
     inherit isDarwin isLinux isVM;
     hostname = name;
