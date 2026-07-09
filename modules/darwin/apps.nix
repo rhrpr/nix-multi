@@ -126,6 +126,7 @@
       # "github-copilot-for-xcode" # Github Copilot for xCode
       # "ibkr" # Interactive Brokers trading platform
       "iterm2" # MacOS Terminal emulator
+      "intellij-idea-ce" # IntelliJ Idea Community Edition
       #"knockknock"     # Security tool to show persistent apps
       "lm-studio" # Local AI model runner and chat interface
       #"logitech-g-hub" # Logitech gaming configuration app
@@ -138,6 +139,7 @@
       #"moonlight" # Game streaming client
       #"musicbrainz-picard" # Audio Tagger
       "obsidian" # Markdown knowledge base and note-taking app
+      "obs" # Open Source Streaming Software
       #"oversight"      # Monitors and notifies when microphone or camera is activated
       #"philips-hue-sync" # Phillips Hue Sync App
       "proton-mail-bridge" # Proton email
