@@ -127,6 +127,7 @@
       # "ibkr" # Interactive Brokers trading platform
       "iterm2" # MacOS Terminal emulator
       "intellij-idea-ce" # IntelliJ Idea Community Edition
+      "jetbrains-air" # Intellij Agentic AI Manager
       #"knockknock"     # Security tool to show persistent apps
       "lm-studio" # Local AI model runner and chat interface
       #"logitech-g-hub" # Logitech gaming configuration app

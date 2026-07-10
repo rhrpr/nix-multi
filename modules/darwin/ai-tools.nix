@@ -124,12 +124,7 @@
       # reducing prompt engineering overhead for standard patterns.
       ai.trellis
 
-      # paseo-desktop — Voice-controlled desktop environment / self-hosted
-      # daemon for AI coding agents (paseo.sh). Accepts voice commands and
-      # forwards them to the appropriate agent in the active herdr workspace.
-      ai.paseo-desktop
-
-      ##########################################################################
+##########################################################################
       # Analytics & Context
       ##########################################################################
 
