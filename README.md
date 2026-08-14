@@ -2,7 +2,7 @@
 
 A simplified, modular Nix configuration inspired by [mitchellh/nixos-config](https://github.com/mitchellh/nixos-config) that supports:
 
-- **macOS hosts** (nix-darwin) for VM creation and development
+- **macOS hosts** (nix-darwin)
 - **Linux hosts** (NixOS + Plasma) with GPU passthrough
 - **NixOS VMs** (Hyprland desktop) that run on both platforms
 
