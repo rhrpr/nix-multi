@@ -81,7 +81,7 @@
       "gallery-dl" # Command-line downloader for image galleries
       # gemini-cli moved to modules/darwin/ai-tools.nix (llm-agents.nix)
       "gettext" # GNU internationalization (i18n) library
-      "gmp" # GNU Multiple Precision Arithmetic Library
+      "gimp" # GNU Multiple Precision Arithmetic Library
       "gnutls" # GNU Transport Layer Security Library
       "htop" # Interactive process viewer
       "jansson" # C library for encoding/decoding JSON
@@ -94,7 +94,6 @@
       "p11-kit" # Library to load and share PKCS#11 modules
       "regclient" # Docker registry synchronization utility
       "taglib" # TagLib library
-      "spicetify-cli" # Spotify customiser
       "syncthing" # Open source continuous file synchronization tool
       "terraform-ls" # Language server for Terraform
       "tfenv" # Terraform version manager
@@ -104,6 +103,7 @@
       "yt-dlp" # YouTube video downloader
       "wget" # Command-line utility for downloading files from the web
       "xcodegen" # Command line tool to generate Xcode project files
+      "xcode" # Install xcode
     ];
 
     casks = [

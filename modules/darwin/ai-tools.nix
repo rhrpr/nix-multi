@@ -55,12 +55,14 @@
       # claude-code-router — Proxy layer that routes Claude Code requests to
       # alternative model providers (OpenRouter, Bedrock, local models).
       # Lets you swap the backend without changing your claude-code workflow.
-      ai.claude-code-router
+      # NOTE: commented out — npm dep fetch fails with HTTP/2 error on npmjs.org
+      # ai.claude-code-router
 
       # oh-my-claudecode — Multi-agent orchestration harness for Claude Code.
       # Spawns and coordinates parallel claude-code workers, manages shared
       # context, and aggregates results into a single coherent output.
-      ai.oh-my-claudecode
+      # NOTE: commented out — npm dep fetch fails with HTTP/2 error on npmjs.org
+      # ai.oh-my-claudecode
 
       ##########################################################################
       # AI Assistants

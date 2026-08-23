@@ -17,6 +17,7 @@
       ./starship.nix
       ./shells
       ./terminals
+      ./spicetify.nix
     ]
     ++ lib.optionals isDarwin [
       # macOS-specific modules

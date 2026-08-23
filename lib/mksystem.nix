@@ -12,6 +12,7 @@
   zen-browser,
   nix-openclaw,
   llm-agents,
+  spicetify-nix,
   ...
 }:
 
@@ -50,6 +51,7 @@ let
       zen-browser
       nix-openclaw
       llm-agents
+      spicetify-nix
       ;
     inherit isDarwin isLinux isVM;
     hostname = name;
@@ -90,7 +92,11 @@ if isDarwin then
       home-manager.darwinModules.home-manager
       nix-openclaw.darwinModules.openclaw
       {
-        home-manager = mkHomeManagerConfig { };
+        home-manager =
+          (mkHomeManagerConfig { })
+          // {
+            sharedModules = [ spicetify-nix.homeManagerModules.default ];
+          };
       }
     ];
   }
@@ -109,10 +115,15 @@ else
           (mkHomeManagerConfig { })
           // (
             if isVM then
-              { }
+              {
+                sharedModules = [ spicetify-nix.homeManagerModules.default ];
+              }
             else
               {
-                sharedModules = [ plasma-manager.homeManagerModules.plasma-manager ];
+                sharedModules = [
+                  plasma-manager.homeManagerModules.plasma-manager
+                  spicetify-nix.homeManagerModules.default
+                ];
               }
           );
       }
