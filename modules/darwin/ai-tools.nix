@@ -39,6 +39,11 @@
       # iterates until tasks are complete. Primary driver for most AI work here.
       ai.claude-code
 
+      # codex — OpenAI's CLI coding agent. Reads your codebase, writes and
+      # edits files, and runs shell commands to complete tasks end-to-end.
+      # Useful as a second-opinion agent alongside claude-code.
+      ai.codex
+
       # copilot-cli — GitHub Copilot in the terminal. Autocompletes shell
       # commands, explains error output, and drafts code snippets inline.
       ai.copilot-cli
@@ -67,6 +72,11 @@
       ##########################################################################
       # AI Assistants
       ##########################################################################
+
+      # chatgpt-desktop — OpenAI's native macOS desktop app. Provides a
+      # persistent ChatGPT window with system-wide hotkey access, file
+      # attachments, and voice input — complements terminal-based agents.
+      ai.chatgpt-desktop
 
       # hermes-agent — Self-improving agent from Nous Research. Capable of
       # recursive self-refinement; useful for long, autonomous research tasks.
