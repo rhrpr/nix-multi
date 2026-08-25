@@ -20,13 +20,9 @@
   ...
 }:
 {
-  # Pull the llm-agents binary cache overlay into this system's nixpkgs so
-  # all pkgs.llm-agents.* references resolve against pre-built binaries.
-  nixpkgs.overlays = [ llm-agents.overlays.default ];
-
   environment.systemPackages =
     let
-      ai = pkgs.llm-agents;
+      ai = llm-agents.packages.${pkgs.system};
     in
     [
 
@@ -76,7 +72,8 @@
       # chatgpt-desktop — OpenAI's native macOS desktop app. Provides a
       # persistent ChatGPT window with system-wide hotkey access, file
       # attachments, and voice input — complements terminal-based agents.
-      ai.chatgpt-desktop
+      # NOTE: commented out — chatgpt-desktop missing from llm-agents overlay
+      # ai.chatgpt-desktop
 
       # hermes-agent — Self-improving agent from Nous Research. Capable of
       # recursive self-refinement; useful for long, autonomous research tasks.
