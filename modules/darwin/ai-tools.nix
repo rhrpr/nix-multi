@@ -12,6 +12,11 @@
 #    - Workflow & Planning    Issue trackers, kanban, and project managers
 #    - Analytics & Context    Session viewers, code intelligence, doc search
 #
+#  Note: openclaw has no NixOS system service module (unlike darwin where
+#  nix-openclaw.darwinModules.openclaw is loaded in lib/mksystem.nix).
+#  The binary is installed here; run it manually or add a systemd user
+#  service if a background daemon is needed.
+#
 ##############################################################################
 {
   pkgs,
@@ -69,12 +74,6 @@
       # AI Assistants
       ##########################################################################
 
-      # chatgpt-desktop — OpenAI's native macOS desktop app. Provides a
-      # persistent ChatGPT window with system-wide hotkey access, file
-      # attachments, and voice input — complements terminal-based agents.
-      # NOTE: commented out — chatgpt-desktop missing from llm-agents overlay
-      # ai.chatgpt-desktop
-
       # hermes-agent — Self-improving agent from Nous Research. Capable of
       # recursive self-refinement; useful for long, autonomous research tasks.
       ai.hermes-agent
@@ -89,8 +88,8 @@
 
       # openclaw — Personal AI assistant that runs on any platform. Provides
       # a gateway daemon for routing requests to multiple AI backends.
-      # Note: full launchd service integration is handled by the nix-openclaw
-      # darwin module already imported in lib/mksystem.nix.
+      # Note: no NixOS system service module; run openclaw manually or add a
+      # systemd user service if a persistent daemon is required.
       ai.openclaw
 
       ##########################################################################
@@ -100,7 +99,7 @@
       # herdr — Terminal workspace manager for AI coding agents (herdr.dev).
       # Creates named workspaces, tracks which agents are running where, and
       # provides unified session navigation. Central coordinator for multi-agent
-      # projects — see docs/ai-tools-with-herdr.md for example workflows.
+      # projects.
       ai.herdr
 
       # backlog-md — Git-native project collaboration between humans and AI.
@@ -133,7 +132,7 @@
       # reducing prompt engineering overhead for standard patterns.
       ai.trellis
 
-##########################################################################
+      ##########################################################################
       # Analytics & Context
       ##########################################################################
 
@@ -148,8 +147,8 @@
       ai.codegraph
 
       # context-hub — CLI for searching and retrieving LLM-optimised docs and
-      # skills (github.com/andrewyng/context-hub). Agents call it to fetch
-      # relevant documentation snippets without bloating the main prompt.
+      # skills. Agents call it to fetch relevant documentation snippets without
+      # bloating the main prompt.
       ai.context-hub
 
     ];
