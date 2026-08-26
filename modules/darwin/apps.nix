@@ -111,6 +111,7 @@
       "aural" # audio player
       "arturia-software-center" # Arturia software management tool
       "battery" # Battery management tool
+      "balenaetcher" # ISO to USB
       "betterdisplay" # Display scaling (hidpi)
       "brave-browser" # Privacy focused browser
       "blender" # Blender app for video editing
