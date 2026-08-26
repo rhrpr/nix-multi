@@ -56,9 +56,9 @@
       #"Magnet" = 441258766; # Window management tool for arranging windows
       "iMovie" = 408981434; # Apple's video editing software
       "Xcode" = 497799835; # Apple xCode
-      "Pages" = 409201541; # Apple's word processing software
-      "Keynote" = 409183694; # Apple's presentation software
-      "Numbers" = 409203825; # Apple's spreadsheet software
+      #"Pages" = 409201541; # Apple's word processing software
+      #"Keynote" = 409183694; # Apple's presentation software
+      #"Numbers" = 409203825; # Apple's spreadsheet software
     };
 
     taps = [
@@ -76,7 +76,6 @@
       "ca-certificates" # Bundle of CA root certificates
       "cask" # Extension mechanism for Homebrew
       "chatgpt" # ChatGPT Desktop App
-      "codex" # ChatGPT Codex
       "coreutils" # GNU core utilities (ls, cat, etc)
       "fastlane" # Automate beta deployment and releases for your iOS and Android apps
       "ffmpeg" # Audio and video converter/processor
@@ -84,7 +83,6 @@
       "gallery-dl" # Command-line downloader for image galleries
       # gemini-cli moved to modules/darwin/ai-tools.nix (llm-agents.nix)
       "gettext" # GNU internationalization (i18n) library
-      "gimp" # GNU Multiple Precision Arithmetic Library
       "gnutls" # GNU Transport Layer Security Library
       "htop" # Interactive process viewer
       "jansson" # C library for encoding/decoding JSON
@@ -117,6 +115,7 @@
       "betterdisplay" # Display scaling (hidpi)
       "brave-browser" # Privacy focused browser
       "blender" # Blender app for video editing
+      "codex" # ChatGPT Codex
       "cursor" # Cursor AI code editor
       "claude" # Claude AI desktop app (.app bundle via homebrew)
       "cyberduck" # FTP, SFTP, WebDAV, S3 file transfer client
@@ -125,6 +124,7 @@
       "firefox" # Web browser
       "ghostty" # terminal emulator
       "google-chrome" # Web browser
+      "gimp" # GNU Multiple Precision Arithmetic Library
       # "github-copilot-for-xcode" # Github Copilot for xCode
       # "ibkr" # Interactive Brokers trading platform
       "iterm2" # MacOS Terminal emulator
