@@ -75,7 +75,6 @@
       "btop" # Resource monitor showing CPU, memory, disks, network
       "ca-certificates" # Bundle of CA root certificates
       "cask" # Extension mechanism for Homebrew
-      "chatgpt" # ChatGPT Desktop App
       "coreutils" # GNU core utilities (ls, cat, etc)
       "fastlane" # Automate beta deployment and releases for your iOS and Android apps
       "ffmpeg" # Audio and video converter/processor
@@ -115,6 +114,7 @@
       "betterdisplay" # Display scaling (hidpi)
       "brave-browser" # Privacy focused browser
       "blender" # Blender app for video editing
+      "chatgpt" # ChatGPT Desktop App
       "codex" # ChatGPT Codex
       "cursor" # Cursor AI code editor
       "claude" # Claude AI desktop app (.app bundle via homebrew)
