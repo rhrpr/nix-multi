@@ -70,6 +70,7 @@
 
     brews = [
       "awk" # Pattern-directed scanning and processing language
+      "age" # Age (Agenix)
       "azure-cli" # Azure CLI (az)
       "btop" # Resource monitor showing CPU, memory, disks, network
       "ca-certificates" # Bundle of CA root certificates

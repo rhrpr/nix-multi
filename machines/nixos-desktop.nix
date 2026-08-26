@@ -18,6 +18,7 @@
     ../modules/nixos/apps.nix
     ../modules/nixos/ai-tools.nix
     ../modules/nixos/desktop.nix
+    ../modules/nixos/secrets.nix
     ../modules/hosts/linux/gpu-passthrough.nix
     ../modules/hosts/linux/vm-management.nix
     ../modules/shared/vm-tools.nix

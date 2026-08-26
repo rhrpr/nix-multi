@@ -14,6 +14,7 @@
     [
       ./core.nix
       ./git.nix
+      ./ssh.nix
       ./starship.nix
       ./shells
       ./terminals

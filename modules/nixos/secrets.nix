@@ -1,4 +1,9 @@
-# Darwin (macOS) secret management using agenix
+# NixOS secret management using agenix
+#
+# Bootstrap: on first install, copy ~/.ssh/agenix-nixos to the machine manually
+# before running nixos-rebuild, then subsequent rebuilds are fully automated.
+# Optionally add the host's /etc/ssh/ssh_host_ed25519_key.pub to secrets.nix
+# as a recipient for true zero-touch bootstrap.
 {
   config,
   lib,
@@ -9,89 +14,99 @@
 }:
 
 let
-  homeDir = "/Users/${username}";
+  homeDir = "/home/${username}";
   sshDir = "${homeDir}/.ssh";
-  # Guard: only activate secrets if the agenix identity key is already in place.
-  # On a fresh install, copy ~/.ssh/agenix-macos manually before rebuilding.
-  hasIdentity = builtins.pathExists "${sshDir}/agenix-macos";
 in
 {
   imports = [
-    agenix.darwinModules.default
+    agenix.nixosModules.default
   ];
 
   environment.systemPackages = [
     agenix.packages.${pkgs.system}.default
   ];
 
+  # Ensure ~/.ssh exists before agenix activation
+  systemd.tmpfiles.rules = [
+    "d ${sshDir} 0700 ${username} users - -"
+  ];
+
   age = {
-    secrets = lib.mkIf hasIdentity {
+    secrets = {
       ssh-id-ed25519 = {
         file = ../../secrets/ssh-keys/id_ed25519.age;
         mode = "0600";
         owner = username;
+        group = "users";
         path = "${sshDir}/id_ed25519";
       };
       ssh-id-rsa = {
         file = ../../secrets/ssh-keys/id_rsa.age;
         mode = "0600";
         owner = username;
+        group = "users";
         path = "${sshDir}/id_rsa";
       };
       ssh-github = {
         file = ../../secrets/ssh-keys/github.age;
         mode = "0600";
         owner = username;
+        group = "users";
         path = "${sshDir}/github.com";
       };
       ssh-proxmox = {
         file = ../../secrets/ssh-keys/proxmox.age;
         mode = "0600";
         owner = username;
+        group = "users";
         path = "${sshDir}/proxmox";
       };
       ssh-proxmox-nodes = {
         file = ../../secrets/ssh-keys/proxmox-nodes.age;
         mode = "0600";
         owner = username;
+        group = "users";
         path = "${sshDir}/proxmox-nodes";
       };
       ssh-raspberry-pi = {
         file = ../../secrets/ssh-keys/raspberry_pi.age;
         mode = "0600";
         owner = username;
+        group = "users";
         path = "${sshDir}/raspberry_pi";
       };
-      # Backup copy of the NixOS agenix identity key
-      ssh-agenix-nixos = {
-        file = ../../secrets/ssh-keys/agenix-nixos.age;
+      # Backup copy of the macOS agenix identity key
+      ssh-agenix-macos = {
+        file = ../../secrets/ssh-keys/agenix-macos.age;
         mode = "0600";
         owner = username;
-        path = "${sshDir}/agenix-nixos";
+        group = "users";
+        path = "${sshDir}/agenix-macos";
       };
     };
 
     identityPaths = [
-      "${sshDir}/agenix-macos"
+      "${sshDir}/agenix-nixos"
     ];
   };
 
-  # Ensure ~/.ssh exists with correct permissions before agenix activation
-  system.activationScripts.sshDirSetup.text = ''
-    install -d -m 700 -o ${username} ${sshDir}
-  '';
+  services.openssh = {
+    enable = true;
+    hostKeys = [
+      {
+        path = "/etc/ssh/ssh_host_ed25519_key";
+        type = "ed25519";
+      }
+    ];
+  };
 
-  # SSH agent
-  launchd.user.agents.ssh-agent = {
+  systemd.user.services.ssh-agent = {
+    description = "SSH Agent";
+    wantedBy = [ "default.target" ];
     serviceConfig = {
-      Label = "ssh-agent";
-      Program = "${pkgs.openssh}/bin/ssh-agent";
-      ProgramArguments = [
-        "${pkgs.openssh}/bin/ssh-agent"
-        "-D"
-      ];
-      RunAtLoad = true;
-      KeepAlive = true;
+      Type = "forking";
+      Environment = "SSH_AUTH_SOCK=%t/ssh-agent.socket";
+      ExecStart = "${pkgs.openssh}/bin/ssh-agent -a $SSH_AUTH_SOCK";
     };
   };
 }
