@@ -425,13 +425,48 @@ Edit `modules/nixos/apps.nix` or `modules/vm/apps.nix` — add to `environment.s
 
 ### Desktop Environment Changes
 
-**Switching Linux Desktop**:
+The desktop is selected via the `desktopManager` string, set automatically in `lib/mksystem.nix` based on host type:
 
-Modify `desktopManager` in `flake.nix` `linuxSpecialArgs`
+| Host | Default desktop | Value |
+|------|----------------|-------|
+| `nixos-desktop` / `nixos-plasma` | KDE Plasma 6 | `"plasma"` |
+| `vm` / `nixos-vm-hyprland` | Hyprland | `"hyprland"` |
+| macOS | none | `"none"` |
+
+Both desktops are fully supported — system services, XDG portals, and Home Manager configs all switch on this value. To change the desktop for `nixos-desktop`:
+
+**Option A — add a `desktop` parameter to `mkSystem` (recommended):**
+
+1. In `lib/mksystem.nix`, accept the new parameter and use it:
+
+   ```nix
+   { name, system, user, isDarwin ? false, vm ? false, desktop ? null }:
+   # ...
+   desktopManager =
+     if desktop != null then desktop
+     else if isVM then "hyprland"
+     else if isDarwin then "none"
+     else "plasma";
+   ```
+
+2. In `flake.nix`, pass `desktop` to the relevant host:
+
+   ```nix
+   nixosConfigurations."nixos-desktop" = mkSystem {
+     name = "nixos-desktop";
+     system = "x86_64-linux";
+     inherit user;
+     desktop = "hyprland";   # or "plasma"
+   };
+   ```
+
+**Option B — quick change (affects all non-VM Linux hosts):**
+
+In `lib/mksystem.nix`, change the fallback string from `"plasma"` to `"hyprland"` in the `desktopManager` assignment.
 
 **VM Desktop Customization**:
 
-Edit `modules/vm/apps.nix` and Hyprland configs in `home/linux/hyprland.nix`
+Edit `home/linux/hyprland.nix` for Hyprland home config, or `home/linux/plasma.nix` for Plasma. System-level desktop options (portals, services, packages) live in `modules/nixos/desktop.nix`.
 
 ### User Configuration
 
