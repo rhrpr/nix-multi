@@ -54,11 +54,11 @@
       "Bitwarden" = 1352778147; # Password manager application
       #"Ferromagnetic" = 1546537151; # Utility for managing magnet links
       #"Magnet" = 441258766; # Window management tool for arranging windows
-      #"iMovie" = 408981434; # Apple's video editing software
-      #"Xcode" = 497799835; # Apple xCode
-      #"Pages" = 409201541; # Apple's word processing software
-      #"Keynote" = 409183694; # Apple's presentation software
-      #"Numbers" = 409203825; # Apple's spreadsheet software
+      "iMovie" = 408981434; # Apple's video editing software
+      "Xcode" = 497799835; # Apple xCode
+      "Pages" = 409201541; # Apple's word processing software
+      "Keynote" = 409183694; # Apple's presentation software
+      "Numbers" = 409203825; # Apple's spreadsheet software
     };
 
     taps = [
@@ -106,7 +106,6 @@
       "yt-dlp" # YouTube video downloader
       "wget" # Command-line utility for downloading files from the web
       "xcodegen" # Command line tool to generate Xcode project files
-      "xcode" # Install xcode
     ];
 
     casks = [
