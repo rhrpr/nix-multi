@@ -21,6 +21,26 @@ make vm-deploy   # Deploy configuration to running VM via SSH
 make dev
 ```
 
+## Prerequisites
+
+### Nix Installation
+
+This configuration uses the **[Determinate Nix Installer](https://github.com/DeterminateSystems/nix-installer)** (not the standard Nix installer). Install it with:
+
+```bash
+curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install
+```
+
+> Determinate Nix ships with flakes and nix-command enabled by default, and provides a cleaner uninstall path than the standard installer.
+
+### nix-darwin
+
+This configuration uses the **community nix-darwin** (`github:lnl7/nix-darwin`), not the DeterminateSystems fork. It is pulled in as a flake input and does not need to be installed separately — the first-time setup command bootstraps it:
+
+```bash
+nix run nix-darwin -- switch --flake .#Ryans-MacBook-Pro
+```
+
 ## Key Design
 
 This configuration simplifies multi-platform Nix management by:
