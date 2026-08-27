@@ -180,9 +180,10 @@ in
 
     # Services configuration
     services = {
-      # Enable X11 with NVIDIA
+      # Enable X11 with NVIDIA — mkDefault so desktop.nix can override
+      # (Hyprland sets enable = false; Plasma sets enable = true)
       xserver = {
-        enable = true;
+        enable = lib.mkDefault true;
         videoDrivers = [ "nvidia" ];
       };
 
