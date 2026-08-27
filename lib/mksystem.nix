@@ -13,6 +13,7 @@
   nix-openclaw,
   llm-agents,
   spicetify-nix,
+  dots-hyprland,
   ...
 }:
 
@@ -22,6 +23,7 @@
   user,
   isDarwin ? false,
   vm ? false,
+  desktopManager ? null, # explicit override; null = auto-detect
 }:
 
 let
@@ -37,6 +39,17 @@ let
   gpuConfig = user.gpuConfig or { };
 
   # Common special arguments for all configurations
+  # Resolve desktop manager: explicit param wins, otherwise auto-detect
+  resolvedDesktopManager =
+    if desktopManager != null then
+      desktopManager
+    else if isVM then
+      "hyprland"
+    else if isDarwin then
+      "none"
+    else
+      "hyprland"; # default Linux desktop to Hyprland
+
   specialArgs = {
     inherit username useremail gpuConfig;
     inherit
@@ -52,17 +65,12 @@ let
       nix-openclaw
       llm-agents
       spicetify-nix
+      dots-hyprland
       ;
     inherit isDarwin isLinux isVM;
     hostname = name;
     currentSystem = system;
-    desktopManager =
-      if isVM then
-        "hyprland"
-      else if isDarwin then
-        "none"
-      else
-        "plasma";
+    desktopManager = resolvedDesktopManager;
   };
 
   # Home Manager configuration

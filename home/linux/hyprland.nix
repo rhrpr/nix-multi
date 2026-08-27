@@ -2,162 +2,312 @@
   config,
   pkgs,
   lib,
+  dots-hyprland,
   ...
 }:
 
 {
+  # ---------------------------------------------------------------------------
+  # end4/dots-hyprland config integration
+  #
+  # AGS widget system and supporting configs are linked directly from the nix
+  # store path of the dots-hyprland flake input. Hyprland itself is configured
+  # here in Nix with end4-style animations/decorations.
+  #
+  # NOTE: end4's current config targets AGS v2 (Astal framework). If nixpkgs
+  # ships AGS v1, the TypeScript widgets may fail to start. Check:
+  #   ags --version
+  # If there are API errors, you may need to add the Astal flake as an input
+  # or use an older branch of dots-hyprland that targets AGS v1.
+  # ---------------------------------------------------------------------------
+
+  # Link end4's config directories into ~/.config/
+  home.file = {
+    # AGS widget system - bar, notifications, launcher, overview, etc.
+    ".config/ags".source = "${dots-hyprland}/.config/ags";
+
+    # Foot terminal config (end4 uses foot as the default terminal)
+    ".config/foot".source = "${dots-hyprland}/.config/foot";
+
+    # Fastfetch config
+    ".config/fastfetch".source = "${dots-hyprland}/.config/fastfetch";
+  };
+
+  # ---------------------------------------------------------------------------
   # Hyprland configuration
+  # ---------------------------------------------------------------------------
   wayland.windowManager.hyprland = {
     enable = true;
+
     settings = {
-      monitor = [
-        ",3440x1440@60,0x0,1"
+      # -------------------------------------------------------------------------
+      # NVIDIA RTX 3080 - required for Hyprland on NVIDIA
+      # Display is connected directly to the RTX 3080 (not PRIME/hybrid mode)
+      # -------------------------------------------------------------------------
+      env = [
+        "LIBVA_DRIVER_NAME,nvidia"
+        "GBM_BACKEND,nvidia-drm"
+        "__GLX_VENDOR_LIBRARY_NAME,nvidia"
+        "WLR_NO_HARDWARE_CURSORS,1"
+        "NVD_BACKEND,direct"
+        "ELECTRON_OZONE_PLATFORM_HINT,auto"
+        "XDG_SESSION_TYPE,wayland"
       ];
 
+      # 3440x1440 ultrawide @ 144Hz - adjust refresh rate to your panel's max
+      monitor = [ ",3440x1440@144,0x0,1" ];
+
+      # -------------------------------------------------------------------------
+      # Autostart - AGS replaces waybar/dunst
+      # -------------------------------------------------------------------------
       exec-once = [
-        "waybar"
+        "ags"
         "swww-daemon"
-        "dunst"
+        "hypridle"
         "nm-applet --indicator"
         "blueman-applet"
+        "${pkgs.polkit_gnome}/libexec/polkit-gnome-authentication-agent-1"
+        "dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP"
       ];
 
+      # -------------------------------------------------------------------------
+      # Input
+      # -------------------------------------------------------------------------
       input = {
         kb_layout = "us";
         follow_mouse = 1;
-        touchpad = {
-          natural_scroll = "yes";
-        };
         sensitivity = 0;
+        accel_profile = "flat";
       };
 
+      # -------------------------------------------------------------------------
+      # General - end4 style gaps and borders
+      # -------------------------------------------------------------------------
       general = {
-        gaps_in = 5;
-        gaps_out = 20;
-        border_size = 2;
-        "col.active_border" = "rgba(33ccffee) rgba(00ff99ee) 45deg";
-        "col.inactive_border" = "rgba(595959aa)";
+        gaps_in = 4;
+        gaps_out = 5;
+        border_size = 1;
+        "col.active_border" = "rgba(b4befeff) rgba(6c7086ff) 45deg";
+        "col.inactive_border" = "rgba(6c708680)";
         layout = "dwindle";
         allow_tearing = false;
       };
 
+      # -------------------------------------------------------------------------
+      # Decorations - rounded corners, blur, shadows (end4 aesthetic)
+      # -------------------------------------------------------------------------
       decoration = {
-        rounding = 10;
+        rounding = 12;
+        active_opacity = 1.0;
+        inactive_opacity = 1.0;
+
         blur = {
           enabled = true;
-          size = 3;
-          passes = 1;
+          size = 8;
+          passes = 3;
+          new_optimizations = true;
+          xray = false;
+          noise = "0.0117";
+          contrast = "0.8917";
+          brightness = "0.8172";
+          vibrancy = "0.1696";
+          vibrancy_darkness = "0.0";
         };
+
         shadow = {
           enabled = true;
-          range = 4;
+          range = 30;
           render_power = 3;
-          color = "rgba(1a1a1aee)";
+          color = "rgba(0000001a)";
+          color_inactive = "rgba(00000000)";
         };
       };
 
+      # -------------------------------------------------------------------------
+      # Animations - end4's smooth Material Design 3 style bezier curves
+      # -------------------------------------------------------------------------
       animations = {
-        enabled = "yes";
-        bezier = "myBezier, 0.05, 0.9, 0.1, 1.05";
+        enabled = true;
+
+        bezier = [
+          "linear, 0, 0, 1, 1"
+          "md3_standard, 0.2, 0, 0, 1"
+          "md3_decel, 0.05, 0.7, 0.1, 1"
+          "md3_accel, 0.3, 0, 0.8, 0.15"
+          "overshot, 0.05, 0.9, 0.1, 1.1"
+          "hyprnostretch, 0.05, 0.9, 0.1, 1.0"
+          "menu_decel, 0.1, 1, 0, 1"
+          "menu_accel, 0.38, 0.04, 1, 0.07"
+          "easeOutCirc, 0, 0.55, 0.45, 1"
+          "easeOutExpo, 0.16, 1, 0.3, 1"
+          "softAcDecel, 0.26, 0.26, 0.15, 1"
+        ];
+
         animation = [
-          "windows, 1, 7, myBezier"
-          "windowsOut, 1, 7, default, popin 80%"
+          "windows, 1, 3, md3_decel, popin 60%"
+          "windowsIn, 1, 3, md3_decel, popin 60%"
+          "windowsOut, 1, 3, md3_accel, popin 60%"
           "border, 1, 10, default"
-          "borderangle, 1, 8, default"
-          "fade, 1, 7, default"
-          "workspaces, 1, 6, default"
+          "fade, 1, 3, md3_decel"
+          "layersIn, 1, 3, menu_decel, slide"
+          "layersOut, 1, 1.6, menu_accel"
+          "fadeLayersIn, 1, 2, menu_decel"
+          "fadeLayersOut, 1, 4.5, menu_accel"
+          "workspaces, 1, 7, menu_decel, slide"
+          "specialWorkspace, 1, 3, md3_decel, slidevert"
         ];
       };
 
+      # -------------------------------------------------------------------------
+      # Layout
+      # -------------------------------------------------------------------------
       dwindle = {
-        pseudotile = "yes";
-        preserve_split = "yes";
+        pseudotile = true;
+        preserve_split = true;
+        smart_split = false;
+        smart_resizing = false;
       };
 
-      master = {
-        new_status = "master";
-      };
-
-      gestures = {
-        workspace_swipe = "off";
-      };
-
+      # -------------------------------------------------------------------------
+      # Misc
+      # -------------------------------------------------------------------------
       misc = {
-        force_default_wallpaper = -1;
+        vfr = 1;
+        vrr = 0;
+        animate_manual_resizes = false;
+        animate_mouse_windowdragging = false;
+        enable_swallow = true;
+        swallow_regex = "^(foot|kitty|alacritty)$";
+        force_default_wallpaper = 0;
+        disable_splash_rendering = true;
+        focus_on_activate = true;
+        initial_workspace_tracking = false;
       };
 
-      # Keybindings
-      "$mainMod" = "CTRL+SUPER";
+      # -------------------------------------------------------------------------
+      # Gestures
+      # -------------------------------------------------------------------------
+      gestures = {
+        workspace_swipe = true;
+        workspace_swipe_fingers = 4;
+        workspace_swipe_distance = 250;
+        workspace_swipe_invert = true;
+        workspace_swipe_min_speed_to_force = 15;
+        workspace_swipe_cancel_ratio = 0.15;
+        workspace_swipe_create_new = true;
+      };
+
+      # -------------------------------------------------------------------------
+      # Keybinds
+      # -------------------------------------------------------------------------
+      "$mod" = "SUPER";
 
       bind = [
-        "$mainMod, Q, exec, kitty"
-        "$mainMod, C, killactive,"
-        "$mainMod, M, exit,"
-        "$mainMod, E, exec, thunar"
-        "$mainMod, V, togglefloating,"
-        "$mainMod, R, exec, rofi -show drun"
-        "$mainMod, P, pseudo, # dwindle"
-        "$mainMod, J, togglesplit, # dwindle"
+        # Applications
+        "$mod, Return, exec, foot"
+        "$mod SHIFT, Return, exec, foot"
+        "$mod, E, exec, nautilus"
+        "$mod, B, exec, firefox"
 
-        # Move focus with mainMod + arrow keys
-        "$mainMod, left, movefocus, l"
-        "$mainMod, right, movefocus, r"
-        "$mainMod, up, movefocus, u"
-        "$mainMod, down, movefocus, d"
+        # AGS panels (end4 style)
+        "$mod, Tab, exec, ags -t overview"
+        "$mod SHIFT, N, exec, ags -t notifications"
 
-        # Move focus with mainMod + vim keys
-        "$mainMod, h, movefocus, l"
-        "$mainMod, l, movefocus, r"
-        "$mainMod, k, movefocus, u"
-        "$mainMod, j, movefocus, d"
+        # Launcher
+        "$mod, Space, exec, fuzzel"
 
-        # Switch workspaces with mainMod + [0-9]
-        "$mainMod, 1, workspace, 1"
-        "$mainMod, 2, workspace, 2"
-        "$mainMod, 3, workspace, 3"
-        "$mainMod, 4, workspace, 4"
-        "$mainMod, 5, workspace, 5"
-        "$mainMod, 6, workspace, 6"
-        "$mainMod, 7, workspace, 7"
-        "$mainMod, 8, workspace, 8"
-        "$mainMod, 9, workspace, 9"
-        "$mainMod, 0, workspace, 10"
-
-        # Move active window to a workspace with mainMod + SHIFT + [0-9]
-        "$mainMod SHIFT, 1, movetoworkspace, 1"
-        "$mainMod SHIFT, 2, movetoworkspace, 2"
-        "$mainMod SHIFT, 3, movetoworkspace, 3"
-        "$mainMod SHIFT, 4, movetoworkspace, 4"
-        "$mainMod SHIFT, 5, movetoworkspace, 5"
-        "$mainMod SHIFT, 6, movetoworkspace, 6"
-        "$mainMod SHIFT, 7, movetoworkspace, 7"
-        "$mainMod SHIFT, 8, movetoworkspace, 8"
-        "$mainMod SHIFT, 9, movetoworkspace, 9"
-        "$mainMod SHIFT, 0, movetoworkspace, 10"
-
-        # Example special workspace (scratchpad)
-        "$mainMod, S, togglespecialworkspace, magic"
-        "$mainMod SHIFT, S, movetoworkspace, special:magic"
-
-        # Scroll through existing workspaces with mainMod + scroll
-        "$mainMod, mouse_down, workspace, e+1"
-        "$mainMod, mouse_up, workspace, e-1"
-
-        # Screenshot
-        ", Print, exec, grim -g \"$(slurp)\" - | wl-copy"
-        "$mainMod, Print, exec, grim - | wl-copy"
+        # Window management
+        "$mod, C, killactive"
+        "$mod SHIFT, Q, exit"
+        "$mod, F, fullscreen, 0"
+        "$mod SHIFT, F, fullscreen, 1"
+        "$mod, V, togglefloating"
+        "$mod, P, pseudo"
+        "$mod, J, togglesplit"
+        "$mod, G, togglegroup"
 
         # Lock screen
-        "$mainMod, L, exec, swaylock"
+        "$mod, Escape, exec, hyprlock"
+
+        # Screenshot - selection to clipboard
+        ", Print, exec, grim -g \"$(slurp)\" - | wl-copy"
+        # Screenshot - full screen to clipboard
+        "$mod, Print, exec, grim - | wl-copy"
+        # Screenshot - selection to file
+        "$mod SHIFT, S, exec, grim -g \"$(slurp)\" ~/Pictures/screenshot-$(date +%Y%m%d-%H%M%S).png"
+
+        # Color picker
+        "$mod SHIFT, C, exec, hyprpicker -a"
+
+        # Wlogout
+        "$mod SHIFT, Escape, exec, wlogout"
+
+        # Focus movement
+        "$mod, left, movefocus, l"
+        "$mod, right, movefocus, r"
+        "$mod, up, movefocus, u"
+        "$mod, down, movefocus, d"
+        "$mod, h, movefocus, l"
+        "$mod, l, movefocus, r"
+        "$mod, k, movefocus, u"
+        "$mod, j, movefocus, d"
+
+        # Move windows
+        "$mod SHIFT, left, movewindow, l"
+        "$mod SHIFT, right, movewindow, r"
+        "$mod SHIFT, up, movewindow, u"
+        "$mod SHIFT, down, movewindow, d"
+        "$mod SHIFT, h, movewindow, l"
+        "$mod SHIFT, l, movewindow, r"
+        "$mod SHIFT, k, movewindow, u"
+        "$mod SHIFT, j, movewindow, d"
+
+        # Workspaces
+        "$mod, 1, workspace, 1"
+        "$mod, 2, workspace, 2"
+        "$mod, 3, workspace, 3"
+        "$mod, 4, workspace, 4"
+        "$mod, 5, workspace, 5"
+        "$mod, 6, workspace, 6"
+        "$mod, 7, workspace, 7"
+        "$mod, 8, workspace, 8"
+        "$mod, 9, workspace, 9"
+        "$mod, 0, workspace, 10"
+
+        # Move active window to workspace
+        "$mod SHIFT, 1, movetoworkspace, 1"
+        "$mod SHIFT, 2, movetoworkspace, 2"
+        "$mod SHIFT, 3, movetoworkspace, 3"
+        "$mod SHIFT, 4, movetoworkspace, 4"
+        "$mod SHIFT, 5, movetoworkspace, 5"
+        "$mod SHIFT, 6, movetoworkspace, 6"
+        "$mod SHIFT, 7, movetoworkspace, 7"
+        "$mod SHIFT, 8, movetoworkspace, 8"
+        "$mod SHIFT, 9, movetoworkspace, 9"
+        "$mod SHIFT, 0, movetoworkspace, 10"
+
+        # Special workspace (scratchpad)
+        "$mod, grave, togglespecialworkspace, scratch"
+        "$mod SHIFT, grave, movetoworkspace, special:scratch"
+
+        # Scroll through workspaces
+        "$mod, mouse_down, workspace, e+1"
+        "$mod, mouse_up, workspace, e-1"
       ];
 
-      # Move/resize windows with mainMod + LMB/RMB and dragging
       bindm = [
-        "$mainMod, mouse:272, movewindow"
-        "$mainMod, mouse:273, resizewindow"
+        "$mod, mouse:272, movewindow"
+        "$mod, mouse:273, resizewindow"
       ];
 
-      # Media keys
+      # Resize with mod+alt+arrows
+      binde = [
+        "$mod ALT, right, resizeactive, 30 0"
+        "$mod ALT, left, resizeactive, -30 0"
+        "$mod ALT, up, resizeactive, 0 -30"
+        "$mod ALT, down, resizeactive, 0 30"
+      ];
+
       bindel = [
         ", XF86AudioRaiseVolume, exec, pamixer -i 5"
         ", XF86AudioLowerVolume, exec, pamixer -d 5"
@@ -169,427 +319,215 @@
         ", XF86MonBrightnessDown, exec, brightnessctl set 5%-"
         ", XF86MonBrightnessUp, exec, brightnessctl set 5%+"
       ];
+
+      # -------------------------------------------------------------------------
+      # Window rules
+      # -------------------------------------------------------------------------
+      windowrulev2 = [
+        # Floating dialogs
+        "float, class:^(pavucontrol)$"
+        "float, class:^(blueman-manager)$"
+        "float, class:^(nm-connection-editor)$"
+        "float, title:^(Picture-in-Picture)$"
+        "pin, title:^(Picture-in-Picture)$"
+        "float, class:^(file_progress)$"
+        "float, class:^(confirm)$"
+        "float, class:^(dialog)$"
+        "float, class:^(download)$"
+        "float, class:^(notification)$"
+        "float, class:^(error)$"
+        "float, class:^(splash)$"
+        "float, class:^(wlogout)$"
+        "fullscreen, class:^(wlogout)$"
+        # Idle inhibit for video
+        "idleinhibit focus, class:^(mpv)$"
+        "idleinhibit fullscreen, class:^(firefox)$"
+        # AGS layer rules
+        "blur, class:^(ags)$"
+      ];
     };
   };
 
-  # Hyprland-specific packages and services
+  # ---------------------------------------------------------------------------
+  # Hyprlock - screen locker
+  # ---------------------------------------------------------------------------
+  programs.hyprlock = {
+    enable = true;
+    settings = {
+      general = {
+        disable_loading_bar = true;
+        grace = 0;
+        hide_cursor = true;
+        no_fade_in = false;
+      };
+
+      background = [
+        {
+          path = "screenshot";
+          blur_size = 7;
+          blur_passes = 4;
+          noise = "0.0117";
+          contrast = "0.8917";
+          brightness = "0.8172";
+          vibrancy = "0.1696";
+          vibrancy_darkness = "0.0";
+        }
+      ];
+
+      input-field = [
+        {
+          size = "250, 50";
+          position = "0, -80";
+          monitor = "";
+          dots_center = true;
+          fade_on_empty = false;
+          font_color = "rgb(cdd6f4)";
+          inner_color = "rgb(1e1e2e)";
+          outer_color = "rgb(313244)";
+          outline_thickness = 5;
+          placeholder_text = "<span foreground='##cdd6f4'> </span>";
+          shadow_passes = 2;
+        }
+      ];
+
+      label = [
+        {
+          monitor = "";
+          text = ''cmd[update:1000] echo "<b>$(date +"%H:%M")</b>"'';
+          color = "rgba(cdd6f4ff)";
+          font_size = 64;
+          font_family = "JetBrainsMono Nerd Font";
+          position = "0, 160";
+          halign = "center";
+          valign = "center";
+        }
+        {
+          monitor = "";
+          text = ''cmd[update:1000] echo "$(date +"%A, %B %d")"'';
+          color = "rgba(cdd6f4cc)";
+          font_size = 18;
+          font_family = "JetBrainsMono Nerd Font";
+          position = "0, 80";
+          halign = "center";
+          valign = "center";
+        }
+      ];
+    };
+  };
+
+  # ---------------------------------------------------------------------------
+  # Hypridle - idle management
+  # ---------------------------------------------------------------------------
+  services.hypridle = {
+    enable = true;
+    settings = {
+      general = {
+        after_sleep_cmd = "hyprctl dispatch dpms on";
+        ignore_dbus_inhibit = false;
+        lock_cmd = "pidof hyprlock || hyprlock";
+      };
+
+      listener = [
+        {
+          timeout = 300;
+          on-timeout = "pidof hyprlock || hyprlock";
+        }
+        {
+          timeout = 600;
+          on-timeout = "hyprctl dispatch dpms off";
+          on-resume = "hyprctl dispatch dpms on";
+        }
+      ];
+    };
+  };
+
+  # ---------------------------------------------------------------------------
+  # GTK theme - Catppuccin Mocha to match end4's default palette
+  # ---------------------------------------------------------------------------
+  gtk = {
+    enable = true;
+    theme = {
+      name = "adw-gtk3-dark";
+      package = pkgs.adw-gtk3;
+    };
+    iconTheme = {
+      name = "Papirus-Dark";
+      package = pkgs.papirus-icon-theme;
+    };
+    cursorTheme = {
+      name = "Bibata-Modern-Classic";
+      package = pkgs.bibata-cursors;
+    };
+    gtk3.extraConfig.gtk-application-prefer-dark-theme = true;
+    gtk4.extraConfig.gtk-application-prefer-dark-theme = true;
+  };
+
+  qt = {
+    enable = true;
+    platformTheme.name = "gtk";
+    style.name = "adwaita-dark";
+  };
+
+  # ---------------------------------------------------------------------------
+  # Required packages
+  # ---------------------------------------------------------------------------
   home.packages = with pkgs; [
-    waybar
-    rofi-wayland
-    dunst
+    # AGS + dependencies (end4's widget system)
+    # NOTE: check `ags --version` - end4's current config targets v2/Astal
+    ags
+    dart-sass # TypeScript compilation for AGS widgets
+    fd # fast find, used by some AGS scripts
+    gjs # JavaScript runtime for AGS
+
+    # Hyprland ecosystem
+    hyprpicker # color picker
+    wlogout # logout menu
+
+    # Terminal (end4 uses foot)
+    foot
+
+    # Launcher
+    fuzzel
+
+    # Wallpaper
     swww
-    swaylock-effects
-    swayidle
+
+    # Screenshots
     grim
     slurp
-    wf-recorder
+    wl-clipboard
+
+    # Audio/brightness/media control
     brightnessctl
-    pamixer
     playerctl
-    wlogout
-    hyprpicker
-    hyprcursor
+    pamixer
+
+    # Utilities used by AGS scripts
+    jq
+    socat
+    curl
+    imagemagick
+
+    # System info widget
+    fastfetch
+
+    # Notification library
+    libnotify
+
+    # GTK theming
+    adw-gtk3
+    papirus-icon-theme
+    bibata-cursors
+
+    # Fonts for AGS (Material Symbols icons used heavily in end4's widgets)
+    material-symbols
+    nerd-fonts.jetbrains-mono
+    nerd-fonts.noto
+
+    # Polkit agent (needed for GUI authentication prompts)
+    polkit_gnome
   ];
 
-  # Configure Waybar
-  programs.waybar = {
-    enable = true;
-    settings = {
-      mainBar = {
-        layer = "top";
-        position = "top";
-        height = 30;
-        spacing = 4;
-
-        modules-left = [
-          "hyprland/workspaces"
-          "hyprland/submap"
-          "hyprland/scratchpad"
-        ];
-        modules-center = [ "hyprland/window" ];
-        modules-right = [
-          "idle_inhibitor"
-          "pulseaudio"
-          "network"
-          "cpu"
-          "memory"
-          "temperature"
-          "backlight"
-          "battery"
-          "clock"
-          "tray"
-        ];
-
-        "hyprland/workspaces" = {
-          disable-scroll = true;
-          all-outputs = true;
-          format = "{icon}";
-          format-icons = {
-            "1" = "";
-            "2" = "";
-            "3" = "";
-            "4" = "";
-            "5" = "";
-            "urgent" = "";
-            "focused" = "";
-            "default" = "";
-          };
-        };
-
-        "hyprland/window" = {
-          format = "{}";
-          max-length = 50;
-        };
-
-        tray = {
-          spacing = 10;
-        };
-
-        clock = {
-          tooltip-format = "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>";
-          format-alt = "{:%Y-%m-%d}";
-        };
-
-        cpu = {
-          format = "{usage}% ";
-          tooltip = false;
-        };
-
-        memory = {
-          format = "{}% ";
-        };
-
-        temperature = {
-          critical-threshold = 80;
-          format = "{temperatureC}°C {icon}";
-          format-icons = [
-            ""
-            ""
-            ""
-          ];
-        };
-
-        backlight = {
-          format = "{percent}% {icon}";
-          format-icons = [
-            ""
-            ""
-            ""
-            ""
-            ""
-            ""
-            ""
-            ""
-            ""
-          ];
-        };
-
-        battery = {
-          states = {
-            warning = 30;
-            critical = 15;
-          };
-          format = "{capacity}% {icon}";
-          format-charging = "{capacity}% ";
-          format-plugged = "{capacity}% ";
-          format-alt = "{time} {icon}";
-          format-icons = [
-            ""
-            ""
-            ""
-            ""
-            ""
-          ];
-        };
-
-        network = {
-          format-wifi = "{essid} ({signalStrength}%) ";
-          format-ethernet = "{ipaddr}/{cidr} ";
-          tooltip-format = "{ifname} via {gwaddr} ";
-          format-linked = "{ifname} (No IP) ";
-          format-disconnected = "Disconnected ⚠";
-          format-alt = "{ifname}: {ipaddr}/{cidr}";
-        };
-
-        pulseaudio = {
-          format = "{volume}% {icon} {format_source}";
-          format-bluetooth = "{volume}% {icon} {format_source}";
-          format-bluetooth-muted = " {icon} {format_source}";
-          format-muted = " {format_source}";
-          format-source = "{volume}% ";
-          format-source-muted = "";
-          format-icons = {
-            headphone = "";
-            hands-free = "";
-            headset = "";
-            phone = "";
-            portable = "";
-            car = "";
-            default = [
-              ""
-              ""
-              ""
-            ];
-          };
-          on-click = "pavucontrol";
-        };
-      };
-    };
-
-    style = ''
-      * {
-        border: none;
-        border-radius: 0;
-        font-family: "FiraCode Nerd Font";
-        font-size: 13px;
-        min-height: 0;
-      }
-
-      window#waybar {
-        background-color: rgba(43, 48, 59, 0.8);
-        border-bottom: 3px solid rgba(100, 114, 125, 0.5);
-        color: #ffffff;
-        transition-property: background-color;
-        transition-duration: .5s;
-      }
-
-      #workspaces button {
-        padding: 0 5px;
-        background-color: transparent;
-        color: #ffffff;
-        border-bottom: 3px solid transparent;
-      }
-
-      #workspaces button:hover {
-        background: rgba(0, 0, 0, 0.2);
-        box-shadow: inset 0 -3px #ffffff;
-      }
-
-      #workspaces button.focused {
-        background-color: #64727D;
-        border-bottom: 3px solid #ffffff;
-      }
-
-      #workspaces button.urgent {
-        background-color: #eb4d4b;
-      }
-
-      #mode {
-        background-color: #64727D;
-        border-bottom: 3px solid #ffffff;
-      }
-
-      #clock,
-      #battery,
-      #cpu,
-      #memory,
-      #disk,
-      #temperature,
-      #backlight,
-      #network,
-      #pulseaudio,
-      #wireplumber,
-      #custom-media,
-      #tray,
-      #mode,
-      #idle_inhibitor,
-      #scratchpad,
-      #mpd {
-        padding: 0 10px;
-        color: #ffffff;
-      }
-
-      #window,
-      #workspaces {
-        margin: 0 4px;
-      }
-
-      .modules-left > widget:first-child > #workspaces {
-        margin-left: 0;
-      }
-
-      .modules-right > widget:last-child > #workspaces {
-        margin-right: 0;
-      }
-
-      #clock {
-        background-color: #64727D;
-      }
-
-      #battery {
-        background-color: #ffffff;
-        color: #000000;
-      }
-
-      #battery.charging, #battery.plugged {
-        color: #ffffff;
-        background-color: #26A65B;
-      }
-
-      @keyframes blink {
-        to {
-          background-color: #ffffff;
-          color: #000000;
-        }
-      }
-
-      #battery.critical:not(.charging) {
-        background-color: #f53c3c;
-        color: #ffffff;
-        animation-name: blink;
-        animation-duration: 0.5s;
-        animation-timing-function: linear;
-        animation-iteration-count: infinite;
-        animation-direction: alternate;
-      }
-
-      label:focus {
-        background-color: #000000;
-      }
-
-      #cpu {
-        background-color: #2ecc71;
-        color: #000000;
-      }
-
-      #memory {
-        background-color: #9b59b6;
-      }
-
-      #disk {
-        background-color: #964B00;
-      }
-
-      #backlight {
-        background-color: #90b1b1;
-      }
-
-      #network {
-        background-color: #2980b9;
-      }
-
-      #network.disconnected {
-        background-color: #f53c3c;
-      }
-
-      #pulseaudio {
-        background-color: #f1c40f;
-        color: #000000;
-      }
-
-      #pulseaudio.muted {
-        background-color: #90b1b1;
-        color: #2a5c45;
-      }
-
-      #temperature {
-        background-color: #f0932b;
-      }
-
-      #temperature.critical {
-        background-color: #eb4d4b;
-      }
-
-      #tray {
-        background-color: #2980b9;
-      }
-
-      #tray > .passive {
-        -gtk-icon-effect: dim;
-      }
-
-      #tray > .needs-attention {
-        -gtk-icon-effect: highlight;
-        background-color: #eb4d4b;
-      }
-
-      #idle_inhibitor {
-        background-color: #2d3748;
-      }
-
-      #idle_inhibitor.activated {
-        background-color: #ecf0f1;
-        color: #2d3748;
-      }
-
-      #scratchpad {
-        background: rgba(0, 0, 0, 0.2);
-      }
-
-      #scratchpad.empty {
-        background-color: transparent;
-      }
-    '';
-  };
-
-  # Configure Dunst for notifications
-  services.dunst = {
-    enable = true;
-    settings = {
-      global = {
-        monitor = 0;
-        follow = "mouse";
-        width = 300;
-        height = 300;
-        origin = "top-right";
-        offset = "30x20";
-        indicate_hidden = "yes";
-        transparency = 0;
-        separator_height = 2;
-        padding = 8;
-        horizontal_padding = 8;
-        frame_width = 3;
-        frame_color = "#aaaaaa";
-        separator_color = "frame";
-        sort = "yes";
-        font = "FiraCode Nerd Font 10";
-        line_height = 0;
-        markup = "full";
-        format = "<b>%s</b>\n%b";
-        alignment = "left";
-        show_age_threshold = 60;
-        word_wrap = "yes";
-        ellipsize = "middle";
-        ignore_newline = "no";
-        stack_duplicates = true;
-        hide_duplicate_count = false;
-        show_indicators = "yes";
-        icon_position = "left";
-        max_icon_size = 32;
-        sticky_history = "yes";
-        history_length = 20;
-        dmenu = "/usr/bin/dmenu -p dunst:";
-        browser = "/usr/bin/firefox -new-tab";
-        always_run_script = true;
-        title = "Dunst";
-        class = "Dunst";
-        startup_notification = false;
-        verbosity = "mesg";
-        corner_radius = 0;
-        force_xinerama = false;
-        mouse_left_click = "close_current";
-        mouse_middle_click = "do_action";
-        mouse_right_click = "close_all";
-      };
-
-      urgency_low = {
-        background = "#222222";
-        foreground = "#888888";
-        timeout = 10;
-      };
-
-      urgency_normal = {
-        background = "#285577";
-        foreground = "#ffffff";
-        timeout = 10;
-      };
-
-      urgency_critical = {
-        background = "#900000";
-        foreground = "#ffffff";
-        frame_color = "#ff0000";
-        timeout = 0;
-      };
-    };
-  };
+  # Ensure ~/.config/hypr exists for hyprland to write its IPC socket
+  xdg.enable = true;
 }

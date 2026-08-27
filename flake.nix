@@ -79,6 +79,12 @@
       url = "github:Gerg-L/spicetify-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    # end4's dots-hyprland for the desktop AGS widgets and config
+    dots-hyprland = {
+      url = "github:end-4/dots-hyprland";
+      flake = false;
+    };
   };
 
   outputs =
@@ -209,11 +215,12 @@
         isDarwin = true;
       };
 
-      # Linux desktop host with GPU passthrough (Plasma)
+      # Linux desktop host with GPU passthrough (Hyprland + end4 dots)
       nixosConfigurations."nixos-desktop" = mkSystem {
         name = "nixos-desktop";
         system = "x86_64-linux";
         inherit user;
+        desktopManager = "hyprland";
       };
 
       # Linux desktop host alias (expected by scripts)
@@ -221,6 +228,7 @@
         name = "nixos-desktop";
         system = "x86_64-linux";
         inherit user;
+        desktopManager = "hyprland";
       };
 
       # NixOS VM guests (Hyprland)

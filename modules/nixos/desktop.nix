@@ -124,10 +124,7 @@ in
     ]
     ++ lib.optionals isHyprland (
       [
-        # Hyprland-specific packages
-        waybar
-        rofi-wayland
-        dunst
+        # Hyprland core utilities
         swww # wallpaper daemon
         grim # screenshot
         slurp # screen selection
@@ -135,12 +132,23 @@ in
         brightnessctl
         playerctl
         pamixer
-        swaylock-effects
-        swayidle
         networkmanagerapplet
         pavucontrol
+        wlogout
+        hyprlock
+        hypridle
+        hyprpicker
+
+        # end4/dots-hyprland toolchain
+        ags # widget system (bar, notifications, launcher, overview)
+        foot # terminal (end4's default)
+        fuzzel # application launcher
+
+        # File management
         file-roller
         nautilus
+
+        # GNOME utilities (used by some AGS widgets)
         gnome-calculator
         gnome-calendar
         gnome-clocks
@@ -163,10 +171,21 @@ in
     ];
 
   # Wayland support
-  environment.sessionVariables = lib.mkIf (isPlasma || isHyprland) {
-    NIXOS_OZONE_WL = "1"; # Enable Wayland support in Chromium/Electron apps
-    MOZ_ENABLE_WAYLAND = "1"; # Enable Wayland support in Firefox
-  };
+  environment.sessionVariables = lib.mkMerge [
+    (lib.mkIf (isPlasma || isHyprland) {
+      NIXOS_OZONE_WL = "1"; # Enable Wayland support in Chromium/Electron apps
+      MOZ_ENABLE_WAYLAND = "1"; # Enable Wayland support in Firefox
+    })
+    # NVIDIA-specific Wayland/Hyprland env vars (set at login, not just in hyprland.conf)
+    (lib.mkIf isHyprland {
+      LIBVA_DRIVER_NAME = "nvidia";
+      GBM_BACKEND = "nvidia-drm";
+      __GLX_VENDOR_LIBRARY_NAME = "nvidia";
+      WLR_NO_HARDWARE_CURSORS = "1";
+      NVD_BACKEND = "direct";
+      ELECTRON_OZONE_PLATFORM_HINT = "auto";
+    })
+  ];
 
   # Security and authentication
   security = {
@@ -270,17 +289,23 @@ in
 
   # Fonts configuration
   fonts = {
-    packages = with pkgs; [
-      noto-fonts
-      noto-fonts-cjk-sans
-      noto-fonts-emoji
-      liberation_ttf
-      fira-code
-      fira-code-symbols
-      nerd-fonts.fira-code
-      nerd-fonts.jetbrains-mono
-      font-awesome
-    ];
+    packages =
+      with pkgs;
+      [
+        noto-fonts
+        noto-fonts-cjk-sans
+        noto-fonts-emoji
+        liberation_ttf
+        fira-code
+        fira-code-symbols
+        nerd-fonts.fira-code
+        nerd-fonts.jetbrains-mono
+        font-awesome
+      ]
+      ++ lib.optionals isHyprland [
+        # Required by end4's AGS widgets (icon font)
+        material-symbols
+      ];
 
     fontconfig = {
       enable = true;
