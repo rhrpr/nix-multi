@@ -3,7 +3,7 @@
 {
 
   # Enable Nix
-  nix.enable = false;
+  nix.enable = true;
 
   # Enable flakes globally
   nix.settings.experimental-features = [ "flakes" ];
