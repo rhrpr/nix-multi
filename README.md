@@ -110,75 +110,158 @@ make vm-run
 
 ```text
 nix-multi/
-├── flake.nix              # Main flake configuration
-├── nix-multi.sh           # Main setup and management script
-├── nix-rebuild.sh         # Quick rebuild helper
-├── validate-setup.sh      # Comprehensive setup validation
+├── flake.nix                          # Main flake — defines all host configs and outputs
+├── Makefile                           # Primary interface for all make commands
+├── nix-multi.sh                       # Legacy setup and management script
+├── nix-rebuild.sh                     # Quick rebuild helper for Darwin/NixOS
+├── validate-setup.sh                  # Comprehensive setup validation
+├── cleanup-desktop-switch.sh          # Utility for desktop environment migration
+├── run-custom-vm.sh                   # Run a custom QEMU VM directly
 │
-├── devshells/             # Development shell environments
-│   ├── flutter.nix
-│   ├── python.nix
-│   ├── rust.nix
-│   └── web.nix
+├── lib/
+│   └── mksystem.nix                   # mkSystem builder — shared logic used in flake.nix
+│                                      # to assemble Darwin and NixOS host configs
 │
-├── docs/                  # Extended documentation
-│   ├── VM-MANAGEMENT.md
-│   ├── VM-STATUS.md
-│   ├── SETUP-STATUS.md
-│   ├── LIBVIRT-DYNAMIC-NETWORK.md
-│   ├── LIBVIRT-NIX-MANAGEMENT.md
-│   └── BIOS-TROUBLESHOOTING.md
+├── devshells/                         # Nix development shell environments (`nix develop .#<name>`)
+│   ├── flutter.nix                    # Flutter / Android dev shell
+│   ├── python.nix                     # Python dev shell
+│   ├── rust.nix                       # Rust dev shell
+│   └── web.nix                        # Node.js / TypeScript dev shell
 │
-├── home/                  # Home Manager configurations
-│   ├── core.nix           # Core packages and settings
-│   ├── git.nix            # Git configuration
-│   ├── zsh.nix            # Zsh shell
-│   ├── starship.nix       # Starship prompt
-│   ├── tmux.nix           # Tmux config
-│   ├── plasma.nix         # KDE Plasma config
-│   ├── steam.nix          # Steam / gaming
-│   ├── aerospace/         # Aerospace window manager (macOS)
-│   ├── neovim/            # Neovim configuration
-│   ├── shells/            # Shell configurations
-│   ├── terminals/         # Terminal emulator configs
-│   ├── linux/             # Linux-specific home config
-│   └── macos/             # macOS-specific home config
+├── docs/                              # Extended documentation
+│   ├── VM-MANAGEMENT.md               # VM management workflow guide
+│   ├── VM-STATUS.md                   # VM status reference
+│   ├── SETUP-STATUS.md                # Setup completion notes
+│   ├── LIBVIRT-DYNAMIC-NETWORK.md     # libvirt dynamic network configuration
+│   ├── LIBVIRT-NIX-MANAGEMENT.md      # Managing libvirt via Nix modules
+│   └── BIOS-TROUBLESHOOTING.md        # BIOS/UEFI compatibility troubleshooting
 │
-├── machines/              # Machine-specific overrides
-│   └── nixos-vm.nix
+├── home/                              # Home Manager configurations (user-space)
+│   ├── core.nix                       # Core packages shared across all platforms
+│   ├── git.nix                        # Git identity and settings
+│   ├── zsh.nix                        # Zsh shell config
+│   ├── starship.nix                   # Starship prompt
+│   ├── tmux.nix                       # Tmux config
+│   ├── plasma.nix                     # KDE Plasma home config
+│   ├── steam.nix                      # Steam and gaming packages
+│   ├── vscode.nix                     # VSCode home config entry point
+│   ├── vscode-shared.nix              # Shared VSCode extensions and settings
+│   ├── ghostty.nix                    # Ghostty terminal config (top-level entry)
+│   ├── aerospace/
+│   │   └── aerospace.toml             # Aerospace window manager config (macOS)
+│   ├── neovim/                        # Neovim configuration
+│   │   ├── nvim.nix                   # Neovim Nix module
+│   │   └── lua/custom/                # Custom Lua configs (init, mappings, plugins)
+│   ├── plasma/
+│   │   └── plasma.conf                # KDE Plasma settings file (applied via Home Manager)
+│   ├── shells/
+│   │   └── default.nix                # Shell configuration module
+│   ├── terminals/                     # Terminal emulator configurations
+│   │   ├── default.nix                # Terminal module entry point
+│   │   ├── ghostty.nix                # Ghostty config
+│   │   ├── iterm2.nix                 # iTerm2 config (macOS)
+│   │   └── tmux.nix                   # Tmux config
+│   ├── linux/                         # Linux-specific home config
+│   │   ├── default.nix                # Linux home entry point
+│   │   ├── browser.nix                # Browser configuration
+│   │   ├── plasma.nix                 # KDE Plasma home config (Linux)
+│   │   └── vscode.nix                 # Linux VSCode config
+│   └── macos/                         # macOS-specific home config
+│       ├── default.nix                # macOS home entry point
+│       └── vscode.nix                 # macOS VSCode config
 │
-├── modules/               # System-level modules
-│   ├── darwin/            # macOS nix-darwin modules
-│   ├── nixos/             # NixOS modules (shared)
-│   ├── vm/                # VM-specific modules
-│   ├── shared/            # Cross-platform modules (secrets, vm-tools)
-│   └── hosts/             # Host-specific modules
+├── machines/                          # Machine-specific configuration overrides
+│   └── nixos-vm.nix                   # NixOS VM machine config
+│
+├── modules/                           # System-level Nix modules
+│   ├── darwin/                        # macOS nix-darwin modules
+│   │   ├── nix-core.nix               # Nix daemon settings, trusted users, substituters
+│   │   └── system.nix                 # macOS system preferences, Homebrew, app installs
+│   ├── nixos/                         # NixOS modules shared across native and VM hosts
+│   │   ├── apps.nix                   # System packages
+│   │   ├── nix-core.nix               # Nix settings and garbage collection
+│   │   ├── system.nix                 # Core system config (locale, fonts, services)
+│   │   ├── host-users.nix             # User accounts, groups, sudo rules
+│   │   ├── hardware-configuration.nix # Hardware detection and kernel modules
+│   │   ├── libvirt-host.nix           # libvirt / KVM host configuration
+│   │   ├── virtualization.nix         # Active virtualization stack config
+│   │   ├── virtualization-clean.nix   # Clean-room virtualization config (alternate)
+│   │   └── virtualization-old.nix     # Legacy virtualization config (archived)
+│   ├── vm/                            # VM guest-specific modules
+│   │   ├── apps.nix                   # VM-specific packages
+│   │   ├── system.nix                 # VM system config
+│   │   ├── vm-guest.nix               # Guest tools — SPICE agent, virtio, clipboard
+│   │   ├── hardware-configuration.nix # VM hardware config
+│   │   ├── gpu-guest.nix              # GPU passthrough guest config (VFIO consumer)
+│   │   ├── iso-arm64.nix              # Full ARM64 ISO builder for UTM
+│   │   ├── iso-minimal-arm64.nix      # Minimal ARM64 ISO builder
+│   │   └── minimal-arm64.nix          # Minimal ARM64 system config
+│   ├── shared/                        # Cross-platform modules
+│   │   ├── secrets.nix                # Agenix secret path declarations
+│   │   └── vm-tools.nix               # VM management CLI tools (cross-platform)
+│   └── hosts/                         # Host capability modules (loaded per-host in flake.nix)
 │       ├── linux/
-│       │   ├── gpu-passthrough.nix    # RTX 3080 partial passthrough
-│       │   └── vm-management.nix      # VM tools for Linux
+│       │   ├── gpu-passthrough.nix    # RTX 3080 VFIO partial passthrough config
+│       │   └── vm-management.nix      # libvirt VM management tools for Linux host
 │       └── macos/
-│           ├── linux-builder.nix
-│           └── vm-management.nix      # VM tools for macOS
+│           ├── linux-builder.nix      # darwin.linux-builder for cross-compilation
+│           └── vm-management.nix      # UTM / QEMU VM management tools for macOS host
 │
-├── scripts/               # Utility scripts
-│   ├── vm-setup.sh        # UTM VM setup and deployment
-│   ├── rtx3080-setup.sh   # RTX 3080 testing and validation
-│   ├── qemu-config.sh     # QEMU configuration helper
-│   ├── debug-sleep.sh     # Sleep/wake diagnostics
-│   ├── manage-wake-sources.sh
-│   ├── check-iommu-status.sh
-│   ├── check-bios-issues.sh
-│   ├── bluetooth-debug.sh
-│   └── test-libvirt-network.sh
+├── scripts/                           # Utility shell scripts
+│   ├── vm-setup.sh                    # UTM VM setup and SSH-based config deployment
+│   ├── utm-vm-setup.sh                # UTM-specific VM creation helper
+│   ├── vm-nix-setup.sh                # NixOS configuration bootstrap inside a VM
+│   ├── rtx3080-setup.sh               # RTX 3080 validation, IOMMU, and driver checks
+│   ├── qemu-config.sh                 # QEMU option generator and availability tester
+│   ├── debug-sleep.sh                 # Sleep / wake diagnostics (macOS)
+│   ├── manage-wake-sources.sh         # ACPI wake source management
+│   ├── check-iommu-status.sh          # IOMMU group inspection (Linux)
+│   ├── check-bios-issues.sh           # BIOS / UEFI compatibility checker
+│   ├── bluetooth-debug.sh             # Bluetooth diagnostics
+│   └── test-libvirt-network.sh        # libvirt network connectivity test
 │
-├── secrets/               # Agenix-encrypted secrets (safe to commit)
-│   └── ssh-keys/          # SSH keys for all machines
+├── secrets/                           # Agenix-encrypted secrets (safe to commit)
+│   ├── ssh-keys/                      # SSH keys encrypted per-machine with age
+│   │   ├── id_ed25519.age             # Primary SSH identity key
+│   │   ├── id_rsa.age                 # RSA key (legacy)
+│   │   ├── github.age                 # GitHub deploy key
+│   │   ├── proxmox.age                # Proxmox host key
+│   │   ├── proxmox-nodes.age          # Proxmox cluster node keys
+│   │   ├── raspberry_pi.age           # Raspberry Pi key
+│   │   ├── agenix-macos.age           # macOS machine identity for agenix decryption
+│   │   └── agenix-nixos.age           # NixOS machine identity for agenix decryption
+│   └── README.md                      # Secret management instructions and bootstrap guide
 │
-└── vms/                   # VM definitions and scripts
-    ├── utm-manager.nix    # UTM VM manager module
-    ├── utm-scripts/       # UTM lifecycle scripts
-    ├── nixos-vm/          # Standalone NixOS VM flake
-    └── omarchy-vm/        # Omarchy gaming VM (Linux only)
+└── vms/                               # VM definitions and management
+    ├── utm-manager.nix                # UTM VM manager Nix module
+    ├── utm-scripts/                   # UTM lifecycle automation scripts
+    │   ├── create-vm.sh               # Create UTM VM from ISO
+    │   ├── install-nixos.sh           # Install NixOS into the VM disk
+    │   ├── manage-nixos-vm.sh         # VM lifecycle management (start/stop/snapshot)
+    │   └── provision-vm.sh            # Post-install provisioning (SSH keys, config)
+    ├── nixos-vm/                      # Standalone NixOS VM flake (self-contained)
+    │   ├── flake.nix                  # VM-specific flake with its own inputs
+    │   ├── home.nix                   # Home Manager config for VM user
+    │   ├── vm-hardware.nix            # VM hardware config (virtio, display, memory)
+    │   ├── config/                    # Desktop config files (applied at build time)
+    │   │   ├── hyprland/hyprland.conf # Hyprland compositor config
+    │   │   └── waybar/                # Waybar status bar config and styles
+    │   └── modules/                   # VM NixOS system modules
+    │       ├── configuration.nix      # Main NixOS configuration
+    │       ├── system.nix             # System settings (locale, time, services)
+    │       ├── development.nix        # Dev tools and languages
+    │       └── hyperland.nix          # Hyprland system-level setup
+    └── omarchy-vm/                    # Omarchy gaming VM — Linux host only
+        ├── omarchy-vm.nix             # libvirt VM definition (XML + Nix)
+        ├── create-omarchy-vm.sh       # VM creation script (disk, network, GPU)
+        ├── manage-omarchy.sh          # VM start/stop/status management
+        ├── gpu-passthrough.sh         # Toggle GPU between host and VM
+        ├── enable-gpu-passthrough.sh  # Enable VFIO passthrough for RTX 3080
+        ├── configure-ultrawide.sh     # Configure 3440x1440 display in VM
+        ├── create-no-gpu-vm.sh        # Create VM without GPU (for testing)
+        ├── fix-filesystem.sh          # Filesystem repair utility
+        ├── setup-user-session.sh      # User session bootstrap inside VM
+        └── README.md                  # Omarchy VM full setup documentation
 ```
 
 ## Configuration Overview
