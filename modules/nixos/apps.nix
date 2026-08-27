@@ -46,15 +46,13 @@
     android-studio
     code-cursor
     discord
-    firefox
+    chromium
     ghostty
-    google-chrome
     gparted
     obsidian
     postman
     protonvpn-gui
     spotify
-    steam
     transmission_4
     whatsapp-for-linux
     yubioath-flutter
