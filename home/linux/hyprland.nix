@@ -16,7 +16,7 @@
 
       exec-once = [
         "waybar"
-        "swww init"
+        "swww-daemon"
         "dunst"
         "nm-applet --indicator"
         "blueman-applet"
@@ -48,10 +48,12 @@
           size = 3;
           passes = 1;
         };
-        drop_shadow = "yes";
-        shadow_range = 4;
-        shadow_render_power = 3;
-        "col.shadow" = "rgba(1a1a1aee)";
+        shadow = {
+          enabled = true;
+          range = 4;
+          render_power = 3;
+          color = "rgba(1a1a1aee)";
+        };
       };
 
       animations = {
@@ -73,7 +75,7 @@
       };
 
       master = {
-        new_is_master = true;
+        new_status = "master";
       };
 
       gestures = {
@@ -201,7 +203,7 @@
 
         modules-left = [
           "hyprland/workspaces"
-          "hyprland/mode"
+          "hyprland/submap"
           "hyprland/scratchpad"
         ];
         modules-center = [ "hyprland/window" ];
@@ -527,11 +529,12 @@
       global = {
         monitor = 0;
         follow = "mouse";
-        geometry = "300x5-30+20";
+        width = 300;
+        height = 300;
+        origin = "top-right";
+        offset = "30x20";
         indicate_hidden = "yes";
-        shrink = "no";
         transparency = 0;
-        notification_height = 0;
         separator_height = 2;
         padding = 8;
         horizontal_padding = 8;
@@ -539,7 +542,6 @@
         frame_color = "#aaaaaa";
         separator_color = "frame";
         sort = "yes";
-        idle_threshold = 120;
         font = "FiraCode Nerd Font 10";
         line_height = 0;
         markup = "full";
@@ -568,10 +570,6 @@
         mouse_left_click = "close_current";
         mouse_middle_click = "do_action";
         mouse_right_click = "close_all";
-      };
-
-      experimental = {
-        per_monitor_dpi = false;
       };
 
       urgency_low = {
