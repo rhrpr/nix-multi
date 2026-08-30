@@ -9,12 +9,15 @@ let
     platformToolsVersion = "35.0.2";
     buildToolsVersions = [ "34.0.0" ];
     platformVersions = [
+      "27"
       "34"
       "35"
+      "36"
     ];
     includeSources = false;
-    # System images are large; create AVDs via Android Studio UI instead
-    includeSystemImages = false;
+    includeSystemImages = true;
+    systemImageTypes = [ "google_apis_playstore" ];
+    abiVersions = [ "x86" ];
     # nixpkgs emulator broken on Apple Silicon; use Android Studio's emulator
     includeEmulator = !isMacosArm;
     emulatorVersion = "35.6.9";
@@ -151,7 +154,15 @@ pkgs.mkShell {
     echo "Flutter ${pkgs.flutter.version} development environment"
     echo "  Platforms : Android | Web${if isMacOS then " | iOS | macOS" else " | Linux"}"
     echo "  Java      : ${pkgs.jdk17.version}"
-    echo "  Android   : API 34/35, NDK r25c, build-tools 34.0.0"
+    echo "  Android   : API 27/34/35/36/37, NDK r25c, build-tools 34.0.0, system-images google_apis_playstore x86"
+    echo ""
+    echo "  AVD setup (run once to create emulators):"
+    echo "    avdmanager create avd -n pixel_api27 -k 'system-images;android-27;google_apis_playstore;x86' --device pixel"
+    echo "    avdmanager create avd -n pixel_api34 -k 'system-images;android-34;google_apis_playstore;x86' --device pixel"
+    echo "    avdmanager create avd -n pixel_api35 -k 'system-images;android-35;google_apis_playstore;x86' --device pixel"
+    echo "    avdmanager create avd -n pixel_api36 -k 'system-images;android-36;google_apis_playstore;x86' --device pixel"
+    echo "    avdmanager create avd -n pixel_api37 -k 'system-images;android-37;google_apis_playstore;x86' --device pixel"
+    echo "  Then launch with: flutter emulators --launch pixel_api<version>"
     ${
       if isMacOS then
         ''
