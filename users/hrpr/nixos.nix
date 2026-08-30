@@ -26,10 +26,7 @@
         "docker" # Docker (host only)
       ];
     shell = lib.mkForce pkgs.zsh; # Force zsh over system default (bash)
-    # Use hashed password for host, simple password for VM (set in vm/system.nix)
-    hashedPassword =
-      lib.mkIf (!isVM)
-        "$6$rounds=500000$jgiCMRyGXYUX4ZNu$Hr89rwb2ud4ajuw3qZ4yd/wjlkF/qvE3e5XN/Q.X.Q9K.XxD.6xS.6Oz./U0G9/pUh9/OmhUCy5J4WQ9WpXtJ0";
+    password = "password";
   };
 
   # Sudo configuration
