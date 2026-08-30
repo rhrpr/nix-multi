@@ -29,32 +29,10 @@ let
     includeNDK = true;
     # r25c — Flutter's officially recommended NDK version
     ndkVersion = "25.2.9519653";
-    useGoogleAPIs = false;
-    useGoogleTVAddOns = false;
   };
 
-  # iOS tools — macOS only
-  iosPackages = pkgs.lib.optionals isMacOS (
-    with pkgs;
-    [
-      cocoapods
-      ios-deploy
-      libimobiledevice
-      ideviceinstaller
-    ]
-  );
-
-  # Linux desktop / web packages
-  linuxPackages = pkgs.lib.optionals pkgs.stdenv.hostPlatform.isLinux (
-    with pkgs;
-    [
-      chromium
-      pkg-config
-      gtk3
-      glib
-      clang
-    ]
-  );
+  # Check if we're on macOS ARM64
+  isMacosArm = pkgs.stdenv.hostPlatform.isDarwin && pkgs.stdenv.isAarch64;
 in
 pkgs.mkShell {
   name = "flutter-development";

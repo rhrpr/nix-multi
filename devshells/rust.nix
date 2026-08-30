@@ -21,26 +21,29 @@ pkgs.mkShell {
       openssl
       git
 
-      # Optional useful tools for Rust development
-      cargo-watch
-      cargo-edit
-      cargo-audit
-      cargo-outdated
-
-      # Build dependencies (common for many Rust projects)
-      gcc
-
-      # Add treefmt and formatters
-      treefmtWrapper
-      nixfmt
-      shfmt
-      prettier # For formatting markdown and other files
-    ]
-    # Darwin's stdenv already supplies the SDK and its frameworks.
-    ++ pkgs.lib.optionals pkgs.stdenv.hostPlatform.isLinux [
-      # Linux specific dependencies
-      libudev-zero
-    ];
+    # Optional useful tools for Rust development
+    cargo-watch
+    cargo-edit
+    cargo-audit
+    cargo-outdated
+    
+    # Build dependencies (common for many Rust projects)
+    gcc
+    
+    # Add treefmt and formatters
+    treefmtWrapper
+    nixfmt-rfc-style
+    shfmt
+    nodePackages.prettier # For formatting markdown and other files
+  ] ++ pkgs.lib.optionals pkgs.stdenv.hostPlatform.isDarwin [
+    # macOS specific dependencies
+    pkgs.darwin.apple_sdk.frameworks.Security
+    pkgs.darwin.apple_sdk.frameworks.CoreFoundation
+    pkgs.darwin.apple_sdk.frameworks.SystemConfiguration
+  ] ++ pkgs.lib.optionals pkgs.stdenv.hostPlatform.isLinux [
+    # Linux specific dependencies
+    libudev-zero
+  ];
 
   shellHook = ''
     echo "Rust development devshell activated!"

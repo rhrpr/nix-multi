@@ -62,7 +62,7 @@
       # -------------------------------------------------------------------------
       exec-once = [
         "ags"
-        "swww-daemon"
+        "awww-daemon"
         "hypridle"
         "nm-applet --indicator"
         "blueman-applet"
@@ -490,7 +490,7 @@
     fuzzel
 
     # Wallpaper
-    swww
+    awww
 
     # Screenshots
     grim

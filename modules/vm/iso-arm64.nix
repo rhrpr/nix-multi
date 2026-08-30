@@ -93,7 +93,7 @@
     waybar
     wofi
     dunst
-    swww
+    awww
     grim
     slurp
     wl-clipboard

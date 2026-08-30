@@ -127,7 +127,7 @@ in
     ++ lib.optionals isEnd4 (
       [
         # Hyprland core utilities
-        swww # wallpaper daemon
+        awww # wallpaper daemon
         grim # screenshot
         slurp # screen selection
         wf-recorder # screen recording

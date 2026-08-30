@@ -13,7 +13,7 @@
     waybar # Status bar
     rofi-wayland # Application launcher
     dunst # Notification daemon
-    swww # Wallpaper daemon
+    awww # Wallpaper daemon
     grim # Screenshot tool
     slurp # Screen area selection
     wl-clipboard # Clipboard utilities
