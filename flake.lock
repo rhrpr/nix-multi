@@ -111,6 +111,22 @@
         "type": "github"
       }
     },
+    "dots-hyprland": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1787806651,
+        "narHash": "sha256-G752F8ymZ2STu98RPh+M87hxFKDYpaofnjVcxj32eJo=",
+        "owner": "end-4",
+        "repo": "dots-hyprland",
+        "rev": "97c5bc651f68092351b24aaa935af708b1e04514",
+        "type": "github"
+      },
+      "original": {
+        "owner": "end-4",
+        "repo": "dots-hyprland",
+        "type": "github"
+      }
+    },
     "flake-compat": {
       "flake": false,
       "locked": {
@@ -801,6 +817,7 @@
       "inputs": {
         "agenix": "agenix",
         "darwin": "darwin",
+        "dots-hyprland": "dots-hyprland",
         "flake-utils": "flake-utils",
         "home-manager": "home-manager_2",
         "hyprland": "hyprland",

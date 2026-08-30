@@ -23,6 +23,8 @@
     nixfmt-rfc-style # Nix formatter
     treefmt
     libfido2
+    cmake
+    juce
   ];
   environment.variables.EDITOR = "nano";
 
