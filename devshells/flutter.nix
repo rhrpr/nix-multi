@@ -161,7 +161,6 @@ pkgs.mkShell {
     echo "    avdmanager create avd -n pixel_api34 -k 'system-images;android-34;google_apis_playstore;x86' --device pixel"
     echo "    avdmanager create avd -n pixel_api35 -k 'system-images;android-35;google_apis_playstore;x86' --device pixel"
     echo "    avdmanager create avd -n pixel_api36 -k 'system-images;android-36;google_apis_playstore;x86' --device pixel"
-    echo "    avdmanager create avd -n pixel_api37 -k 'system-images;android-37;google_apis_playstore;x86' --device pixel"
     echo "  Then launch with: flutter emulators --launch pixel_api<version>"
     ${
       if isMacOS then
