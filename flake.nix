@@ -75,6 +75,10 @@
       url = "github:numtide/llm-agents.nix";
     };
 
+    hermes-agent = {
+      url = "github:NousResearch/hermes-agent";
+    };
+
     spicetify-nix = {
       url = "github:Gerg-L/spicetify-nix";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -96,6 +100,7 @@
       treefmt-nix,
       flake-utils,
       llm-agents,
+      hermes-agent,
       ...
     }:
     let

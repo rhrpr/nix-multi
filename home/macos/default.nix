@@ -4,6 +4,7 @@
   imports = [
     ./vscode.nix
     ./aerospace.nix
+    ./hermes.nix
   ];
 
   # macOS-specific packages

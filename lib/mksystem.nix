@@ -12,6 +12,7 @@
   zen-browser,
   nix-openclaw,
   llm-agents,
+  hermes-agent,
   spicetify-nix,
   dots-hyprland,
   ...
@@ -64,6 +65,7 @@ let
       zen-browser
       nix-openclaw
       llm-agents
+      hermes-agent
       spicetify-nix
       dots-hyprland
       ;

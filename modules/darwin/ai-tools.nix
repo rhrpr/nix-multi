@@ -57,6 +57,9 @@
       ##########################################################################
       # Claude Code Ecosystem
       ##########################################################################
+      # NOTE: hermes-agent binary is provided by home/macos/hermes.nix via the
+      # official NousResearch/hermes-agent Home Manager module. hermes-desktop
+      # and hermes-hud are installed here from the llm-agents overlay.
 
       # claude-code-router — Proxy layer that routes Claude Code requests to
       # alternative model providers (OpenRouter, Bedrock, local models).
@@ -73,10 +76,6 @@
       ##########################################################################
       # AI Assistants
       ##########################################################################
-
-      # hermes-agent — Self-improving agent from Nous Research. Capable of
-      # recursive self-refinement; useful for long, autonomous research tasks.
-      ai.hermes-agent
 
       # hermes-desktop — Desktop companion GUI for Hermes. Provides a visual
       # interface for managing Hermes sessions and reviewing agent outputs.
