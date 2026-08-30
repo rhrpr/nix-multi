@@ -27,7 +27,7 @@
 {
   environment.systemPackages =
     let
-      ai = llm-agents.packages.${pkgs.system};
+      ai = llm-agents.packages.${pkgs.stdenv.hostPlatform.system};
     in
     [
 

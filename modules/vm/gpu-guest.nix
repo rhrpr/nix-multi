@@ -11,7 +11,7 @@
 let
   isNvidia = gpuConfig.vendor == "nvidia";
   enablePassthrough = gpuConfig.enablePartialPassthrough;
-  isX86_64 = pkgs.system == "x86_64-linux";
+  isX86_64 = pkgs.stdenv.hostPlatform.system == "x86_64-linux";
 in
 {
   config = lib.mkIf (isNvidia && enablePassthrough && isX86_64) {

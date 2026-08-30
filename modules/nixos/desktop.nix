@@ -64,7 +64,7 @@ in
   programs.hyprland = lib.mkIf isHyprland {
     enable = true;
     xwayland.enable = true;
-    package = hyprland.packages.${pkgs.system}.hyprland;
+    package = hyprland.packages.${pkgs.stdenv.hostPlatform.system}.hyprland;
   };
 
   # Ensure clean switching between desktop environments
@@ -240,7 +240,7 @@ in
       else if isHyprland then
         [
           # Use the portal from Hyprland flake instead of nixpkgs to avoid conflicts
-          hyprland.packages.${pkgs.system}.xdg-desktop-portal-hyprland
+          hyprland.packages.${pkgs.stdenv.hostPlatform.system}.xdg-desktop-portal-hyprland
           xdg-desktop-portal-gtk
         ]
       else
