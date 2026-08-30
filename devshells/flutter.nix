@@ -22,7 +22,7 @@ let
     # r25c — Flutter's officially recommended NDK version
     ndkVersion = "25.2.9519653";
     useGoogleAPIs = false;
-    useGoogleTVAddons = false;
+    useGoogleTVAddOns = false;
   };
 
   # iOS tools — macOS only
