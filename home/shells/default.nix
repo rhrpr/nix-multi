@@ -80,7 +80,11 @@ in
 
       # Nix development shell
       devshell() {
-        nix develop ~/.config/nix-multi
+        if [ -n "$1" ]; then
+          nix develop ~/.config/nix-multi#"$1"
+        else
+          nix develop ~/.config/nix-multi
+        fi
       }
 
       # Quick edit nix config
