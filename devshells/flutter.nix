@@ -51,7 +51,7 @@ in
 pkgs.mkShell {
   name = "flutter-development";
 
-  buildInputs =
+  packages =
     with pkgs;
     [
       # Flutter / Dart SDK
