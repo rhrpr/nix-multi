@@ -152,6 +152,14 @@ in
     };
   };
 
+  # ── LM Studio CLI on PATH ────────────────────────────────────────────────
+  # lms is a ~62MB Bun-compiled native binary bundled with the LM Studio app.
+  # It has no stable download URL so cannot be packaged as a Nix derivation.
+  # LM Studio places it at ~/.lmstudio/bin/lms on first run of the GUI app.
+  # This replaces what `npx lmstudio install-cli` does (PATH manipulation only).
+  # Prerequisite: open LM Studio.app at least once after a fresh install.
+  home.sessionPath = [ "${config.home.homeDirectory}/.lmstudio/bin" ];
+
   # ── Shell integration ────────────────────────────────────────────────────
   home.shellAliases = {
     "hermes-health" = "hermes-local-health";

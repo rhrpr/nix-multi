@@ -50,10 +50,14 @@ let
 
       # ── lms CLI ─────────────────────────────────────────────────────────
       if command -v lms &>/dev/null; then
-        echo "$PASS lms CLI available"
+        echo "$PASS lms CLI available ($(which lms))"
+      elif [ -x "$HOME/.lmstudio/bin/lms" ]; then
+        echo "$WARN lms found at ~/.lmstudio/bin/lms but not on PATH"
+        echo "       Rebuild Home Manager to apply home.sessionPath, or re-login"
       else
-        echo "$FAIL lms CLI: not found"
-        echo "       Run: npx lmstudio install-cli"
+        echo "$FAIL lms CLI not found"
+        echo "       Open LM Studio.app at least once — it places lms at ~/.lmstudio/bin/lms"
+        echo "       ~/.lmstudio/bin is added to PATH declaratively by Home Manager (no npx needed)"
       fi
 
       # ── LM Studio server ────────────────────────────────────────────────
@@ -126,14 +130,16 @@ let
 
       echo ""
       echo "--- Next steps after first install ---"
-      echo "  1. lms server start"
-      echo "  2. curl -s http://localhost:1234/v1/models | jq -r '.data[].id'"
+      echo "  1. Open LM Studio.app once (places lms at ~/.lmstudio/bin/lms)"
+      echo "     ~/.lmstudio/bin is on PATH via Home Manager — no npx install-cli needed"
+      echo "  2. lms server start   (or: launchd agent starts it at login if enabled)"
+      echo "  3. hermes-model-discover"
       echo "     -> set localModelId in home/macos/hermes.nix, then rebuild"
-      echo "  3. hermes model   (complete Codex OAuth)"
-      echo "  4. hermes config set model.lmstudio_load_mode jit"
-      echo "  5. echo 'OPENROUTER_API_KEY=sk-or-...' >> ~/.hermes/.env"
-      echo "  6. hermes doctor"
-      echo "  7. hermes-local-health  (this script)"
+      echo "  4. hermes model   (complete Codex OAuth)"
+      echo "  5. hermes config set model.lmstudio_load_mode jit"
+      echo "  6. echo 'OPENROUTER_API_KEY=sk-or-...' >> ~/.hermes/.env"
+      echo "  7. hermes doctor"
+      echo "  8. hermes-local-health  (this script)"
       echo ""
       echo "=== End of health check ==="
     '';
