@@ -27,7 +27,6 @@ in
           package = pkgs.qemu_kvm;
           runAsRoot = true;
           swtpm.enable = true;
-          # Current NixOS exposes every QEMU OVMF image automatically.
           verbatimConfig = ''
             # Partial GPU passthrough configuration
             cgroup_device_acl = [
