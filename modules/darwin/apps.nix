@@ -118,7 +118,6 @@
       "brave-browser" # Privacy focused browser
       "blender" # Blender app for video editing
       "chatgpt" # ChatGPT Desktop App
-      "claude-code" # Claude AI code editor
       "codex" # ChatGPT Codex
       "cursor" # Cursor AI code editor
       "claude" # Claude AI desktop app (.app bundle via homebrew)
