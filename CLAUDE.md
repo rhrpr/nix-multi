@@ -210,6 +210,73 @@ This is a sophisticated multi-platform Nix configuration supporting:
 - **Display**: GTK with OpenGL/Wayland
 - **GPU Sharing**: Dynamic allocation between host/VMs/containers
 
+## Hermes AI Workflow (macOS only)
+
+### Architecture
+
+Cost-ordered routing stack for M4 24 GB:
+
+```
+TIER 0  LM Studio (localhost:1234)  auxiliary tasks + subagent delegation  (free)
+TIER 1  ChatGPT/Codex OAuth         main planner/reasoner                  (subscription)
+TIER 2  OpenRouter PAYG             fallback / specialist models            (pay-as-you-go)
+```
+
+### Relevant files
+
+| File | Purpose |
+|------|---------|
+| `home/macos/hermes.nix` | HM module — auxiliary/delegation/fallback routing; set `localModelId` here |
+| `modules/darwin/hermes.nix` | System scripts: `hermes-local-health`, `hermes-model-discover` |
+| `docs/hermes-m4-24gb-end-to-end-setup.md` | Full architecture and tuning reference |
+
+### First-time setup (post-rebuild, mutable steps)
+
+```bash
+# 1. Discover local model ID
+lms server start
+hermes-model-discover                   # prints available model IDs
+
+# 2. Set localModelId in home/macos/hermes.nix, then rebuild
+darwin-rebuild switch --flake ~/.config/nix-multi#Ryans-MacBook-Pro
+
+# 3. Authenticate Codex as the main model (OAuth — not managed by Nix)
+hermes model
+
+# 4. Enable JIT loading so model doesn't hold RAM while idle
+hermes config set model.lmstudio_load_mode jit
+
+# 5. Add OpenRouter key (never stored in Nix store)
+echo 'OPENROUTER_API_KEY=sk-or-...' >> ~/.hermes/.env
+
+# 6. Validate
+hermes-local-health
+hermes doctor
+```
+
+### Key design constraint
+
+The `model:` block in `~/.hermes/config.yaml` is written by `hermes model` (OAuth flow)
+and is **never overwritten by Nix**. Only `auxiliary`, `delegation`, `fallback_providers`,
+and `provider_routing` are managed declaratively.
+
+### Hermes commands
+
+```bash
+hermes-local-health        # validate full stack (LM Studio + config + secrets)
+hermes-model-discover      # list models available in LM Studio
+lms-models                 # same, quick zsh function
+lms-start                  # start LM Studio API server
+hermes-dr                  # hermes doctor
+hermes-st                  # hermes status
+```
+
+### Concurrency tuning (24 GB M4)
+
+Start with defaults (`max_concurrent_children: 1`, `max_concurrency: 1`).
+After observing memory pressure and token throughput, raise to 2.
+Edit `home/macos/hermes.nix` and rebuild.
+
 ## Troubleshooting
 
 ### Build Issues
