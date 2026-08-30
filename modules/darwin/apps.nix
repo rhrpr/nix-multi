@@ -109,7 +109,7 @@
 
     casks = [
       "ableton-live-standard" # Digital audio workstation for music production
-      #"android-studio" # Android development environment
+      "android-studio" # Android development environment
       "aural" # audio player
       "arturia-software-center" # Arturia software management tool
       "battery" # Battery management tool
@@ -118,7 +118,7 @@
       "brave-browser" # Privacy focused browser
       "blender" # Blender app for video editing
       "chatgpt" # ChatGPT Desktop App
-      "claude-code" # Claude Code Desktop app
+      "claude-code" # Claude AI code editor
       "codex" # ChatGPT Codex
       "cursor" # Cursor AI code editor
       "claude" # Claude AI desktop app (.app bundle via homebrew)
