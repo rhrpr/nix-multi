@@ -54,7 +54,6 @@ in
     treefmt
     libfido2
     cmake
-    juce
     sockseek
     # stemdeck  # APFS DMG not supported by undmg — install manually
   ];
