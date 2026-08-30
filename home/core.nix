@@ -40,11 +40,14 @@
       enable = true;
       defaultEditor = true;
       vimAlias = true;
+      withRuby = true;
+      withPython3 = true;
     };
     # terminal file manager
     yazi = {
       enable = true;
       enableZshIntegration = true;
+      shellWrapperName = "yy";
       settings = {
         manager = {
           show_hidden = true;

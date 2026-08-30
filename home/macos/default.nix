@@ -10,7 +10,7 @@
   # macOS-specific packages
   home.packages =
     with pkgs;
-    lib.optionals stdenv.isDarwin [
+    lib.optionals stdenv.hostPlatform.isDarwin [
       # Add any macOS-specific packages here
     ];
 }

@@ -25,7 +25,7 @@ in
   # Linux-specific packages
   home.packages =
     with pkgs;
-    lib.optionals stdenv.isLinux [
+    lib.optionals stdenv.hostPlatform.isLinux [
       # Linux desktop utilities
       xclip
       wl-clipboard

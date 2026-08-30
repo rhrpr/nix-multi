@@ -7,7 +7,7 @@
 {
   programs.neovim = {
     enable = true;
-    package = inputs.nvchad4nix.packages.${pkgs.system}.default;
+    package = inputs.nvchad4nix.packages.${pkgs.stdenv.hostPlatform.system}.default;
 
     extraConfig = ''
       set expandtab

@@ -1,7 +1,7 @@
 { pkgs, treefmtWrapper }:
 
 let
-  isMacOS = pkgs.stdenv.isDarwin;
+  isMacOS = pkgs.stdenv.hostPlatform.isDarwin;
   isMacosArm = isMacOS && pkgs.stdenv.isAarch64;
 
   androidSdk = pkgs.androidenv.composeAndroidPackages {
@@ -41,7 +41,7 @@ let
   );
 
   # Linux desktop / web packages
-  linuxPackages = pkgs.lib.optionals pkgs.stdenv.isLinux (
+  linuxPackages = pkgs.lib.optionals pkgs.stdenv.hostPlatform.isLinux (
     with pkgs;
     [
       chromium

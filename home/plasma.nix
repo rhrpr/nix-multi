@@ -7,7 +7,7 @@
 
 {
   # Apply only if the system is Linux
-  config = lib.mkIf pkgs.stdenv.isLinux {
+  config = lib.mkIf pkgs.stdenv.hostPlatform.isLinux {
     # System-level configuration for Plasma
     services.desktopManager.plasma6 = {
       enable = true;

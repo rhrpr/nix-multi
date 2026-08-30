@@ -4,6 +4,7 @@
 {
   isDarwin,
   username,
+  lib,
   ...
 }:
 
@@ -11,47 +12,50 @@
   programs.ssh = {
     enable = true;
 
-    addKeysToAgent = if isDarwin then "yes" else "no";
-    extraConfig = if isDarwin then "UseKeychain yes" else "";
+    settings = {
+      "*" = {
+        AddKeysToAgent = if isDarwin then "yes" else "no";
+      } // lib.optionalAttrs isDarwin {
+        UseKeychain = "yes";
+      };
 
-    matchBlocks = {
       "debbie" = {
-        hostname = "192.168.1.3";
-        user = "root";
-        port = 22;
-        identityFile = "~/.ssh/proxmox";
-        identitiesOnly = true;
+        Hostname = "192.168.1.3";
+        User = "root";
+        Port = 22;
+        IdentityFile = "~/.ssh/proxmox";
+        IdentitiesOnly = true;
       };
 
       "servarr" = {
-        hostname = "192.168.1.4";
-        user = "servarr";
-        port = 22;
-        identityFile = "~/.ssh/proxmox-nodes";
-        identitiesOnly = true;
+        Hostname = "192.168.1.4";
+        User = "servarr";
+        Port = 22;
+        IdentityFile = "~/.ssh/proxmox-nodes";
+        IdentitiesOnly = true;
       };
 
       "vault" = {
-        hostname = "192.168.1.5";
-        user = "vault";
-        port = 22;
-        identityFile = "~/.ssh/proxmox-nodes";
-        identitiesOnly = true;
+        Hostname = "192.168.1.5";
+        User = "vault";
+        Port = 22;
+        IdentityFile = "~/.ssh/proxmox-nodes";
+        IdentitiesOnly = true;
       };
 
       "immmich" = {
-        hostname = "192.168.1.6";
-        user = "immich";
-        port = 22;
-        identityFile = "~/.ssh/proxmox-nodes";
-        identitiesOnly = true;
+        Hostname = "192.168.1.6";
+        User = "immich";
+        Port = 22;
+        IdentityFile = "~/.ssh/proxmox-nodes";
+        IdentitiesOnly = true;
       };
 
       "github.com" = {
-        hostname = "github.com";
-        user = "git";
-        identityFile = "~/.ssh/github.com";
-        identitiesOnly = true;
+        Hostname = "github.com";
+        User = "git";
+        IdentityFile = "~/.ssh/github.com";
+        IdentitiesOnly = true;
       };
     };
   };

@@ -33,12 +33,12 @@ pkgs.mkShell {
     nixfmt-rfc-style
     shfmt
     nodePackages.prettier # For formatting markdown and other files
-  ] ++ pkgs.lib.optionals pkgs.stdenv.isDarwin [
+  ] ++ pkgs.lib.optionals pkgs.stdenv.hostPlatform.isDarwin [
     # macOS specific dependencies
     pkgs.darwin.apple_sdk.frameworks.Security
     pkgs.darwin.apple_sdk.frameworks.CoreFoundation
     pkgs.darwin.apple_sdk.frameworks.SystemConfiguration
-  ] ++ pkgs.lib.optionals pkgs.stdenv.isLinux [
+  ] ++ pkgs.lib.optionals pkgs.stdenv.hostPlatform.isLinux [
     # Linux specific dependencies
     libudev-zero
   ];
