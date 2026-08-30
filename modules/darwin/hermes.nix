@@ -64,7 +64,7 @@ let
         MODELS=$(curl -s http://localhost:1234/v1/models | jq -r '.data[].id' 2>/dev/null)
         if [ -n "$MODELS" ]; then
           echo "$PASS models available:"
-          echo "$MODELS" | sed 's/^/         /'
+          while IFS= read -r line; do echo "         $line"; done <<< "$MODELS"
         else
           echo "$WARN no models loaded (start one in LM Studio or via lms load)"
         fi

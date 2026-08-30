@@ -1,4 +1,34 @@
 { lib, pkgs, username, ... }:
+let
+  sockseek = pkgs.stdenvNoCC.mkDerivation rec {
+    pname = "sockseek";
+    version = "3.0.5";
+    src = pkgs.fetchurl {
+      url = "https://github.com/fiso64/sockseek/releases/download/v${version}/sockseek_${version}_osx-arm64.tar.gz";
+      sha256 = "1l7dl1vrj7pskvp2l0f3dizzhyvak5s5b4i3sybrg2prg25hf63a";
+    };
+    sourceRoot = ".";
+    installPhase = ''
+      mkdir -p $out/bin
+      install -m755 sockseek $out/bin/sockseek
+    '';
+  };
+  # stemdeck: DMG is APFS format; undmg only supports HFS — install manually
+  # stemdeck = pkgs.stdenvNoCC.mkDerivation rec {
+  #   pname = "stemdeck";
+  #   version = "0.15.2";
+  #   src = pkgs.fetchurl {
+  #     url = "https://github.com/stemdeckapp/stemdeck/releases/download/v${version}/StemDeck-macOS-arm64.dmg";
+  #     sha256 = "0ff3317x14ss1ixhy2jhrb639n85wjm03jgdz0h3rs44v3myi4g1";
+  #   };
+  #   nativeBuildInputs = [ pkgs.undmg ];
+  #   sourceRoot = ".";
+  #   installPhase = ''
+  #     mkdir -p $out/Applications
+  #     cp -r StemDeck.app $out/Applications/
+  #   '';
+  # };
+in
 {
 
   ##########################################################################
@@ -25,6 +55,8 @@
     libfido2
     cmake
     juce
+    sockseek
+    # stemdeck  # APFS DMG not supported by undmg — install manually
   ];
   environment.variables.EDITOR = "nano";
 

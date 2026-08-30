@@ -1,4 +1,47 @@
 { pkgs, ... }:
+let
+  sockseek = pkgs.stdenvNoCC.mkDerivation rec {
+    pname = "sockseek";
+    version = "3.0.5";
+    src = pkgs.fetchurl {
+      url = "https://github.com/fiso64/sockseek/releases/download/v${version}/sockseek_${version}_linux-x64.tar.gz";
+      sha256 = "0rhvjnn30a7jr1vh8g7vmmw5m54470hdgzbv947ami3v544yk8fh";
+    };
+    nativeBuildInputs = [ pkgs.autoPatchelfHook ];
+    buildInputs = [
+      pkgs.stdenv.cc.cc.lib
+      pkgs.zlib
+      pkgs.openssl
+      pkgs.icu
+    ];
+    sourceRoot = ".";
+    installPhase = ''
+      mkdir -p $out/bin
+      install -m755 sockseek $out/bin/sockseek
+    '';
+  };
+  stemdeck = pkgs.stdenvNoCC.mkDerivation rec {
+    pname = "stemdeck";
+    version = "0.15.2";
+    src = pkgs.fetchurl {
+      url = "https://github.com/stemdeckapp/stemdeck/releases/download/v${version}/StemDeck-Linux-x64.tar.gz";
+      sha256 = "0gqjz93y5n3l5hh5q5hk4cx1dgln06vs1dra0b02ylf960dfg2fp";
+    };
+    nativeBuildInputs = [ pkgs.autoPatchelfHook ];
+    buildInputs = [
+      pkgs.stdenv.cc.cc.lib
+      pkgs.gtk3
+      pkgs.glib
+      pkgs.webkitgtk_4_1
+      pkgs.openssl
+    ];
+    installPhase = ''
+      mkdir -p $out/bin $out/lib
+      install -m755 StemDeck $out/bin/stemdeck
+      if [ -d lib ]; then cp -r lib/* $out/lib/; fi
+    '';
+  };
+in
 {
 
   ##########################################################################
@@ -56,6 +99,8 @@
     transmission_4
     whatsapp-for-linux
     yubioath-flutter
+    sockseek
+    stemdeck
   ];
   environment.variables.EDITOR = "nano";
 
