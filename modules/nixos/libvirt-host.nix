@@ -23,11 +23,11 @@
         swtpm.enable = true;
 
         # OVMF UEFI firmware for modern VMs
-        ovmf = {
-          enable = true;
-          packages = [ pkgs.OVMFFull.fd ];
-        };
-
+        # ovmf = {
+        #   enable = true;
+        #   packages = [ pkgs.OVMFFull.fd ];
+        # };
+        
         # QEMU configuration for user session support
         verbatimConfig = ''
           # Device access control list for user sessions

@@ -40,7 +40,10 @@
         package = lib.mkDefault pkgs.qemu_kvm;
         runAsRoot = lib.mkDefault true;
         swtpm.enable = lib.mkDefault true;
-        # Current NixOS exposes every QEMU OVMF image automatically.
+        # ovmf = {
+        #   enable = lib.mkDefault true;
+        #   packages = lib.mkDefault [ pkgs.OVMFFull.fd ];
+        # };
       };
     };
 

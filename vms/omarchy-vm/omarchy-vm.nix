@@ -16,10 +16,10 @@
       package = pkgs.qemu_kvm;
       runAsRoot = true;
       swtpm.enable = true;
-      ovmf = {
-        enable = true;
-        packages = [ pkgs.OVMFFull.fd ];
-      };
+      # ovmf = {
+      #   enable = true;
+      #   packages = [ pkgs.OVMFFull.fd ];
+      # };
       verbatimConfig = ''
         # Omarchy VM optimizations
         cgroup_device_acl = [
