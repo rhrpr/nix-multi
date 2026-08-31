@@ -30,7 +30,7 @@ pkgs.mkShell {
     
     # Add treefmt and formatters
     treefmtWrapper
-    nixfmt-rfc-style
+    nixfmt
     shfmt
     nodePackages.prettier # For formatting markdown and other files
   ] ++ pkgs.lib.optionals pkgs.stdenv.hostPlatform.isDarwin [

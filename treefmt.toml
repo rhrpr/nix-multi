@@ -1,6 +1,6 @@
 # Nix formatting
 [formatter.nix]
-command = "nixfmt-rfc-style"
+command = "nixfmt"
 includes = ["*.nix"]
 
 # Python formatting

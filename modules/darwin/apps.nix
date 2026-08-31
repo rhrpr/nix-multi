@@ -50,7 +50,7 @@ in
     just # use Justfile to simplify nix-darwin's commands
     devbox # a toolbox for developers
     nodejs_latest
-    nixfmt-rfc-style # Nix formatter
+    nixfmt # Nix formatter
     treefmt
     libfido2
     cmake

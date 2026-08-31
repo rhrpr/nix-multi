@@ -6,7 +6,7 @@ let
 
   androidSdk = pkgs.androidenv.composeAndroidPackages {
     toolsVersion = "26.1.1";
-    platformToolsVersion = "35.0.2";
+    platformToolsVersion = "37.0.1";
     buildToolsVersions = [ "34.0.0" ];
     platformVersions = [
       "27"
@@ -67,8 +67,8 @@ pkgs.mkShell {
       jdk17
 
       # Web tooling
-      nodejs_20
-      nodePackages.firebase-tools
+      nodejs_22
+      firebase-tools
 
       # Native build tools
       cmake
@@ -83,8 +83,8 @@ pkgs.mkShell {
 
       # Formatting
       treefmtWrapper
-      nixfmt-rfc-style
-      nodePackages.prettier
+      nixfmt
+      prettier
     ]
     ++ iosPackages
     ++ linuxPackages;

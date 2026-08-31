@@ -18,7 +18,7 @@ pkgs.mkShell {
 
     # Add treefmt and formatters
     treefmtWrapper
-    nixfmt-rfc-style
+    nixfmt
     shfmt
   ];
 
