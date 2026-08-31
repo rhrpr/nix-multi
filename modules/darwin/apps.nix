@@ -147,7 +147,8 @@ in
       "balenaetcher" # ISO to USB
       "betterdisplay" # Display scaling (hidpi)
       "brave-browser" # Privacy focused browser
-      "blender" # Blender app for video editing
+      "blender" # Blender app for video editin
+      "caffeine" # Keepalive app for macos
       "chatgpt" # ChatGPT Desktop App
       "codex" # ChatGPT Codex
       "cursor" # Cursor AI code editor
