@@ -57,9 +57,10 @@
       ##########################################################################
       # Claude Code Ecosystem
       ##########################################################################
-      # NOTE: hermes-agent binary is provided by home/macos/hermes.nix via the
-      # official NousResearch/hermes-agent Home Manager module. hermes-desktop
-      # and hermes-hud are installed here from the llm-agents overlay.
+      # hermes-agent — CLI TUI for the Hermes agent runtime. Provides the
+      # `hermes` command used for model auth, config, status, and interactive
+      # sessions. Must be on PATH before running `hermes model` OAuth flow.
+      ai.hermes-agent
 
       # claude-code-router — Proxy layer that routes Claude Code requests to
       # alternative model providers (OpenRouter, Bedrock, local models).
