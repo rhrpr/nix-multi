@@ -50,7 +50,7 @@ let
   # Recommended: a Qwen3.5-class ~9B MLX 4-bit model.
   # Leave as "" until discovered; hermes falls back to the main model.
   # ─────────────────────────────────────────────────────────────────────────
-  localModelId = "";
+  localModelId = "qwen/qwen3.5-9b";
 
   # OpenRouter fallback model (PAYG — activated only when main + local fail).
   # Check openrouter.ai/models for the best current value.
