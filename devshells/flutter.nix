@@ -7,9 +7,13 @@ let
   androidSdk = pkgs.androidenv.composeAndroidPackages {
     toolsVersion = "26.1.1";
     platformToolsVersion = "37.0.1";
-    buildToolsVersions = [ "34.0.0" ];
+    buildToolsVersions = [
+      "34.0.0"
+      "36.0.0"
+    ];
     platformVersions = [
       "27"
+      "33"
       "34"
       "35"
       "36"
@@ -143,6 +147,7 @@ pkgs.mkShell {
       if isMacOS then
         ''
           flutter config --enable-macos-desktop &>/dev/null || true
+          flutter config --enable-ios &>/dev/null || true
         ''
       else
         ''
@@ -158,10 +163,11 @@ pkgs.mkShell {
     ${
       if isMacosArm then
         ''
-          echo "  Android   : API 27/34/35/36, NDK r25c, build-tools 34.0.0, system-images google_apis arm64-v8a"
+          echo "  Android   : API 27/33/34/35/36, NDK r25c, build-tools 34.0.0+36.0.0, system-images google_apis arm64-v8a"
           echo ""
           echo "  AVD setup (run once to create emulators):"
           echo "    avdmanager create avd -n pixel_api27 -k 'system-images;android-27;google_apis;arm64-v8a' --device pixel"
+          echo "    avdmanager create avd -n pixel_api33 -k 'system-images;android-33;google_apis;arm64-v8a' --device pixel"
           echo "    avdmanager create avd -n pixel_api34 -k 'system-images;android-34;google_apis;arm64-v8a' --device pixel"
           echo "    avdmanager create avd -n pixel_api35 -k 'system-images;android-35;google_apis;arm64-v8a' --device pixel"
           echo "    avdmanager create avd -n pixel_api36 -k 'system-images;android-36;google_apis;arm64-v8a' --device pixel"
@@ -169,10 +175,11 @@ pkgs.mkShell {
         ''
       else
         ''
-          echo "  Android   : API 27/34/35/36, NDK r25c, build-tools 34.0.0, system-images google_apis_playstore x86"
+          echo "  Android   : API 27/33/34/35/36, NDK r25c, build-tools 34.0.0+36.0.0, system-images google_apis_playstore x86"
           echo ""
           echo "  AVD setup (run once to create emulators):"
           echo "    avdmanager create avd -n pixel_api27 -k 'system-images;android-27;google_apis_playstore;x86' --device pixel"
+          echo "    avdmanager create avd -n pixel_api33 -k 'system-images;android-33;google_apis_playstore;x86' --device pixel"
           echo "    avdmanager create avd -n pixel_api34 -k 'system-images;android-34;google_apis_playstore;x86' --device pixel"
           echo "    avdmanager create avd -n pixel_api35 -k 'system-images;android-35;google_apis_playstore;x86' --device pixel"
           echo "    avdmanager create avd -n pixel_api36 -k 'system-images;android-36;google_apis_playstore;x86' --device pixel"
