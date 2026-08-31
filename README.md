@@ -377,7 +377,7 @@ make dev-rust       # Rust development
 make check          # Validate flake configuration
 make update         # Update flake inputs
 make clean          # Clean build artifacts
-make fmt            # Format Nix files (nixfmt-rfc-style)
+make fmt            # Format Nix files (nixfmt)
 ```
 
 ### Debugging

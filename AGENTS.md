@@ -95,7 +95,7 @@ make dev-python                    # Python development
 make dev-web                       # Web development (Node.js, TypeScript)
 
 # Code formatting
-make fmt                           # Format Nix files (nixfmt-rfc-style)
+make fmt                           # Format Nix files (nixfmt)
 treefmt                            # Format all files (when in dev shell)
 
 # Legacy commands (still available)

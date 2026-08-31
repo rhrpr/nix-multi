@@ -85,7 +85,7 @@ NixOS system service module (darwin gets `nix-openclaw.darwinModules.openclaw` l
 
 macOS uses **Homebrew** as the primary package manager for GUI and CLI tools. Nix packages are
 limited to a small set of core tools (`git`, `ripgrep`, `neovim`, `just`, `devbox`,
-`nodejs_latest`, `nixfmt-rfc-style`, `treefmt`, `libfido2`).
+`nodejs_latest`, `nixfmt`, `treefmt`, `libfido2`).
 
 NixOS uses **nix packages only** — no Homebrew equivalent.
 
@@ -295,4 +295,4 @@ NixOS desktop.nix provides:
 | `users/hrpr/darwin.nix` homebrew block | Low | Partially overridden by `modules/darwin/apps.nix`; cleanup=zap is a no-op |
 | secrets fresh-install guard | Medium | macOS has `hasIdentity` guard; NixOS always tries to activate secrets (will fail without identity key) |
 | SSH agent daemon style | Low | launchd foreground (macOS) vs systemd forking (NixOS) — both work, inconsistent approach |
-| `nixfmt-rfc-style` + `treefmt` in macOS nix packages | Low | These are build/format tools also available in devShells; on NixOS they are absent from system packages |
+| `nixfmt` + `treefmt` in macOS nix packages | Low | These are build/format tools also available in devShells; on NixOS they are absent from system packages |
