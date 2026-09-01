@@ -96,6 +96,11 @@
       # Workflow & Project Management
       ##########################################################################
 
+      # agent-deck — durable command centre for native AI coding CLIs.
+      # Tracks Claude, Codex, Gemini, Copilot, and Hermes sessions; isolates
+      # concurrent tasks with git worktrees; and recovers the fleet after reboot.
+      ai.agent-deck
+
       # herdr — Terminal workspace manager for AI coding agents (herdr.dev).
       # Creates named workspaces, tracks which agents are running where, and
       # provides unified session navigation. Central coordinator for multi-agent
