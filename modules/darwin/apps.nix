@@ -141,6 +141,7 @@ in
     casks = [
       "ableton-live-standard" # Digital audio workstation for music production
       "android-studio" # Android development environment
+      "antigravity" # Google Antigravity multi-agent command centre
       "aural" # audio player
       "arturia-software-center" # Arturia software management tool
       "battery" # Battery management tool
