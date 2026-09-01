@@ -25,7 +25,8 @@ make dev
 
 The macOS configuration uses **Herdr** as the single agent-aware terminal
 multiplexer. It installs Claude Code, Codex CLI, Gemini CLI, GitHub Copilot CLI,
-Hermes Agent, Google Antigravity, Antigravity CLI, and the LM Studio integration.
+Hermes Agent, Google Antigravity, Antigravity CLI, the LM Studio integration, and
+Agent Deck as an explicitly optional fleet-management alternative.
 
 ```bash
 herdr-agent-setup # install native restore integrations
