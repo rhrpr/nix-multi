@@ -7,6 +7,7 @@ commands.
 Use the maintained guide:
 
 - [Durable multi-agent development workflow](AI-AGENT-WORKFLOW.md)
+- [Historical descriptive tool inventory](ai-tools-with-herdr-legacy.md)
 - [Hermes and LM Studio setup](hermes-m4-24gb-end-to-end-setup.md)
 
 Quick start:
