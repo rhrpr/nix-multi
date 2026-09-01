@@ -42,6 +42,3 @@ keys.txt
 # VM ISO files and downloads
 vm-iso/
 *.iso
-
-# Agent Deck task worktrees
-.worktrees/
