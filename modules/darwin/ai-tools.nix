@@ -101,6 +101,12 @@
       # Workflow & Project Management
       ##########################################################################
 
+      # agent-deck — optional fleet-management alternative.
+      # Installed for experiments requiring its session database, cost dashboard,
+      # or conductor features. Herdr remains the default terminal/worktree owner;
+      # never let both tools manage the same live agent session.
+      ai.agent-deck
+
       # herdr — agent-aware terminal multiplexer and persistent runtime.
       # Owns real terminal panes, project workspaces, git worktrees, lifecycle
       # status, remote attachment, and supported native agent restoration.
