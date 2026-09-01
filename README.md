@@ -21,6 +21,19 @@ make vm-deploy   # Deploy configuration to running VM via SSH
 make dev
 ```
 
+## AI Agent Command Centre
+
+The macOS configuration installs Agent Deck, Claude Code, Codex CLI, Gemini CLI,
+GitHub Copilot CLI, Hermes Agent, and the LM Studio integration.
+
+```bash
+agent-deck       # or: ai
+ai-agent-doctor  # validate CLIs, fleet state, and local inference
+```
+
+See [Durable multi-agent development workflow](docs/AI-AGENT-WORKFLOW.md) for
+subscription routing, parallel worktrees, model handoffs, and reboot recovery.
+
 ## Prerequisites
 
 ### Nix Installation
