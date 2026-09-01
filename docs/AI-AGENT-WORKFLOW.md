@@ -1,42 +1,45 @@
 # Durable multi-agent development workflow
 
-**Primary control plane:** Agent Deck  
+**Terminal runtime:** Herdr  
 **Execution plane:** native Claude Code, Codex CLI, Gemini CLI, GitHub Copilot CLI, and Hermes Agent  
 **Local inference:** LM Studio on the M4 MacBook Pro (24 GB unified memory)  
 **Last verified:** 2026-09-01
 
 ## Decision
 
-Use **Agent Deck** as the session multiplexer and worktree manager. Keep each vendor's
-native CLI and authentication path. Use **Hermes** as an additional agent and model
-router, not as a compulsory proxy in front of every subscription.
+Use **Herdr** as the single agent-aware terminal multiplexer. Keep each vendor's native
+CLI and authentication path. Use **Hermes** as an agent and model router inside Herdr,
+not as a compulsory proxy in front of every subscription.
 
 This separation is deliberate:
 
-- Agent Deck supports Claude, Codex, Gemini, Copilot, Hermes, persistent metadata,
-  isolated tmux sessions, git worktrees, status, session forking, and fleet recovery.
+- Herdr owns persistent terminal sessions, workspaces, tabs, panes, agent status,
+  remote attachment, git worktrees, and supported native agent restoration.
 - Native CLIs are the reliable way to consume ChatGPT, Claude, Gemini, and Copilot
   subscriptions.
 - Hermes can use ChatGPT/Codex OAuth, Copilot OAuth/ACP, LM Studio, APIs, and paid
   fallbacks. It cannot turn every consumer subscription into a general-purpose API.
 - Git worktrees prevent simultaneous agents from editing the same checkout.
-- A tracked handoff file transfers explicit state between model families; native hidden
-  conversation state is not portable.
+- A tracked handoff file transfers explicit state between model families and covers
+  agents, including Gemini, without a current Herdr native-restore integration.
+
+Do not nest another agent session manager inside Herdr. There should be one owner of
+terminal processes and workspace state.
 
 ## Architecture
 
 | Layer | Tool | Responsibility | Persistent data |
 |---|---|---|---|
 | Portfolio queue | GitHub Issues/Projects | Cross-project priority, ownership, acceptance criteria | GitHub |
-| Session control | Agent Deck | Groups, status, tmux sessions, worktrees, recovery | `~/.local/share/agent-deck` |
+| Terminal runtime | Herdr | Sessions, workspaces, panes, status, worktrees, restore, SSH | `~/.config/herdr` |
 | Execution | Native CLIs | Coding, review, tests, research | Vendor-specific home directories |
 | Flexible agent | Hermes | Provider switching, local delegation, specialist/fallback models | `~/.hermes` |
 | Local worker | LM Studio | Cheap auxiliary work and one delegated child at a time | LM Studio application data |
 | Durable handoff | `.ai/HANDOFF.md` | Model-neutral state, decisions, commands, blockers | Git branch |
-| Isolation | Git worktrees | One writable checkout per task | Repository and `.worktrees/` |
+| Isolation | Git worktrees | One writable checkout per task | `~/.herdr/worktrees` |
 
-Agent Deck is the command centre. VS Code remains a useful diff/editor surface: open the
-specific worktree, not the primary checkout, while an agent is changing it.
+VS Code remains a useful diff/editor surface: open the specific Herdr worktree, not the
+primary checkout, while an agent is changing it.
 
 ## Subscription and routing policy
 
@@ -78,30 +81,71 @@ copilot
 hermes model
 ```
 
-Then validate:
+Install Herdr's supported native restore integrations and validate:
 
 ```bash
+herdr-agent-setup
 ai-agent-doctor
 hermes-local-health
 ```
 
+The integration bootstrap installs current Herdr hooks for Claude, Codex, Copilot and
+Hermes. Run `herdr integration status` after agent upgrades.
+
 ## Day-to-day workflow
+
+### Start or reattach
+
+Start Herdr where the work lives:
+
+```bash
+cd ~/projects
+herdr
+```
+
+Herdr starts or attaches to its background server. Detach with `Ctrl+B`, then `Q`.
+Running `herdr` again reattaches without stopping agents.
+
+Use:
+
+- `Ctrl+B`, then `Shift+N` to create a project workspace;
+- `Ctrl+B`, then `Shift+G` to create a git worktree;
+- `Ctrl+B`, then `V` or `-` to split panes;
+- `Ctrl+B`, then `C` to create a tab;
+- `Ctrl+B`, then `W` to navigate workspaces.
+
+### Different projects
+
+Create a workspace for each repository:
+
+```bash
+herdr workspace create --cwd ~/projects/terrashift --label terrashift
+herdr workspace create --cwd ~/projects/meridian --label meridian
+herdr workspace create --cwd ~/.config/nix-multi --label nix-multi
+```
+
+A workspace may contain the writing agent, test watcher, development server and logs in
+separate panes. Herdr rolls agent status up so blocked work is visible without visiting
+each pane.
 
 ### One project, several independent tasks
 
-Create one worktree-backed session per task:
+Create one worktree-backed workspace per independently mergeable task:
 
 ```bash
 cd ~/projects/example
 
-agent-deck add . -t api-auth -g example -c claude \
-  --worktree agent/api-auth --new-branch
+herdr worktree create --cwd . --branch agent/api-auth --base main --label api-auth
+herdr worktree create --cwd . --branch agent/auth-tests --base main --label auth-tests
+herdr worktree create --cwd . --branch agent/repo-map --base main --label repo-map
+```
 
-agent-deck add . -t auth-tests -g example -c codex \
-  --worktree agent/auth-tests --new-branch
+Enter each worktree workspace and run the appropriate native CLI in its root pane:
 
-agent-deck add . -t repo-map -g example -c gemini \
-  --worktree agent/repo-map --new-branch
+```bash
+claude
+codex
+gemini
 ```
 
 Rules:
@@ -111,33 +155,16 @@ Rules:
 - Parallel agents may inspect the same repository, but they must not write to the same
   checkout.
 - Give every task acceptance criteria and a required test command.
-- Merge or rebase deliberately after reviewing each branch; do not let agents
-  automatically merge one another's work.
-
-### Different projects
-
-Create an Agent Deck group for each project and set its default path:
-
-```bash
-agent-deck group create terrashift
-agent-deck group create meridian
-agent-deck group create nix-multi
-
-agent-deck group update terrashift --default-path ~/projects/terrashift
-agent-deck group update meridian --default-path ~/projects/meridian
-agent-deck group update nix-multi --default-path ~/.config/nix-multi
-```
-
-Launch the TUI with `agent-deck` (or the `ai` alias). The actionable sort keeps
-waiting and failed sessions above idle work.
+- Review and merge deliberately; do not let agents automatically merge one another's
+  work.
 
 ### Use Hermes
 
-Hermes appears as a first-class Agent Deck tool:
+Run Hermes directly in a Herdr pane:
 
 ```bash
-agent-deck launch . -t local-triage -g nix-multi -c hermes \
-  -m "Inspect the flake and produce a bounded change plan."
+cd ~/.config/nix-multi
+hermes
 ```
 
 Use Hermes when provider switching or local delegation is valuable. Use a native CLI
@@ -156,57 +183,64 @@ to:
 4. Commit coherent changes, or explicitly list uncommitted files and diffs.
 5. Record the exact next command and the next smallest action.
 
-Stop the old session before starting a different agent in the same worktree:
+Then stop the old agent in that pane and start the replacement from the same worktree:
 
 ```bash
-WORKTREE=$(agent-deck session show api-auth --json | jq -r '.path')
-agent-deck session stop api-auth
-agent-deck launch "$WORKTREE" -t api-auth-codex -g example -c codex \
-  -m "Read .ai/HANDOFF.md, verify repository state, then continue the recorded next action."
+codex
+# Prompt: Read .ai/HANDOFF.md, verify git status and the last test result,
+# then continue only the recorded next action.
 ```
 
 The receiving agent must verify `git status`, the branch name, and the last test result
 before editing.
 
-## Reboot, crash, and quota recovery
+## Persistence, reboot, crash, and quota recovery
 
-Agent Deck persists metadata and native session identifiers, but tmux processes do not
-survive a reboot. Recover sequentially:
+Normal detach is strongest: the Herdr server and all pane processes remain alive.
+
+After a full machine or Herdr-server restart, the original processes are gone. Herdr
+restores workspace/tab/pane layout and resumes supported agent conversations when current
+integrations reported valid native session references:
+
+- Claude Code
+- Codex CLI
+- GitHub Copilot CLI
+- Hermes Agent
+
+Gemini currently restores as a shell in the saved working directory. Continue it using
+the tracked handoff file and Gemini's own session facilities where available.
+
+Recovery sequence:
 
 ```bash
-agent-deck fleet status
-agent-deck fleet recover
-agent-deck fleet recover --yes
+herdr
+herdr integration status
 ```
 
-The first recovery command is read-only and the second is a dry run. The confirmed
-recovery staggers restarts to avoid simultaneous OAuth refresh-token races.
-
-For one dead session:
+Herdr resumes eligible panes after the client attaches and supplies terminal context. If
+an integration is outdated or missing:
 
 ```bash
-agent-deck session restart <session>
-```
-
-If panes are alive but Agent Deck lost its control connection:
-
-```bash
-agent-deck session revive --all
+herdr integration install <agent>
 ```
 
 When a provider quota is exhausted, do not repeatedly restart that CLI. Complete the
-handoff protocol, stop it, and start an eligible native CLI or Hermes in the same
-worktree.
+handoff protocol, stop it, and start an eligible native CLI or Hermes in the same pane
+and worktree.
+
+Keep pane-history persistence disabled by default: terminal output can contain prompts,
+command output, tokens or secrets. Native restoration plus `.ai/HANDOFF.md` provides a
+safer continuity layer.
 
 ## Persistence and backup boundary
 
-Declarative Nix configuration owns packages, PATH, Agent Deck defaults, Hermes routing,
-and helper commands. It must not own OAuth or API credentials.
+Declarative Nix configuration owns packages, PATH, Herdr defaults, Hermes routing, and
+helper commands. It must not own OAuth or API credentials.
 
 Back up at least:
 
 ```text
-~/.local/share/agent-deck
+~/.config/herdr
 ~/.claude
 ~/.codex
 ~/.gemini
@@ -221,7 +255,7 @@ their auth files, `.env` files, or copied credentials to the repository.
 Every agent task is complete only when:
 
 - acceptance criteria are met;
-- the diff is reviewed from outside the writing agent's session;
+- the diff is reviewed from outside the writing agent's pane;
 - tests and formatting pass, or failures are recorded;
 - secrets and mutable auth state remain untracked;
 - `.ai/HANDOFF.md` is current if work will continue;
@@ -233,17 +267,17 @@ native CLI makes the final change.
 
 ## Why not make Hermes the only entry point?
 
-Hermes is the best provider-flexible agent in this stack, but it is not the best durable
-multi-project operating system by itself. Consumer subscription support differs by
-provider, and native CLIs retain their own session/resume behavior. Agent Deck can launch
-all of them, preserve the fleet view, isolate their branches, and recover them after a
-reboot. Hermes remains valuable inside that control plane.
+Hermes is the provider-flexible agent and local-delegation layer, but it is not the
+terminal runtime. Consumer subscription support differs by provider, and native CLIs
+retain their own authentication and session behavior. Herdr keeps them together without
+replacing them.
 
 ## References
 
-- [Agent Deck](https://github.com/asheshgoplani/agent-deck)
-- [Agent Deck configuration](https://github.com/asheshgoplani/agent-deck/blob/main/skills/agent-deck/references/config-reference.md)
-- [Agent Deck CLI and fleet recovery](https://github.com/asheshgoplani/agent-deck/blob/main/skills/agent-deck/references/cli-reference.md)
+- [Herdr](https://herdr.dev/)
+- [Herdr session state and restore](https://herdr.dev/docs/session-state/)
+- [Herdr integrations](https://herdr.dev/docs/integrations/)
+- [Herdr worktrees](https://herdr.dev/docs/configuration/#worktrees)
 - [Hermes providers](https://hermes-agent.nousresearch.com/docs/integrations/providers)
 - [Gemini CLI quotas](https://github.com/google-gemini/gemini-cli/blob/main/docs/resources/quota-and-pricing.md)
 - [Claude Code setup](https://docs.anthropic.com/en/docs/claude-code/getting-started)
