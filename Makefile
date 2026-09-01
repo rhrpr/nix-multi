@@ -56,6 +56,13 @@ help:
 	@echo "  dev-python     - Enter Python development shell"
 	@echo "  dev-rust       - Enter Rust development shell"
 	@echo ""
+	@echo "AI Agent Operations:"
+	@echo "  ai             - Open the Agent Deck command centre"
+	@echo "  ai-status      - Inspect durable fleet state"
+	@echo "  ai-recover-plan - Preview cold-boot fleet recovery"
+	@echo "  ai-recover     - Recover dead sessions sequentially"
+	@echo "  ai-doctor      - Validate the native CLI stack"
+	@echo ""
 	@echo "Maintenance:"
 	@echo "  check          - Check flake configuration"
 	@echo "  update         - Update flake inputs"
@@ -210,6 +217,23 @@ dev-python:
 .PHONY: dev-rust
 dev-rust:
 	nix develop .#rust
+
+# AI agent command centre
+.PHONY: ai ai-status ai-recover-plan ai-recover ai-doctor
+ai:
+	agent-deck
+
+ai-status:
+	agent-deck fleet status
+
+ai-recover-plan:
+	agent-deck fleet recover
+
+ai-recover:
+	agent-deck fleet recover --yes
+
+ai-doctor:
+	ai-agent-doctor
 
 # Maintenance
 .PHONY: check
