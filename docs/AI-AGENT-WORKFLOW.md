@@ -1,7 +1,7 @@
 # Durable multi-agent development workflow
 
 **Terminal runtime:** Herdr  
-**Execution plane:** native Claude Code, Codex CLI, Gemini CLI, GitHub Copilot CLI, and Hermes Agent  
+**Execution plane:** native Claude Code, Codex CLI, Gemini CLI, GitHub Copilot CLI, Google Antigravity CLI, and Hermes Agent  
 **Local inference:** LM Studio on the M4 MacBook Pro (24 GB unified memory)  
 **Last verified:** 2026-09-01
 
@@ -49,6 +49,7 @@ primary checkout, while an agent is changing it.
 | Claude | Claude Code sign-in to Pro/Max | Architecture, difficult refactors, interactive iteration | Claude Pro is a general Anthropic API entitlement |
 | Gemini | Gemini CLI Google-account sign-in | Large-context mapping, documentation, second opinions | A Gemini consumer plan can be consumed by Hermes as an API |
 | GitHub Copilot | Copilot CLI; Hermes Copilot OAuth/ACP | Quick implementation, shell help, alternative model access | Usage is unlimited across all models |
+| Google Antigravity | Antigravity app and `agy` CLI | Parallel Google-agent workflows, autonomous coding, browser-in-loop work | Its state replaces Git or the tracked handoff |
 | LM Studio | OpenAI-compatible localhost endpoint through Hermes | Compression, triage, extraction, bounded delegated work | A 9B local model should own high-risk changes |
 | OpenRouter/API keys | Hermes fallback only | Outage escape hatch or a named specialist model | This is covered by existing subscriptions |
 
@@ -78,6 +79,7 @@ codex
 claude
 gemini
 copilot
+agy
 hermes model
 ```
 
@@ -274,7 +276,7 @@ replacing them.
 
 ## References
 
-- [Herdr](https://herdr.dev/)
+- [Herdr](https://herdr.dev/)\n- [Google Antigravity](https://antigravity.google/)\n- [Antigravity CLI installation](https://antigravity.google/docs/cli/install/)
 - [Herdr session state and restore](https://herdr.dev/docs/session-state/)
 - [Herdr integrations](https://herdr.dev/docs/integrations/)
 - [Herdr worktrees](https://herdr.dev/docs/configuration/#worktrees)
