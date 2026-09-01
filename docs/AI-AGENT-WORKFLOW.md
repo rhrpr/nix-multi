@@ -159,8 +159,9 @@ to:
 Stop the old session before starting a different agent in the same worktree:
 
 ```bash
+WORKTREE=$(agent-deck session show api-auth --json | jq -r '.path')
 agent-deck session stop api-auth
-agent-deck launch .worktrees/agent-api-auth -t api-auth-codex -g example -c codex \
+agent-deck launch "$WORKTREE" -t api-auth-codex -g example -c codex \
   -m "Read .ai/HANDOFF.md, verify repository state, then continue the recorded next action."
 ```
 
