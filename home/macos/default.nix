@@ -5,6 +5,7 @@
     ./vscode.nix
     ./aerospace.nix
     ./hermes.nix
+    ./agent-deck.nix
   ];
 
   # macOS-specific packages
