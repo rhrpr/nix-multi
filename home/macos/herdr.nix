@@ -7,9 +7,15 @@
 #  agent's own home directory.
 #
 ##############################################################################
-{ pkgs, ... }:
+{
+  pkgs,
+  llm-agents,
+  ...
+}:
 
 let
+  aiPackages = llm-agents.packages.${pkgs.stdenv.hostPlatform.system};
+
   herdrAgentSetup = pkgs.writeShellApplication {
     name = "herdr-agent-setup";
     runtimeInputs = with pkgs; [ coreutils ];
@@ -104,6 +110,9 @@ in
   };
 
   home.packages = [
+    # Keep the Antigravity CLI in the same user profile as the Herdr helpers.
+    # The package exposes the executable as `agy`.
+    aiPackages.antigravity-cli
     herdrAgentSetup
     aiAgentDoctor
   ];
