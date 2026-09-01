@@ -68,6 +68,10 @@ let
       echo
       echo "Mutable state (keep outside Git and the Nix store):"
       echo "  ~/.config/herdr  ~/.claude  ~/.codex  ~/.gemini  ~/.hermes"
+      echo
+      if command -v agent-deck >/dev/null 2>&1; then
+        echo "[optional] Agent Deck is installed; Herdr remains the default."
+      fi
       echo "Back these directories up with Time Machine."
 
       exit "$failed"
