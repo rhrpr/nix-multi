@@ -91,8 +91,8 @@ ai-agent-doctor
 hermes-local-health
 ```
 
-The integration bootstrap installs current Herdr hooks for Claude, Codex, Copilot and
-Hermes. Run `herdr integration status` after agent upgrades.
+The integration bootstrap installs current Herdr hooks for Claude, Codex, Copilot,
+Hermes and Antigravity CLI. Run `herdr integration status` after agent upgrades.
 
 ## Day-to-day workflow
 
@@ -148,6 +148,7 @@ Enter each worktree workspace and run the appropriate native CLI in its root pan
 claude
 codex
 gemini
+agy
 ```
 
 Rules:
@@ -175,7 +176,7 @@ when the subscription path or tool-specific session features matter more.
 ## Model handoff protocol
 
 Hidden conversation history does not transfer between Claude, Codex, Gemini, Copilot,
-and Hermes. Before changing tool or reaching a quota boundary, require the current agent
+Antigravity and Hermes. Before changing tool or reaching a quota boundary, require the current agent
 to:
 
 1. Stop starting new work.
@@ -208,6 +209,7 @@ integrations reported valid native session references:
 - Codex CLI
 - GitHub Copilot CLI
 - Hermes Agent
+- Google Antigravity CLI
 
 Gemini currently restores as a shell in the saved working directory. Continue it using
 the tracked handoff file and Gemini's own session facilities where available.
