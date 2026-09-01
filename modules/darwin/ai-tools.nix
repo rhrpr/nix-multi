@@ -54,6 +54,11 @@
       # context window (e.g. large repo summarisation).
       ai.gemini-cli
 
+      # antigravity-cli — terminal interface for Google's Antigravity agents.
+      # The executable is `agy`; Herdr's integration records conversation IDs
+      # so supported sessions can resume after a full server or machine restart.
+      ai.antigravity-cli
+
       ##########################################################################
       # Claude Code Ecosystem
       ##########################################################################
@@ -96,15 +101,9 @@
       # Workflow & Project Management
       ##########################################################################
 
-      # agent-deck — durable command centre for native AI coding CLIs.
-      # Tracks Claude, Codex, Gemini, Copilot, and Hermes sessions; isolates
-      # concurrent tasks with git worktrees; and recovers the fleet after reboot.
-      ai.agent-deck
-
-      # herdr — Terminal workspace manager for AI coding agents (herdr.dev).
-      # Creates named workspaces, tracks which agents are running where, and
-      # provides unified session navigation. Central coordinator for multi-agent
-      # projects.
+      # herdr — agent-aware terminal multiplexer and persistent runtime.
+      # Owns real terminal panes, project workspaces, git worktrees, lifecycle
+      # status, remote attachment, and supported native agent restoration.
       ai.herdr
 
       # backlog-md — Git-native project collaboration between humans and AI.
