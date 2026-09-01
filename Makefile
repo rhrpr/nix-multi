@@ -57,10 +57,10 @@ help:
 	@echo "  dev-rust       - Enter Rust development shell"
 	@echo ""
 	@echo "AI Agent Operations:"
-	@echo "  ai             - Open the Agent Deck command centre"
-	@echo "  ai-status      - Inspect durable fleet state"
-	@echo "  ai-recover-plan - Preview cold-boot fleet recovery"
-	@echo "  ai-recover     - Recover dead sessions sequentially"
+	@echo "  ai             - Start or reattach to Herdr"
+	@echo "  ai-status      - List persistent Herdr sessions"
+	@echo "  ai-integrations - Show native restore integrations"
+	@echo "  ai-setup       - Install Herdr agent integrations"
 	@echo "  ai-doctor      - Validate the native CLI stack"
 	@echo ""
 	@echo "Maintenance:"
@@ -218,19 +218,19 @@ dev-python:
 dev-rust:
 	nix develop .#rust
 
-# AI agent command centre
-.PHONY: ai ai-status ai-recover-plan ai-recover ai-doctor
+# AI agent terminal runtime
+.PHONY: ai ai-status ai-integrations ai-setup ai-doctor
 ai:
-	agent-deck
+	herdr
 
 ai-status:
-	agent-deck fleet status
+	herdr session list
 
-ai-recover-plan:
-	agent-deck fleet recover
+ai-integrations:
+	herdr integration status
 
-ai-recover:
-	agent-deck fleet recover --yes
+ai-setup:
+	herdr-agent-setup
 
 ai-doctor:
 	ai-agent-doctor
