@@ -21,6 +21,22 @@ make vm-deploy   # Deploy configuration to running VM via SSH
 make dev
 ```
 
+## AI Agent Command Centre
+
+The macOS configuration uses **Herdr** as the single agent-aware terminal
+multiplexer. It installs Claude Code, Codex CLI, Gemini CLI, GitHub Copilot CLI,
+Hermes Agent, Google Antigravity, Antigravity CLI, the LM Studio integration, and
+Agent Deck as an explicitly optional fleet-management alternative.
+
+```bash
+herdr-agent-setup # install native restore integrations
+ai-agent-doctor   # validate CLIs, sessions, integrations, and local inference
+herdr             # or: ai
+```
+
+See [Durable multi-agent development workflow](docs/AI-AGENT-WORKFLOW.md) for
+subscription routing, parallel worktrees, model handoffs, and reboot restoration.
+
 ## Prerequisites
 
 ### Nix Installation

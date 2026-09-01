@@ -56,6 +56,13 @@ help:
 	@echo "  dev-python     - Enter Python development shell"
 	@echo "  dev-rust       - Enter Rust development shell"
 	@echo ""
+	@echo "AI Agent Operations:"
+	@echo "  ai             - Start or reattach to Herdr"
+	@echo "  ai-status      - List persistent Herdr sessions"
+	@echo "  ai-integrations - Show native restore integrations"
+	@echo "  ai-setup       - Install Herdr agent integrations"
+	@echo "  ai-doctor      - Validate the native CLI stack"
+	@echo ""
 	@echo "Maintenance:"
 	@echo "  check          - Check flake configuration"
 	@echo "  update         - Update flake inputs"
@@ -210,6 +217,23 @@ dev-python:
 .PHONY: dev-rust
 dev-rust:
 	nix develop .#rust
+
+# AI agent terminal runtime
+.PHONY: ai ai-status ai-integrations ai-setup ai-doctor
+ai:
+	herdr
+
+ai-status:
+	herdr session list
+
+ai-integrations:
+	herdr integration status
+
+ai-setup:
+	herdr-agent-setup
+
+ai-doctor:
+	ai-agent-doctor
 
 # Maintenance
 .PHONY: check

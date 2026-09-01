@@ -5,6 +5,7 @@
     ./vscode.nix
     ./aerospace.nix
     ./hermes.nix
+    ./herdr.nix
   ];
 
   # macOS-specific packages
