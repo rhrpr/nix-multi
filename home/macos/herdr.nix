@@ -16,7 +16,7 @@ let
     text = ''
       set -euo pipefail
 
-      for agent in claude codex copilot hermes; do
+      for agent in claude codex copilot hermes antigravity-cli; do
         echo "Installing Herdr integration: $agent"
         herdr integration install "$agent"
       done
@@ -41,7 +41,7 @@ let
       set -u
 
       failed=0
-      for tool in herdr claude codex gemini copilot hermes; do
+      for tool in herdr claude codex gemini copilot hermes agy; do
         if command -v "$tool" >/dev/null 2>&1; then
           echo "[ok]   $tool"
         else
