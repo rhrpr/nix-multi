@@ -101,6 +101,7 @@ in
       "nikitabobko/tap" # aerospace - an i3-like tiling window manager for macOS
       "FelixKratz/formulae" # janky borders - highlight active window borders
       "trycua/lume"
+      "supabase/tap" # Supabase CLI and tools
     ];
 
     brews = [
@@ -130,6 +131,7 @@ in
       "regclient" # Docker registry synchronization utility
       "taglib" # TagLib library
       "syncthing" # Open source continuous file synchronization tool
+      "supabase" # Supabase CLI and tools
       "terraform-ls" # Language server for Terraform
       "tfenv" # Terraform version manager
       "tmux" # Terminal multiplexer
