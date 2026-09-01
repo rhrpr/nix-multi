@@ -23,15 +23,18 @@ This separation is deliberate:
 - A tracked handoff file transfers explicit state between model families and covers
   agents, including Gemini, without a current Herdr native-restore integration.
 
-Do not nest another agent session manager inside Herdr. There should be one owner of
-terminal processes and workspace state.
+Agent Deck remains installed as an optional fleet-management alternative for experiments
+that need its session database, cost dashboard, or conductor features. Herdr remains the
+default. Do not let Herdr and Agent Deck manage the same live agent session: there must be
+one terminal owner per task.
 
 ## Architecture
 
 | Layer | Tool | Responsibility | Persistent data |
 |---|---|---|---|
 | Portfolio queue | GitHub Issues/Projects | Cross-project priority, ownership, acceptance criteria | GitHub |
-| Terminal runtime | Herdr | Sessions, workspaces, panes, status, worktrees, restore, SSH | `~/.config/herdr` |
+| Terminal runtime | Herdr | Default sessions, workspaces, panes, status, worktrees, restore, SSH | `~/.config/herdr` |
+| Optional fleet manager | Agent Deck | Separate experiments needing its database, cost view, or conductors | `~/.local/share/agent-deck` |
 | Execution | Native CLIs | Coding, review, tests, research | Vendor-specific home directories |
 | Flexible agent | Hermes | Provider switching, local delegation, specialist/fallback models | `~/.hermes` |
 | Local worker | LM Studio | Cheap auxiliary work and one delegated child at a time | LM Studio application data |
@@ -161,6 +164,22 @@ Rules:
 - Review and merge deliberately; do not let agents automatically merge one another's
   work.
 
+### Optional Agent Deck
+
+Agent Deck is installed, but it is not the default `ai` command and does not manage
+Herdr workspaces or worktrees. Invoke it explicitly only for a separate experiment:
+
+```bash
+agent-deck
+```
+
+Use a distinct branch/worktree and do not attach an Agent Deck session to an agent already
+running inside Herdr. Returning to the supported default is always:
+
+```bash
+herdr
+```
+
 ### Use Hermes
 
 Run Hermes directly in a Herdr pane:
@@ -238,13 +257,14 @@ safer continuity layer.
 
 ## Persistence and backup boundary
 
-Declarative Nix configuration owns packages, PATH, Herdr defaults, Hermes routing, and
-helper commands. It must not own OAuth or API credentials.
+Declarative Nix configuration owns packages, PATH, Herdr defaults, the optional Agent
+Deck binary, Hermes routing, and helper commands. It must not own OAuth or API credentials.
 
 Back up at least:
 
 ```text
 ~/.config/herdr
+~/.local/share/agent-deck
 ~/.claude
 ~/.codex
 ~/.gemini
