@@ -56,6 +56,7 @@ in
     cmake
     sockseek
     # stemdeck  # APFS DMG not supported by undmg — install manually
+    supabase-cli
   ];
   environment.variables.EDITOR = "nano";
 
@@ -130,7 +131,6 @@ in
       "regclient" # Docker registry synchronization utility
       "taglib" # TagLib library
       "syncthing" # Open source continuous file synchronization tool
-      "supabase" # Supabase CLI and tools
       "terraform-ls" # Language server for Terraform
       "tfenv" # Terraform version manager
       "tmux" # Terminal multiplexer
