@@ -70,6 +70,12 @@ in
   homebrew = {
     enable = true;
 
+    # Put `/opt/homebrew/{bin,sbin}` on PATH in interactive shells.
+    # nix-darwin added these options defaulting to `false`; without them
+    # `brew` (and brew-installed tools like tfenv) are not found in the terminal.
+    enableZshIntegration = true;
+    enableBashIntegration = true;
+
     onActivation = {
       autoUpdate = true; # Fetch the newest stable branch of Homebrew's git repo
       upgrade = true; # Upgrade outdated casks, formulae, and App Store apps
