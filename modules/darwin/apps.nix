@@ -88,12 +88,12 @@ in
       #"Ferromagnetic" = 1546537151; # Utility for managing magnet links
       #"Magnet" = 441258766; # Window management tool for arranging windows
       "iMovie" = 408981434; # Apple's video editing software
-      "Xcode" = 97799835; # Apple xCode
+      "Xcode" = 497799835; # Apple xCode
       "Pages" = 361309726;
       "Keynote" = 361285480; # Apple's presentation software
       "Numbers" = 361304891; # Apple's spreadsheet software
       "Apple Developer" = 640199958; # Apple Developer
-      "Testflight" = 899247664; #TestFlight
+      # "Testflight" = 899247664; #TestFlight
     };
 
     taps = [
@@ -101,7 +101,6 @@ in
       "nikitabobko/tap" # aerospace - an i3-like tiling window manager for macOS
       "FelixKratz/formulae" # janky borders - highlight active window borders
       "trycua/lume"
-      "supabase/tap" # Supabase CLI and tools
     ];
 
     brews = [
