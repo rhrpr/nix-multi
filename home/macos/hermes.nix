@@ -52,6 +52,33 @@ let
   # ─────────────────────────────────────────────────────────────────────────
   localModelId = "qwen/qwen3.5-9b";
 
+  # OpenCode uses the same local LM Studio endpoint as Hermes. Model keys must
+  # exactly match `lms ls` / the IDs returned by LM Studio's /v1/models API.
+  opencodeModels = {
+    "google/gemma-4-12b-qat" = {
+      name = "Gemma 4 12B QAT (local)";
+      tool_call = true;
+    };
+    "google/gemma-4-e4b" = {
+      name = "Gemma 4 E4B (local)";
+      tool_call = true;
+    };
+    "openai/gpt-oss-20b" = {
+      name = "GPT-OSS 20B (local)";
+      reasoning = true;
+      tool_call = true;
+    };
+    "prism-ml/bonsai-27b" = {
+      name = "Bonsai 27B / Qwen 3.5 (local)";
+      tool_call = true;
+    };
+    "qwen/qwen3.5-9b" = {
+      name = "Qwen 3.5 9B (local, default)";
+      reasoning = true;
+      tool_call = true;
+    };
+  };
+
   # OpenRouter fallback model (PAYG — activated only when main + local fail).
   # Check openrouter.ai/models for the best current value.
   openrouterFallbackModel = "google/gemini-2.5-flash";
@@ -152,6 +179,40 @@ in
     };
   };
 
+  # ── OpenCode → LM Studio ────────────────────────────────────────────────
+  # This is OpenCode's documented OpenAI-compatible LM Studio provider. The
+  # provider timeout is disabled because JIT-loading a large local model can
+  # legitimately take longer than a normal remote API request.
+  xdg.configFile."opencode/opencode.json" = {
+    force = true;
+    text = builtins.toJSON {
+      "$schema" = "https://opencode.ai/config.json";
+      model = "lmstudio/${localModelId}";
+      small_model = "lmstudio/google/gemma-4-e4b";
+      enabled_providers = [ "lmstudio" ];
+      autoupdate = false; # OpenCode is upgraded through the pinned Nix flake.
+      share = "disabled";
+
+      provider.lmstudio = {
+        npm = "@ai-sdk/openai-compatible";
+        name = "LM Studio (local)";
+        options = {
+          baseURL = "http://127.0.0.1:1234/v1";
+          timeout = false;
+          headerTimeout = false;
+        };
+        models = opencodeModels;
+      };
+
+      # The model performs inference locally, while OpenCode executes these
+      # internet tools and returns their results to the model as tool output.
+      permission = {
+        webfetch = "allow";
+        websearch = "allow";
+      };
+    };
+  };
+
   # ── LM Studio CLI on PATH ────────────────────────────────────────────────
   # lms is a ~62MB Bun-compiled native binary bundled with the LM Studio app.
   # It has no stable download URL so cannot be packaged as a Nix derivation.
@@ -165,6 +226,8 @@ in
     "hermes-health" = "hermes-local-health";
     "hermes-dr" = "hermes doctor";
     "hermes-st" = "hermes status";
+    "oc" = "opencode";
+    "oc-local" = "opencode --model lmstudio/${localModelId}";
   };
 
   programs.zsh.initContent = lib.mkAfter ''

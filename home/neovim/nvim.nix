@@ -27,6 +27,7 @@
       emmet-language-server
       nixd
       terraform-ls
+      sourcekit-lsp # Swift / SourceKit-LSP language server
       nodejs
       (python3.withPackages (
         ps: with ps; [

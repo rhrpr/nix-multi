@@ -57,6 +57,7 @@ in
     sockseek
     # stemdeck  # APFS DMG not supported by undmg — install manually
     supabase-cli
+    google-cloud-sdk # gcloud CLI
   ];
   environment.variables.EDITOR = "nano";
 

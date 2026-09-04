@@ -41,6 +41,35 @@ let
         echo "$FAIL hermes CLI: not found"
       fi
 
+      # ── OpenCode CLI + local provider config ────────────────────────────
+      if command -v opencode &>/dev/null; then
+        echo "$PASS opencode CLI available"
+      else
+        echo "$FAIL opencode CLI: not found"
+      fi
+
+      OPENCODE_CFG="$HOME/.config/opencode/opencode.json"
+      if [ -f "$OPENCODE_CFG" ]; then
+        if jq -e \
+          '.model == "lmstudio/qwen/qwen3.5-9b"
+           and .provider.lmstudio.options.baseURL == "http://127.0.0.1:1234/v1"
+           and .permission.webfetch == "allow"
+           and .permission.websearch == "allow"' \
+          "$OPENCODE_CFG" &>/dev/null; then
+          echo "$PASS OpenCode local LM Studio provider + web tools configured"
+        else
+          echo "$FAIL OpenCode config exists but local provider/web tools are incomplete"
+        fi
+      else
+        echo "$FAIL $OPENCODE_CFG missing — rebuild Home Manager"
+      fi
+
+      if [ "''${OPENCODE_ENABLE_EXA:-}" = "1" ]; then
+        echo "$PASS OpenCode web search enabled (OPENCODE_ENABLE_EXA=1)"
+      else
+        echo "$WARN OPENCODE_ENABLE_EXA is not set in this shell (re-login after rebuild)"
+      fi
+
       # ── jq ──────────────────────────────────────────────────────────────
       if command -v jq &>/dev/null; then
         echo "$PASS jq available"
@@ -140,6 +169,7 @@ let
       echo "  6. echo 'OPENROUTER_API_KEY=sk-or-...' >> ~/.hermes/.env"
       echo "  7. hermes doctor"
       echo "  8. hermes-local-health  (this script)"
+      echo "  9. opencode             (uses local Qwen through LM Studio)"
       echo ""
       echo "=== End of health check ==="
     '';

@@ -22,12 +22,24 @@
   pkgs,
   lib,
   llm-agents,
+  hermes-agent,
   ...
 }:
 {
+  # Enables OpenCode's hosted Exa web-search tool even though inference uses a
+  # custom local provider. webfetch works without a feature flag.
+  environment.variables.OPENCODE_ENABLE_EXA = "1";
+
   environment.systemPackages =
     let
       ai = llm-agents.packages.${pkgs.stdenv.hostPlatform.system};
+      # hermes-agent + hermes-desktop come from the NousResearch flake input
+      # (already locked, and its Home-Manager module is imported in
+      # home/macos/hermes.nix). llm-agents.nix pins a stale v2026.8.31 tag
+      # tarball hash — upstream force-moved that tag — so its hermes-agent /
+      # hermes-desktop packages fail to build. Sourcing them here keeps the
+      # CLI and the HM module on the same version.
+      hermesPkgs = hermes-agent.packages.${pkgs.stdenv.hostPlatform.system};
     in
     [
 
@@ -54,6 +66,11 @@
       # context window (e.g. large repo summarisation).
       ai.gemini-cli
 
+      # opencode — terminal coding agent configured declaratively in
+      # home/macos/hermes.nix to use LM Studio and local models by default.
+      # Its webfetch/websearch tools remain available to the local models.
+      ai.opencode
+
       # antigravity-cli — terminal interface for Google's Antigravity agents.
       # The executable is `agy`; Herdr's integration records conversation IDs
       # so supported sessions can resume after a full server or machine restart.
@@ -65,7 +82,8 @@
       # hermes-agent — CLI TUI for the Hermes agent runtime. Provides the
       # `hermes` command used for model auth, config, status, and interactive
       # sessions. Must be on PATH before running `hermes model` OAuth flow.
-      ai.hermes-agent
+      # From the NousResearch flake input (see hermesPkgs note above).
+      hermesPkgs.default
 
       # claude-code-router — Proxy layer that routes Claude Code requests to
       # alternative model providers (OpenRouter, Bedrock, local models).
@@ -85,7 +103,8 @@
 
       # hermes-desktop — Desktop companion GUI for Hermes. Provides a visual
       # interface for managing Hermes sessions and reviewing agent outputs.
-      ai.hermes-desktop
+      # From the NousResearch flake input (see hermesPkgs note above).
+      hermesPkgs.desktop
 
       # hermes-hud — TUI heads-up display that shows live Hermes agent state:
       # current task, memory contents, tool calls in-flight, token budget.
@@ -132,9 +151,11 @@
       # without traditional stashing or worktrees.
       ai.gitbutler
 
-      # openspec — OpenAPI / Swagger spec tooling. Generate, validate, and
-      # diff API specs from the CLI; useful for spec-first development where
-      # agents implement against a contract.
+      # openspec — spec-driven development for AI coding assistants
+      # (openspec.dev, @fission-ai/openspec). Manages change proposals and
+      # capability specs as markdown in the repo; agents draft a spec, get it
+      # approved, implement against it, then archive it. `openspec init` wires
+      # up the AGENTS.md / tool instructions for the project.
       ai.openspec
 
       # trellis — Out-of-the-box engineering framework for AI coding.
