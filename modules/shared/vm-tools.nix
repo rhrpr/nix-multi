@@ -63,25 +63,24 @@ in
   ];
 
   # Shell aliases for VM management (cross-platform)
-  environment.shellAliases =
-    {
-      # QEMU utilities (work on both platforms)
-      qemu-img-create = "qemu-img create -f qcow2";
-      qemu-img-info = "qemu-img info";
-      qemu-img-convert = "qemu-img convert";
-      qemu-config = "~/.config/nix-multi/scripts/qemu-config.sh";
+  environment.shellAliases = {
+    # QEMU utilities (work on both platforms)
+    qemu-img-create = "qemu-img create -f qcow2";
+    qemu-img-info = "qemu-img info";
+    qemu-img-convert = "qemu-img convert";
+    qemu-config = "~/.config/nix-multi/scripts/qemu-config.sh";
 
-      # VM management shortcuts
-      vm-config-test = "~/.config/nix-multi/scripts/qemu-config.sh test";
-      vm-config-show = "~/.config/nix-multi/scripts/qemu-config.sh config";
-    }
-    // lib.optionalAttrs isLinux {
-      # Linux-specific aliases
-      vm-manager = "virt-manager";
-      vm-viewer = "virt-viewer";
-    }
-    // lib.optionalAttrs isDarwin {
-      # macOS-specific aliases
-      vm-list = "ls -la ~/VMs/";
-    };
+    # VM management shortcuts
+    vm-config-test = "~/.config/nix-multi/scripts/qemu-config.sh test";
+    vm-config-show = "~/.config/nix-multi/scripts/qemu-config.sh config";
+  }
+  // lib.optionalAttrs isLinux {
+    # Linux-specific aliases
+    vm-manager = "virt-manager";
+    vm-viewer = "virt-viewer";
+  }
+  // lib.optionalAttrs isDarwin {
+    # macOS-specific aliases
+    vm-list = "ls -la ~/VMs/";
+  };
 }

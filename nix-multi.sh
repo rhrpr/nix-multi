@@ -8,6 +8,7 @@ set -euo pipefail
 # Configuration
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 FLAKE_DIR="$SCRIPT_DIR"
+LINUX_CONFIG="${LINUX_CONFIG:-nixos-end4}" # nixos-end4 | nixos-omarchy | nixos-plasma
 
 # Colors
 RED='\033[0;31m'
@@ -96,6 +97,14 @@ check_flakes() {
     fi
 }
 
+confirm_apply() {
+    if [[ "${CONFIRM_APPLY:-}" != "1" ]]; then
+        log_error "Refusing to modify this system without CONFIRM_APPLY=1."
+        echo "Review README.md and your profile first, then run: CONFIRM_APPLY=1 $0 setup"
+        exit 1
+    fi
+}
+
 # Setup macOS host
 setup_macos() {
     log_section "Setting up macOS host configuration"
@@ -134,7 +143,7 @@ setup_macos() {
 setup_linux() {
     log_section "Setting up Linux host configuration"
     
-    local hostname="${1:-nixos-hyprland}"
+    local hostname="${1:-$LINUX_CONFIG}"
     
     log_info "Building NixOS configuration for hostname: $hostname"
     
@@ -309,9 +318,9 @@ USAGE:
     $0 [COMMAND] [ARGS...]
 
 COMMANDS:
-    setup               Setup host configuration (auto-detects OS)
-    setup-macos         Setup macOS host with nix-darwin
-    setup-linux [HOST]  Setup Linux host with NixOS (default: nixos-hyprland)
+    setup               Apply host configuration (requires CONFIRM_APPLY=1)
+    setup-macos         Apply macOS host configuration (requires CONFIRM_APPLY=1)
+    setup-linux [HOST]  Apply Linux host configuration (requires CONFIRM_APPLY=1)
     
     vm-build [ARCH]     Build NixOS Hyprland VM (x86_64 or aarch64)
     vm-run              Run NixOS Hyprland VM
@@ -331,7 +340,7 @@ EOF
     help                Show this help message
 
 EXAMPLES:
-    $0 setup                    # Auto-setup for current OS
+    CONFIRM_APPLY=1 $0 setup    # Apply configuration for current OS
     $0 vm-build x86_64         # Build x86_64 VM
     $0 vm-run                  # Run VM
     
@@ -360,6 +369,7 @@ main() {
     
     case "$command" in
         setup)
+            confirm_apply
             check_nix
             check_flakes
             local host_os
@@ -367,18 +377,20 @@ main() {
             if [[ "$host_os" == "macos" ]]; then
                 setup_macos
             elif [[ "$host_os" == "linux" ]]; then
-                setup_linux "${2:-nixos-hyprland}"
+                setup_linux "${2:-$LINUX_CONFIG}"
             fi
             ;;
         setup-macos)
+            confirm_apply
             check_nix
             check_flakes
             setup_macos
             ;;
         setup-linux)
+            confirm_apply
             check_nix
             check_flakes
-            setup_linux "${2:-nixos-hyprland}"
+            setup_linux "${2:-$LINUX_CONFIG}"
             ;;
         vm-build)
             check_nix

@@ -1,7 +1,12 @@
 # Omarchy VM Configuration
 # Gaming-focused Linux distribution optimized for performance
 
-{ pkgs, lib, config, ... }:
+{
+  pkgs,
+  lib,
+  config,
+  ...
+}:
 
 {
   # Omarchy VM libvirt domain configuration
@@ -23,7 +28,7 @@
           "/dev/ptmx", "/dev/kvm", "/dev/kqemu",
           "/dev/rtc", "/dev/hpet", "/dev/vfio/vfio"
         ]
-        
+
         # Audio and gaming device access
         user = "hrpr"
         group = "libvirt"
@@ -41,7 +46,7 @@
     spice-gtk
     spice-protocol
     tigervnc
-    
+
     # Gaming tools that might be useful with Omarchy
     gamemode
     mangohud
@@ -54,5 +59,9 @@
   };
 
   # Kernel modules for gaming/virtualization
-  boot.kernelModules = [ "kvm-intel" "kvm-amd" "vfio-pci" ];
+  boot.kernelModules = [
+    "kvm-intel"
+    "kvm-amd"
+    "vfio-pci"
+  ];
 }

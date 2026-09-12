@@ -12,15 +12,16 @@
 {
   # Boot configuration for better VM performance (Linux only)
   boot = {
-    kernelModules =
-      [ "vfio-pci" ]
-      ++ lib.optionals (pkgs.stdenv.hostPlatform.system == "x86_64-linux") [
-        "kvm-intel"
-        "kvm-amd"
-      ]
-      ++ lib.optionals (pkgs.stdenv.hostPlatform.system == "aarch64-linux") [
-        "kvm"
-      ];
+    kernelModules = [
+      "vfio-pci"
+    ]
+    ++ lib.optionals (pkgs.stdenv.hostPlatform.system == "x86_64-linux") [
+      "kvm-intel"
+      "kvm-amd"
+    ]
+    ++ lib.optionals (pkgs.stdenv.hostPlatform.system == "aarch64-linux") [
+      "kvm"
+    ];
     kernelParams =
       lib.optionals (pkgs.stdenv.hostPlatform.system == "x86_64-linux") [
         "intel_iommu=on"

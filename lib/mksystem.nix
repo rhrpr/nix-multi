@@ -28,7 +28,7 @@
   isDarwin ? false,
   vm ? false,
   hardwareModule ? null,
-  desktopManager ? null, # "end4" or "omarchy"; null = auto-detect
+  desktopManager ? null, # "end4" | "omarchy" | "plasma"; null = auto-detect
 }:
 
 let
@@ -44,6 +44,7 @@ let
   gpuConfig = user.gpuConfig or { };
   homeModules = user.homeModules or [ ];
   systemSettings = user.systemSettings or { };
+  userSettings = user.userSettings or { };
 
   # Common special arguments for all configurations
   # Resolve desktop manager: explicit param wins, otherwise auto-detect
@@ -60,7 +61,14 @@ let
   isOmarchy = resolvedDesktopManager == "omarchy";
 
   specialArgs = {
-    inherit username useremail gpuConfig homeModules systemSettings;
+    inherit
+      username
+      useremail
+      gpuConfig
+      homeModules
+      systemSettings
+      userSettings
+      ;
     inherit
       nixpkgs
       home-manager
@@ -95,11 +103,18 @@ let
       // {
         inherit isDarwin isLinux;
       };
-    users.${username} = import ../users/${user.name}/home-manager.nix;
+    users.${username} = import ../home;
     backupFileExtension = "backup";
   };
 
 in
+assert nixpkgs.lib.assertMsg (builtins.elem resolvedDesktopManager [
+  "none"
+  "end4"
+  "hyprland"
+  "omarchy"
+  "plasma"
+]) "Unknown desktopManager: ${resolvedDesktopManager}. Choose end4, omarchy, or plasma.";
 if isDarwin then
   # macOS system using nix-darwin
   darwin.lib.darwinSystem {
@@ -108,15 +123,13 @@ if isDarwin then
     modules = [
       { nixpkgs.config.allowUnfree = true; }
       ../machines/${machine}.nix
-      ../users/${user.name}/darwin.nix
+      ../modules/darwin/user.nix
       home-manager.darwinModules.home-manager
       nix-openclaw.darwinModules.openclaw
       {
-        home-manager =
-          (mkHomeManagerConfig { })
-          // {
-            sharedModules = [ spicetify-nix.homeManagerModules.default ];
-          };
+        home-manager = (mkHomeManagerConfig { }) // {
+          sharedModules = [ spicetify-nix.homeManagerModules.default ];
+        };
       }
     ];
   }
@@ -125,38 +138,31 @@ else
   nixpkgs.lib.nixosSystem {
     inherit system;
     specialArgs = specialArgs;
-    modules =
-      [
-        { nixpkgs.config.allowUnfree = true; }
-        ../machines/${machine}.nix
-        ../users/${user.name}/nixos.nix
-      ]
-      ++ nixpkgs.lib.optional (hardwareModule != null) hardwareModule
-      ++ nixpkgs.lib.optionals isOmarchy [
-        omarchy-nix.nixosModules.default
-        ../modules/nixos/omarchy.nix
-      ]
-      ++ [
-        home-manager.nixosModules.home-manager
-        {
-          home-manager =
-            (mkHomeManagerConfig { })
-            // {
-              sharedModules =
-                (
-                  if isVM then
-                    [ spicetify-nix.homeManagerModules.default ]
-                  else
-                    [
-                      plasma-manager.homeManagerModules.plasma-manager
-                      spicetify-nix.homeManagerModules.default
-                    ]
-                )
-                ++ nixpkgs.lib.optionals isOmarchy [
-                  omarchy-nix.homeManagerModules.default
-                  { omarchy.enable = true; }
-                ];
-            };
-        }
-      ];
+    modules = [
+      { nixpkgs.config.allowUnfree = true; }
+      ../machines/${machine}.nix
+      ../modules/shared/user.nix
+    ]
+    ++ nixpkgs.lib.optional (hardwareModule != null) hardwareModule
+    ++ nixpkgs.lib.optionals isOmarchy [
+      omarchy-nix.nixosModules.default
+      ../modules/nixos/omarchy.nix
+    ]
+    ++ [
+      home-manager.nixosModules.home-manager
+      {
+        home-manager = (mkHomeManagerConfig { }) // {
+          sharedModules = [
+            spicetify-nix.homeManagerModules.default
+          ]
+          ++ nixpkgs.lib.optionals (resolvedDesktopManager == "plasma") [
+            plasma-manager.homeManagerModules.plasma-manager
+          ]
+          ++ nixpkgs.lib.optionals isOmarchy [
+            omarchy-nix.homeManagerModules.default
+            { omarchy.enable = true; }
+          ];
+        };
+      }
+    ];
   }

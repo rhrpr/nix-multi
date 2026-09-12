@@ -9,9 +9,10 @@ ARCH := $(shell uname -m)
 IS_VM := $(shell if [ -f /sys/class/dmi/id/product_name ] && grep -qi "qemu\|kvm\|virtual\|vmware" /sys/class/dmi/id/product_name 2>/dev/null; then echo "true"; else echo "false"; fi)
 
 # Configuration names
-MACOS_CONFIG = Ryans-MacBook-Pro
-LINUX_CONFIG = nixos-plasma
-VM_CONFIG = nixos-vm-hyprland
+MACOS_CONFIG ?= Ryans-MacBook-Pro
+LINUX_CONFIG ?= nixos-end4 # nixos-end4 | nixos-omarchy | nixos-plasma
+LINUX_CONFIG := $(strip $(LINUX_CONFIG))
+VM_CONFIG ?= nixos-vm-hyprland
 
 # Default target
 .PHONY: help
@@ -75,13 +76,16 @@ help:
 	@echo "  gpu-check      - Check RTX 3080 passthrough status"
 
 # Auto-detect setup
-.PHONY: setup
-setup:
+.PHONY: confirm-apply
+confirm-apply:
 	@if [ "$$CONFIRM_APPLY" != "1" ]; then \
 		echo "Refusing to modify this system without CONFIRM_APPLY=1."; \
 		echo "Review README.md and your profile first, then run: CONFIRM_APPLY=1 make setup"; \
 		exit 1; \
 	fi
+
+.PHONY: setup
+setup: confirm-apply
 ifeq ($(UNAME),Darwin)
 	@$(MAKE) setup-macos
 else ifeq ($(IS_VM),true)
@@ -94,15 +98,11 @@ endif
 
 # Linux setup  
 .PHONY: setup-linux
-setup-linux: enable-flakes  
-	@if [ "$$CONFIRM_APPLY" != "1" ]; then \
-		echo "Refusing to modify this system without CONFIRM_APPLY=1."; \
-		exit 1; \
-	fi
+setup-linux: confirm-apply enable-flakes
 	@echo "Setting up NixOS configuration..."
 	@# Fix Git ownership issue when running with sudo
 	@if [ "$$EUID" -eq 0 ]; then \
-		git config --global --add safe.directory /home/hrpr/.config/nix-multi; \
+		git config --global --add safe.directory "$(CURDIR)"; \
 	fi
 	nix build .#nixosConfigurations.$(LINUX_CONFIG).config.system.build.toplevel --no-link
 	sudo nixos-rebuild switch --flake .#$(LINUX_CONFIG)
@@ -136,35 +136,27 @@ enable-flakes:
 	fi
 
 .PHONY: setup-macos
-setup-macos: enable-flakes
-	@if [ "$$CONFIRM_APPLY" != "1" ]; then \
-		echo "Refusing to modify this system without CONFIRM_APPLY=1."; \
-		exit 1; \
-	fi
+setup-macos: confirm-apply enable-flakes
 	@echo "Setting up macOS configuration..."
 	nix build .#darwinConfigurations.$(MACOS_CONFIG).system
 	sudo ./result/sw/bin/darwin-rebuild switch --flake .#$(MACOS_CONFIG)
 
 .PHONY: setup-vm
-setup-vm: enable-flakes
-	@if [ "$$CONFIRM_APPLY" != "1" ]; then \
-		echo "Refusing to modify this system without CONFIRM_APPLY=1."; \
-		exit 1; \
-	fi
+setup-vm: confirm-apply enable-flakes
 	@echo "Setting up NixOS VM configuration..."
 	@# Fix Git ownership issue when running with sudo
 	@if [ "$$EUID" -eq 0 ]; then \
-		git config --global --add safe.directory /home/hrpr/.config/nix-multi; \
+		git config --global --add safe.directory "$(CURDIR)"; \
 	fi
 	nix build .#nixosConfigurations.$(VM_CONFIG).config.system.build.toplevel --no-link
 	sudo nixos-rebuild switch --flake .#$(VM_CONFIG)
 
 # Apply libvirt host configuration
 .PHONY: apply-libvirt
-apply-libvirt:
+apply-libvirt: confirm-apply
 	@echo "Applying LibVirt host configuration..."
 	@echo "This will rebuild the NixOS system with comprehensive libvirt support"
-	@sudo nixos-rebuild switch --flake .#nixos-desktop
+	@sudo nixos-rebuild switch --flake .#$(LINUX_CONFIG)
 	@echo "LibVirt host configuration applied successfully!"
 	@echo ""
 	@echo "Verifying services..."
@@ -177,7 +169,7 @@ apply-libvirt:
 .PHONY: test-config
 test-config:
 	@echo "Testing NixOS configuration..."
-	@sudo nixos-rebuild dry-build --flake .#nixos-desktop
+	@sudo nixos-rebuild dry-build --flake .#$(LINUX_CONFIG)
 
 # VM building
 .PHONY: vm-build
@@ -294,36 +286,36 @@ gpu-check:
 	@cat /proc/driver/nvidia/version 2>/dev/null || echo "NVIDIA driver not loaded"
 
 # VM Management (UTM-based)
-VM_SSH_PORT = 22000
-VM_SSH_USER = hrpr
-VM_SSH_HOST = localhost
-VM_NAME = nixos-hyprland
+VM_SSH_PORT ?= 22000
+VM_SSH_USER ?= $(USER)
+VM_SSH_HOST ?= localhost
+VM_NAME ?= nixos-vm
 ISO_DIR = ./vm-iso
 NIXOS_ISO_URL = https://channels.nixos.org/nixos-unstable/latest-nixos-minimal-aarch64-linux.iso
 
 .PHONY: vm-setup
 vm-setup:
-	@./scripts/vm-setup.sh setup
+	@VM_SSH_PORT="$(VM_SSH_PORT)" VM_SSH_USER="$(VM_SSH_USER)" VM_SSH_HOST="$(VM_SSH_HOST)" VM_NAME="$(VM_NAME)" ./scripts/vm-setup.sh setup
 
 .PHONY: vm-download
 vm-download:
-	@./scripts/vm-setup.sh download
+	@VM_SSH_PORT="$(VM_SSH_PORT)" VM_SSH_USER="$(VM_SSH_USER)" VM_SSH_HOST="$(VM_SSH_HOST)" VM_NAME="$(VM_NAME)" ./scripts/vm-setup.sh download
 
 .PHONY: vm-ssh
 vm-ssh:
-	@./scripts/vm-setup.sh ssh
+	@VM_SSH_PORT="$(VM_SSH_PORT)" VM_SSH_USER="$(VM_SSH_USER)" VM_SSH_HOST="$(VM_SSH_HOST)" VM_NAME="$(VM_NAME)" ./scripts/vm-setup.sh ssh
 
 .PHONY: vm-deploy
 vm-deploy:
-	@./scripts/vm-setup.sh deploy
+	@VM_SSH_PORT="$(VM_SSH_PORT)" VM_SSH_USER="$(VM_SSH_USER)" VM_SSH_HOST="$(VM_SSH_HOST)" VM_NAME="$(VM_NAME)" ./scripts/vm-setup.sh deploy
 
 .PHONY: vm-update
 vm-update:
-	@./scripts/vm-setup.sh deploy
+	@VM_SSH_PORT="$(VM_SSH_PORT)" VM_SSH_USER="$(VM_SSH_USER)" VM_SSH_HOST="$(VM_SSH_HOST)" VM_NAME="$(VM_NAME)" ./scripts/vm-setup.sh deploy
 
 .PHONY: vm-status
 vm-status:
-	@./scripts/vm-setup.sh status
+	@VM_SSH_PORT="$(VM_SSH_PORT)" VM_SSH_USER="$(VM_SSH_USER)" VM_SSH_HOST="$(VM_SSH_HOST)" VM_NAME="$(VM_NAME)" ./scripts/vm-setup.sh status
 
 .PHONY: vm-clean
 vm-clean:
@@ -376,7 +368,7 @@ omarchy-test:
 	@echo "Testing Omarchy VM functionality..."
 	@export LIBVIRT_DEFAULT_URI="qemu:///session" && echo "VM Status: $$(virsh domstate omarchy 2>/dev/null || echo 'not running')"
 	@echo "Shared folder test:"
-	@ls -la /home/hrpr/projects | head -3
+	@ls -la "$(HOME)/projects" | head -3
 	@echo ""
 	@echo "VM Console: virt-viewer omarchy (user session)"
 	@echo "Shared folder mount (in VM): sudo mount -t 9p -o trans=virtio,version=9p2000.L projects ~/projects"
@@ -393,9 +385,9 @@ libvirt-test:
 	@./scripts/test-libvirt-network.sh
 
 .PHONY: libvirt-apply
-libvirt-apply:
+libvirt-apply: confirm-apply
 	@echo "Applying libvirt host configuration via NixOS rebuild..."
-	@sudo nixos-rebuild switch --flake .#nixos-desktop
+	@sudo nixos-rebuild switch --flake .#$(LINUX_CONFIG)
 
 .PHONY: libvirt-check
 libvirt-check:

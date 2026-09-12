@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#172d27">
+  <title>$title</title>
+  <meta name="description" content="$description">
+  <link rel="canonical" href="$canonical">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="$title">
+  <meta property="og:description" content="$description">
+  <meta property="og:url" content="$canonical">
+  $social_image
+  <meta name="twitter:title" content="$title">
+  <meta name="twitter:description" content="$description">
+  <link rel="icon" href="$root/assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="$root/assets/style.css">
+  <script src="$root/assets/site.js" defer></script>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="header wrap">
+    <a class="brand" href="$root/" aria-label="Nix Multi home"><span class="brand-mark" aria-hidden="true">n<span>+</span></span> nix multi<span class="brand-dot">.</span></a>
+    <nav aria-label="Main navigation">
+      <a href="$root/#why">Why Nix Multi</a>
+      <a href="$root/docs/" $docs_current>Documentation</a>
+      <a class="nav-github" href="https://github.com/rhrpr/nix-multi">GitHub <span aria-hidden="true">↗</span></a>
+    </nav>
+  </header>
+  $body
+  <footer class="footer wrap">
+    <a class="brand" href="$root/">nix multi<span class="brand-dot">.</span></a>
+    <p>A personal setup. A reusable foundation.</p>
+    <div><a href="$root/docs/">Documentation</a><a href="https://github.com/rhrpr/nix-multi">Source ↗</a></div>
+  </footer>
+</body>
+</html>

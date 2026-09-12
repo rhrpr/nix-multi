@@ -224,42 +224,37 @@
         isDarwin = true;
       };
 
-      # Linux desktop host with GPU passthrough. Omarchy is the default;
-      # the explicit profile aliases below make switching desktops obvious.
-      nixosConfigurations."nixos-desktop" = mkSystem {
+      # Keep the hardware and host name stable when changing desktops.
+      nixosConfigurations."nixos-desktop" = self.nixosConfigurations.nixos-omarchy; # nixos-end4 | nixos-omarchy | nixos-plasma
+
+      nixosConfigurations."nixos-omarchy" = mkSystem {
         name = "nixos-desktop";
         system = "x86_64-linux";
         inherit user;
         hardwareModule = profile.hardwareModules.desktop;
-        desktopManager = "omarchy";
+        desktopManager = "omarchy"; # "end4" | "omarchy" | "plasma"
       };
 
-      nixosConfigurations."nixos-desktop-end4" = mkSystem {
-        name = "nixos-desktop-end4";
+      nixosConfigurations."nixos-end4" = mkSystem {
+        name = "nixos-desktop";
         machine = "nixos-desktop";
         system = "x86_64-linux";
         inherit user;
         hardwareModule = profile.hardwareModules.desktop;
-        desktopManager = "end4";
+        desktopManager = "end4"; # "end4" | "omarchy" | "plasma"
       };
 
-      nixosConfigurations."nixos-desktop-omarchy" = mkSystem {
-        name = "nixos-desktop-omarchy";
-        machine = "nixos-desktop";
-        system = "x86_64-linux";
-        inherit user;
-        hardwareModule = profile.hardwareModules.desktop;
-        desktopManager = "omarchy";
-      };
-
-      # Linux desktop host alias (expected by scripts)
       nixosConfigurations."nixos-plasma" = mkSystem {
         name = "nixos-desktop";
         system = "x86_64-linux";
         inherit user;
         hardwareModule = profile.hardwareModules.desktop;
-        desktopManager = "end4";
+        desktopManager = "plasma"; # "end4" | "omarchy" | "plasma"
       };
+
+      # Existing explicit aliases retain their desktop behavior.
+      nixosConfigurations."nixos-desktop-end4" = self.nixosConfigurations.nixos-end4;
+      nixosConfigurations."nixos-desktop-omarchy" = self.nixosConfigurations.nixos-omarchy;
 
       # NixOS VM guests. The short/default profile now runs Omarchy.
       nixosConfigurations."vm" = mkSystem {

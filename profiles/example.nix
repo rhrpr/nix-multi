@@ -6,6 +6,7 @@
     email = "replace-me@example.com";
     gpuConfig = { };
     homeModules = [ ];
+    userSettings.passwordlessSudo = false;
     systemSettings = {
       timeZone = "UTC";
       defaultLocale = "en_US.UTF-8";

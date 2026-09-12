@@ -14,27 +14,26 @@ let
 in
 {
   # import sub modules
-  imports =
-    [
-      ./core.nix
-      ./shells
-      ./spicetify.nix
-    ]
-    ++ homeModules
-    ++ lib.optionals (!isOmarchy) [
-      # Omarchy seeds these as mutable files and owns their live theming.
-      ./git.nix
-      ./starship.nix
-      ./terminals
-    ]
-    ++ lib.optionals isDarwin [
-      # macOS-specific modules
-      ./macos
-    ]
-    ++ lib.optionals isLinux [
-      # Linux-specific modules
-      ./linux
-    ];
+  imports = [
+    ./core.nix
+    ./shells
+    ./spicetify.nix
+  ]
+  ++ homeModules
+  ++ lib.optionals (!isOmarchy) [
+    # Omarchy seeds these as mutable files and owns their live theming.
+    ./git.nix
+    ./starship.nix
+    ./terminals
+  ]
+  ++ lib.optionals isDarwin [
+    # macOS-specific modules
+    ./macos
+  ]
+  ++ lib.optionals isLinux [
+    # Linux-specific modules
+    ./linux
+  ];
 
   # Home Manager needs a bit of information about you and the paths it should manage.
   home = {

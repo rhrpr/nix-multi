@@ -8,10 +8,14 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(dirname "$SCRIPT_DIR")"
 
 # Configuration
-VM_NAME="nixos-hyprland"
-VM_SSH_PORT="22"
-VM_SSH_USER="hrpr"
-VM_SSH_HOST="192.168.64.4"
+VM_NAME="${VM_NAME:-nixos-vm}"
+VM_SSH_PORT="${VM_SSH_PORT:-22000}"
+VM_SSH_USER="${VM_SSH_USER:-${USER:?Set VM_SSH_USER to the guest account name}}"
+VM_SSH_HOST="${VM_SSH_HOST:-localhost}"
+VM_MEMORY_MB="${VM_MEMORY_MB:-6144}"
+VM_CPU_CORES="${VM_CPU_CORES:-4}"
+VM_STORAGE_GB="${VM_STORAGE_GB:-30}"
+VM_NIXOS_CONFIG="${VM_NIXOS_CONFIG:-nixos-vm-hyprland}"
 ISO_DIR="$ROOT_DIR/vm-iso"
 NIXOS_ISO_URL="https://channels.nixos.org/nixos-unstable/latest-nixos-minimal-aarch64-linux.iso"
 
@@ -72,9 +76,9 @@ show_utm_instructions() {
     echo ""
     echo "2. Configure VM settings:"
     echo "   - Name: $VM_NAME"
-    echo "   - Memory: 6144 MB (6GB)"
-    echo "   - CPU Cores: 4"
-    echo "   - Storage: 30 GB"
+    echo "   - Memory: $VM_MEMORY_MB MB"
+    echo "   - CPU Cores: $VM_CPU_CORES"
+    echo "   - Storage: $VM_STORAGE_GB GB"
     echo ""
     echo "3. Boot configuration:"
     echo "   - Boot ISO Image: $ISO_DIR/nixos-minimal-aarch64.iso"
@@ -86,7 +90,7 @@ show_utm_instructions() {
     echo ""
     echo "5. Start the VM and install NixOS:"
     echo "   - Follow the NixOS installation guide"
-    echo "   - Create user '$VM_SSH_USER' with password 'nixos'"
+    echo "   - Create user '$VM_SSH_USER' and configure key-based SSH access"
     echo "   - Enable SSH: sudo systemctl enable --now sshd"
     echo ""
     echo "6. After installation, run: $0 deploy"
@@ -140,7 +144,7 @@ deploy_config() {
     log "Applying NixOS configuration..."
     ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null \
         -p "$VM_SSH_PORT" "$VM_SSH_USER@$VM_SSH_HOST" \
-        'cd ~ && rm -rf nix-multi && tar xzf nix-multi-config.tar.gz && cd nix-multi && sudo nixos-rebuild switch --flake .#nixos-vm-hyprland'
+        "cd ~ && rm -rf nix-multi && tar xzf nix-multi-config.tar.gz && cd nix-multi && sudo nixos-rebuild switch --flake .#$VM_NIXOS_CONFIG"
     
     # Cleanup
     rm -f /tmp/nix-multi-config.tar.gz

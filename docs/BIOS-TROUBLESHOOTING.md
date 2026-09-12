@@ -1,5 +1,9 @@
 # BIOS Configuration Guide for Gigabyte B660M + NVIDIA RTX 3080 Sleep/Wake Issues
 
+> **Maintainer hardware example:** These settings are for a Gigabyte B660M,
+> Intel CPU, and NVIDIA RTX 3080. Consult your motherboard and GPU
+> documentation instead of applying them to different hardware.
+
 ## Overview
 The Gigabyte B660M motherboard with Intel B660 chipset has several BIOS settings that commonly cause sleep/wake failures, especially with high-end NVIDIA GPUs like the RTX 3080. These settings often override OS-level power management configurations.
 

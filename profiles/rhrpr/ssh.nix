@@ -16,7 +16,8 @@
     settings = {
       "*" = {
         AddKeysToAgent = if isDarwin then "yes" else "no";
-      } // lib.optionalAttrs isDarwin {
+      }
+      // lib.optionalAttrs isDarwin {
         UseKeychain = "yes";
       };
 

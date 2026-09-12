@@ -59,4 +59,43 @@
 
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux"; # Set explicit platform to avoid circular dependency
   hardware.cpu.intel.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
+
+  boot = {
+    loader.systemd-boot.enable = true;
+    loader.efi.canTouchEfiVariables = true;
+    loader.efi.efiSysMountPoint = "/boot";
+    initrd.systemd.enable = true;
+    kernelParams = [
+      "nvidia-drm.modeset=1"
+      "nvidia.NVreg_PreserveVideoMemoryAllocations=1"
+      "nvidia.NVreg_TemporaryFilePath=/var/tmp"
+      "mem_sleep_default=deep"
+      "acpi_sleep=nonvs"
+      "acpi.ec_no_wakeup=1"
+    ];
+  };
+
+  environment.systemPackages = with pkgs; [
+    sbctl
+    efibootmgr
+  ];
+
+  hardware.nvidia = {
+    modesetting.enable = true;
+    powerManagement = {
+      enable = true;
+      finegrained = false;
+    };
+    gsp.enable = false;
+    forceFullCompositionPipeline = true;
+    open = lib.mkDefault true;
+    package = lib.mkDefault config.boot.kernelPackages.nvidiaPackages.stable;
+  };
+  services.xserver.videoDrivers = [ "nvidia" ];
+
+  systemd.sleep.settings.Sleep = {
+    HibernateDelaySec = "30min";
+    SuspendState = "mem";
+    SuspendMode = "platform";
+  };
 }

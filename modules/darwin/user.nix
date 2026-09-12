@@ -1,14 +1,12 @@
-# macOS user configuration
 {
-  config,
   pkgs,
   lib,
   username,
+  userSettings ? { },
   ...
 }:
 
 {
-  # User account
   users.users.${username} = {
     name = username;
     home = "/Users/${username}";
@@ -16,15 +14,12 @@
     shell = pkgs.zsh;
   };
 
-  # Enable sudo without password for admin users (macOS uses different syntax)
-  security.sudo.extraConfig = ''
+  security.sudo.extraConfig = lib.mkIf (userSettings.passwordlessSudo or false) ''
     %admin ALL=(ALL) NOPASSWD: ALL
   '';
 
-  # macOS-specific user environment
   programs.zsh.enable = true;
 
-  # Homebrew integration (optional)
   homebrew = {
     enable = true;
     onActivation.cleanup = "zap";

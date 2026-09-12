@@ -5,7 +5,10 @@ let
   agenix-nixos = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMUVQqvfbSxCVTYZVeFiL12GxkDqiA5wUNjK/cfBJy0U hrpr@nixos-desktop";
 
   # All recipients — every secret is encrypted to both so either machine can decrypt
-  allKeys = [ agenix-macos agenix-nixos ];
+  allKeys = [
+    agenix-macos
+    agenix-nixos
+  ];
 in
 {
   # Main user identity

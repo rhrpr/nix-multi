@@ -2,6 +2,11 @@
 
 This directory holds all secrets for the nix-multi configuration, encrypted with [agenix](https://github.com/ryantm/agenix) (age encryption via SSH keys).
 
+> **Forks must create their own recipient list and encrypted files.** The
+> committed `secrets.nix` imports the maintainer profile and its `.age` files
+> cannot be decrypted by other users. Replace `secrets.nix` with
+> `secrets.nix.example` before adding your recipients and secrets.
+
 ## How it works
 
 Agenix encrypts each secret to one or more **recipient** SSH public keys. Any machine holding the corresponding private key can decrypt its secrets at activation time. Secrets are committed to git as `.age` files — they are safe to store in version control because they are encrypted.
