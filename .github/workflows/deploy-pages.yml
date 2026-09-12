@@ -28,6 +28,11 @@ jobs:
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
 
+      - name: Verify website artifact exists
+        run: |
+          test -d website/dist
+          test -f website/dist/index.html
+
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
