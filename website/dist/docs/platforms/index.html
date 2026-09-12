@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#172d27">
+  <title>Platforms &amp; virtual machines — Nix Multi</title>
+  <meta name="description" content="Choose a macOS, NixOS, or virtual machine workflow and understand its requirements.">
+  <link rel="canonical" href="https://rhrpr.github.io/nix-multi/docs/platforms/">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Platforms &amp; virtual machines — Nix Multi">
+  <meta property="og:description" content="Choose a macOS, NixOS, or virtual machine workflow and understand its requirements.">
+  <meta property="og:url" content="https://rhrpr.github.io/nix-multi/docs/platforms/">
+  <meta property="og:image" content="https://rhrpr.github.io/nix-multi/assets/og.png"><meta property="og:image:alt" content="Nix Multi. One foundation for your machines."><meta name="twitter:card" content="summary_large_image"><meta name="twitter:image" content="https://rhrpr.github.io/nix-multi/assets/og.png">
+  <meta name="twitter:title" content="Platforms &amp; virtual machines — Nix Multi">
+  <meta name="twitter:description" content="Choose a macOS, NixOS, or virtual machine workflow and understand its requirements.">
+  <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../assets/style.css">
+  <script src="../../assets/site.js" defer></script>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="header wrap">
+    <a class="brand" href="../../" aria-label="Nix Multi home"><span class="brand-mark" aria-hidden="true">n<span>+</span></span> nix multi<span class="brand-dot">.</span></a>
+    <nav aria-label="Main navigation">
+      <a href="../../#why">Why Nix Multi</a>
+      <a href="../../docs/" aria-current="true">Documentation</a>
+      <a class="nav-github" href="https://github.com/rhrpr/nix-multi">GitHub <span aria-hidden="true">↗</span></a>
+    </nav>
+  </header>
+  <main id="main" class="docs-layout wrap"><aside class="docs-sidebar"><p>DOCUMENTATION</p><nav aria-label="Documentation"><a href="../../docs/">Documentation</a><a href="../../docs/getting-started/">Getting started</a><a href="../../docs/architecture/">Architecture</a><a href="../../docs/platforms/" aria-current="page">Platforms &amp; virtual machines</a><a href="../../docs/workflows/">Everyday workflows</a><a href="../../docs/troubleshooting/">Troubleshooting</a></nav><a class="source-link" href="https://github.com/rhrpr/nix-multi">Browse the source ↗</a></aside><article class="article"><p class="eyebrow">03 / CHOOSE</p><h1>Choose your environment.</h1><p class="lead">Share a foundation across machines while keeping the platform-specific parts explicit.</p>
+<h2 id="macos">macOS on Apple Silicon</h2><p>The maintained Darwin configuration targets <code>aarch64-darwin</code>. It combines nix-darwin system settings, Home Manager, application management, Aerospace, and optional development and AI tools.</p><p>Use your own Darwin output and profile. Review macOS application and service modules before switching. For an ARM64 Linux guest, start with the UTM workflow below.</p>
+<h2 id="nixos">NixOS desktops</h2><p>The maintained desktop outputs target <code>x86_64-linux</code>. Choose end4 Hyprland, Omarchy, or KDE Plasma 6. Each named output enables its own desktop and Home Manager configuration. Supply hardware configuration generated on the machine you intend to use.</p>
+<div class="table-scroll"><table><thead><tr><th>Maintainer output</th><th>Meaning</th></tr></thead><tbody><tr><td><code>nixos-end4</code></td><td>end4 Hyprland desktop.</td></tr><tr><td><code>nixos-omarchy</code></td><td>Omarchy desktop.</td></tr><tr><td><code>nixos-plasma</code></td><td>KDE Plasma 6, SDDM, and Plasma Home Manager settings.</td></tr><tr><td><code>vm</code><br><code>nixos-vm-omarchy</code></td><td>Omarchy NixOS guest.</td></tr><tr><td><code>nixos-vm-hyprland</code></td><td>end4 guest compatibility profile.</td></tr></tbody></table></div>
+<p>The Makefile selects <code>LINUX_CONFIG ?= nixos-end4</code>, with all three choices commented on the same line. Override it with <code>LINUX_CONFIG=nixos-omarchy</code> or <code>LINUX_CONFIG=nixos-plasma</code>. The <code>nixos-desktop</code> alias selects Omarchy; the older <code>nixos-desktop-end4</code> and <code>nixos-desktop-omarchy</code> aliases remain available. All desktop choices share the same host name and hardware profile.</p><p>These are examples for the maintainer's machines. Create your own output names and hardware paths before activation.</p>
+<h2 id="vms">Virtual machines</h2><div class="callout"><strong>Align the guest hardware and architecture first.</strong><p>The VM outputs declare x86_64, but the current maintainer VM hardware module selects ARM64. Omarchy requires x86_64, so these defaults currently fail full flake evaluation. Generate hardware configuration for your intended guest and use a compatible desktop before deployment.</p></div><h3>Apple Silicon and UTM</h3><p>The UTM workflow starts with an ARM64 NixOS ISO, followed by guest installation and configuration over SSH. Download the ISO without changing the host system:</p><pre><code>make vm-download</code></pre><p>Create the guest in UTM, select resources appropriate to your machine, install NixOS, and set up your own guest account and SSH access. Review <code>scripts/vm-setup.sh</code> and set <code>VM_SSH_USER</code>, <code>VM_SSH_HOST</code>, and <code>VM_SSH_PORT</code> for that guest before deployment.</p>
+<h3>QEMU and Linux hosts</h3><p>Use the helpers to inspect the configuration for your target architecture:</p><pre><code>./scripts/qemu-config.sh config
+./scripts/qemu-config.sh test x86_64</code></pre><p>Native guest and host architectures are the route to hardware acceleration. Building or emulating another architecture has different requirements; a cross-platform helper does not guarantee accelerated execution. The current main flake's maintained guest outputs are x86_64 Linux; ARM64 UTM installation is a separate workflow.</p>
+<h2 id="gpu">GPU passthrough is optional</h2><p>The repository includes hardware-specific passthrough tooling. Adapt PCI addresses, device IDs, IOMMU groups, and driver configuration to your own GPU. Do not assume the maintainer's RTX 3080 values apply, or that a consumer GPU supports simultaneous host and guest use in every mode.</p><p>Read <a href="https://github.com/rhrpr/nix-multi/blob/main/modules/hosts/linux/gpu-passthrough.nix">the passthrough module</a> and <a href="https://github.com/rhrpr/nix-multi/blob/main/docs/VM-MANAGEMENT.md">the detailed VM guide</a> before changing device ownership.</p>
+<a class="next-link" href="../workflows/">Next: everyday workflows <span aria-hidden="true">→</span></a>
+</article></main>
+  <footer class="footer wrap">
+    <a class="brand" href="../../">nix multi<span class="brand-dot">.</span></a>
+    <p>A personal setup. A reusable foundation.</p>
+    <div><a href="../../docs/">Documentation</a><a href="https://github.com/rhrpr/nix-multi">Source ↗</a></div>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#172d27">
+  <title>Architecture — Nix Multi</title>
+  <meta name="description" content="How profiles, host definitions, system modules, and Home Manager fit together.">
+  <link rel="canonical" href="https://rhrpr.github.io/nix-multi/docs/architecture/">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Architecture — Nix Multi">
+  <meta property="og:description" content="How profiles, host definitions, system modules, and Home Manager fit together.">
+  <meta property="og:url" content="https://rhrpr.github.io/nix-multi/docs/architecture/">
+  <meta property="og:image" content="https://rhrpr.github.io/nix-multi/assets/og.png"><meta property="og:image:alt" content="Nix Multi. One foundation for your machines."><meta name="twitter:card" content="summary_large_image"><meta name="twitter:image" content="https://rhrpr.github.io/nix-multi/assets/og.png">
+  <meta name="twitter:title" content="Architecture — Nix Multi">
+  <meta name="twitter:description" content="How profiles, host definitions, system modules, and Home Manager fit together.">
+  <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../assets/style.css">
+  <script src="../../assets/site.js" defer></script>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="header wrap">
+    <a class="brand" href="../../" aria-label="Nix Multi home"><span class="brand-mark" aria-hidden="true">n<span>+</span></span> nix multi<span class="brand-dot">.</span></a>
+    <nav aria-label="Main navigation">
+      <a href="../../#why">Why Nix Multi</a>
+      <a href="../../docs/" aria-current="true">Documentation</a>
+      <a class="nav-github" href="https://github.com/rhrpr/nix-multi">GitHub <span aria-hidden="true">↗</span></a>
+    </nav>
+  </header>
+  <main id="main" class="docs-layout wrap"><aside class="docs-sidebar"><p>DOCUMENTATION</p><nav aria-label="Documentation"><a href="../../docs/">Documentation</a><a href="../../docs/getting-started/">Getting started</a><a href="../../docs/architecture/" aria-current="page">Architecture</a><a href="../../docs/platforms/">Platforms &amp; virtual machines</a><a href="../../docs/workflows/">Everyday workflows</a><a href="../../docs/troubleshooting/">Troubleshooting</a></nav><a class="source-link" href="https://github.com/rhrpr/nix-multi">Browse the source ↗</a></aside><article class="article"><p class="eyebrow">02 / UNDERSTAND</p><h1>Shared modules.<br>Individual machines.</h1><p class="lead">The configuration separates reusable behavior from personal values and hardware details.</p>
+<h2 id="composition">How a host comes together</h2>
+<pre><code>flake.nix
+  ├── inputs + locked dependency revisions
+  ├── profile → user, preferences, hardware paths
+  └── host output → lib/mksystem.nix
+        ├── machines/ → platform composition
+        ├── modules/ → system and host features
+        └── home/ → Home Manager configuration</code></pre>
+<p><code>flake.nix</code> selects the profile and defines each output. <code>lib/mksystem.nix</code> passes the platform, identity, hardware, and desktop settings to system and Home Manager modules.</p>
+<h2 id="layout">Where changes belong</h2><div class="table-scroll"><table><thead><tr><th>Location</th><th>Responsibility</th></tr></thead><tbody>
+<tr><td><code>profiles/</code></td><td>User identity, locale, host preferences, hardware modules, and personal imports.</td></tr>
+<tr><td><code>machines/</code></td><td>Compose modules for macOS, a NixOS desktop, or a NixOS guest.</td></tr>
+<tr><td><code>modules/darwin/</code></td><td>macOS apps, system settings, users, and optional tooling.</td></tr>
+<tr><td><code>modules/nixos/</code></td><td>NixOS system, desktop, applications, and services.</td></tr>
+<tr><td><code>modules/hosts/</code></td><td>Host capabilities such as VM management and GPU passthrough.</td></tr>
+<tr><td><code>modules/vm/</code></td><td>Guest system configuration and VM integration.</td></tr>
+<tr><td><code>home/</code></td><td>Shared packages, shell configuration, editors, and platform adaptations.</td></tr>
+<tr><td><code>devshells/</code></td><td>Focused development environments selected through flake outputs.</td></tr>
+</tbody></table></div>
+<h2 id="names">Output names and machine modules</h2><p>An output is the name you select after <code>#</code> in a flake reference. In <code>mkSystem</code>, <code>name</code> supplies the host name, while <code>machine</code> chooses a module from <code>machines/</code>. Set <code>machine</code> explicitly when your host name differs from an existing module name.</p>
+<h2 id="profiles">Keep personal values in your profile</h2><p>Start from <code>profiles/example.nix</code>. Replace user and hardware settings in your own profile instead of embedding personal values into shared modules. Review all imported modules: a profile is an organizing boundary, not a guarantee that every upstream default fits your machine.</p>
+<h2 id="home-manager">Home Manager follows the platform</h2><p><code>home/default.nix</code> imports the shared core and shell setup, then platform-specific modules and your additional Home Manager modules. Desktop-specific conditions determine which configuration files are managed. Omarchy, for example, owns parts of its live desktop theming.</p>
+<h2 id="optional">Enable host capabilities deliberately</h2><p>Virtualization, passthrough, desktop environments, and local AI services have different requirements. Read their module options and hardware assumptions before enabling them. Keep the reusable foundation small enough to understand.</p>
+<a class="next-link" href="../platforms/">Next: platforms & virtual machines <span aria-hidden="true">→</span></a>
+</article></main>
+  <footer class="footer wrap">
+    <a class="brand" href="../../">nix multi<span class="brand-dot">.</span></a>
+    <p>A personal setup. A reusable foundation.</p>
+    <div><a href="../../docs/">Documentation</a><a href="https://github.com/rhrpr/nix-multi">Source ↗</a></div>
+  </footer>
+</body>
+</html>
