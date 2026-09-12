@@ -33,5 +33,6 @@
   hardwareModules = {
     desktop = ./rhrpr/hardware/nixos-desktop.nix;
     vm = ./rhrpr/hardware/nixos-vm.nix;
+    vmX86 = ./rhrpr/hardware/nixos-vm-x86.nix;
   };
 }

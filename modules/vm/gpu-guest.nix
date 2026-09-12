@@ -23,7 +23,7 @@ in
         enable = true;
         enable32Bit = lib.mkIf isX86_64 true;
         extraPackages = with pkgs; [
-          vaapiVdpau
+          libva-vdpau-driver
           libvdpau-va-gl
         ];
       };

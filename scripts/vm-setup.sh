@@ -15,7 +15,7 @@ VM_SSH_HOST="${VM_SSH_HOST:-localhost}"
 VM_MEMORY_MB="${VM_MEMORY_MB:-6144}"
 VM_CPU_CORES="${VM_CPU_CORES:-4}"
 VM_STORAGE_GB="${VM_STORAGE_GB:-30}"
-VM_NIXOS_CONFIG="${VM_NIXOS_CONFIG:-nixos-vm-hyprland}"
+VM_NIXOS_CONFIG="${VM_NIXOS_CONFIG:-nixos-vm-arm64}"
 ISO_DIR="$ROOT_DIR/vm-iso"
 NIXOS_ISO_URL="https://channels.nixos.org/nixos-unstable/latest-nixos-minimal-aarch64-linux.iso"
 

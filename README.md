@@ -59,12 +59,12 @@ in [flake.nix](flake.nix) also lists all three choices. Older
 | `Ryans-MacBook-Pro` | Apple Silicon macOS with nix-darwin |
 | `vm`, `nixos-vm-omarchy` | x86_64 NixOS guest with Omarchy |
 | `nixos-vm-hyprland` | x86_64 NixOS guest with end4 Hyprland |
+| `nixos-vm-arm64` | ARM64 NixOS guest with end4 Hyprland for UTM |
 
 These outputs use the maintainer's profile. Forks should define their own hosts.
-The VM outputs declare x86_64, but the current maintainer VM hardware module
-selects ARM64; Omarchy requires x86_64. This existing mismatch blocks the full
-flake check. Generate hardware configuration for the intended guest before
-using the VM profiles.
+The ARM64 and x86_64 VM profiles use separate hardware modules. Generate a
+fresh module for the architecture and disk layout of the guest you intend to
+use.
 
 ## Getting started
 

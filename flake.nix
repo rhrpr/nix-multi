@@ -256,13 +256,14 @@
       nixosConfigurations."nixos-desktop-end4" = self.nixosConfigurations.nixos-end4;
       nixosConfigurations."nixos-desktop-omarchy" = self.nixosConfigurations.nixos-omarchy;
 
-      # NixOS VM guests. The short/default profile now runs Omarchy.
+      # x86_64 guests use an x86_64 hardware module because Omarchy supports
+      # x86_64 only.
       nixosConfigurations."vm" = mkSystem {
         name = "vm";
         machine = "nixos-vm";
         system = "x86_64-linux";
         inherit user;
-        hardwareModule = profile.hardwareModules.vm;
+        hardwareModule = profile.hardwareModules.vmX86;
         vm = true;
         desktopManager = "omarchy";
       };
@@ -272,16 +273,27 @@
         machine = "nixos-vm";
         system = "x86_64-linux";
         inherit user;
-        hardwareModule = profile.hardwareModules.vm;
+        hardwareModule = profile.hardwareModules.vmX86;
         vm = true;
         desktopManager = "omarchy";
       };
 
-      # Legacy/end4 VM profile retained for comparison and rollback.
+      # End4 Hyprland VM for x86_64 hosts.
       nixosConfigurations."nixos-vm-hyprland" = mkSystem {
         name = "nixos-vm-hyprland";
         machine = "nixos-vm";
         system = "x86_64-linux";
+        inherit user;
+        hardwareModule = profile.hardwareModules.vmX86;
+        vm = true;
+        desktopManager = "end4";
+      };
+
+      # ARM64 UTM guest profile for Apple Silicon hosts.
+      nixosConfigurations."nixos-vm-arm64" = mkSystem {
+        name = "nixos-vm-arm64";
+        machine = "nixos-vm";
+        system = "aarch64-linux";
         inherit user;
         hardwareModule = profile.hardwareModules.vm;
         vm = true;

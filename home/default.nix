@@ -1,11 +1,11 @@
 {
   username,
-  pkgs,
   lib,
   desktopManager ? "end4",
   isDarwin ? false,
   isLinux ? false,
   homeModules ? [ ],
+  supportsSpicetify ? true,
   ...
 }:
 
@@ -17,8 +17,8 @@ in
   imports = [
     ./core.nix
     ./shells
-    ./spicetify.nix
   ]
+  ++ lib.optionals supportsSpicetify [ ./spicetify.nix ]
   ++ homeModules
   ++ lib.optionals (!isOmarchy) [
     # Omarchy seeds these as mutable files and owns their live theming.

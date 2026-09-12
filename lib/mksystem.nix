@@ -59,6 +59,7 @@ let
       "omarchy"; # default Linux desktop to Omarchy
 
   isOmarchy = resolvedDesktopManager == "omarchy";
+  supportsSpicetify = system != "aarch64-linux";
 
   specialArgs = {
     inherit
@@ -68,6 +69,7 @@ let
       homeModules
       systemSettings
       userSettings
+      supportsSpicetify
       ;
     inherit
       nixpkgs
@@ -128,7 +130,7 @@ if isDarwin then
       nix-openclaw.darwinModules.openclaw
       {
         home-manager = (mkHomeManagerConfig { }) // {
-          sharedModules = [ spicetify-nix.homeManagerModules.default ];
+          sharedModules = nixpkgs.lib.optional supportsSpicetify spicetify-nix.homeManagerModules.default;
         };
       }
     ];
@@ -152,16 +154,15 @@ else
       home-manager.nixosModules.home-manager
       {
         home-manager = (mkHomeManagerConfig { }) // {
-          sharedModules = [
-            spicetify-nix.homeManagerModules.default
-          ]
-          ++ nixpkgs.lib.optionals (resolvedDesktopManager == "plasma") [
-            plasma-manager.homeManagerModules.plasma-manager
-          ]
-          ++ nixpkgs.lib.optionals isOmarchy [
-            omarchy-nix.homeManagerModules.default
-            { omarchy.enable = true; }
-          ];
+          sharedModules =
+            nixpkgs.lib.optional supportsSpicetify spicetify-nix.homeManagerModules.default
+            ++ nixpkgs.lib.optionals (resolvedDesktopManager == "plasma") [
+              plasma-manager.homeManagerModules.plasma-manager
+            ]
+            ++ nixpkgs.lib.optionals isOmarchy [
+              omarchy-nix.homeManagerModules.default
+              { omarchy.enable = true; }
+            ];
         };
       }
     ];

@@ -12,7 +12,7 @@ IS_VM := $(shell if [ -f /sys/class/dmi/id/product_name ] && grep -qi "qemu\|kvm
 MACOS_CONFIG ?= Ryans-MacBook-Pro
 LINUX_CONFIG ?= nixos-end4 # nixos-end4 | nixos-omarchy | nixos-plasma
 LINUX_CONFIG := $(strip $(LINUX_CONFIG))
-VM_CONFIG ?= nixos-vm-hyprland
+VM_CONFIG ?= nixos-vm-arm64
 
 # Default target
 .PHONY: help

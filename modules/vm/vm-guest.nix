@@ -148,11 +148,10 @@
 
   # Systemd optimizations for VM
   systemd = {
-    # Faster shutdown
-    extraConfig = ''
-      DefaultTimeoutStopSec=10s
-      DefaultTimeoutStartSec=10s
-    '';
+    settings.Manager = {
+      DefaultTimeoutStopSec = "10s";
+      DefaultTimeoutStartSec = "10s";
+    };
 
     # Optimize journald for VM
     services.systemd-journald.serviceConfig = {
