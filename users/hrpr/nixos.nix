@@ -26,7 +26,6 @@
         "docker" # Docker (host only)
       ];
     shell = lib.mkForce pkgs.zsh; # Force zsh over system default (bash)
-    password = "password";
   };
 
   # Sudo configuration

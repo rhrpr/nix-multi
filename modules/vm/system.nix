@@ -48,12 +48,6 @@
     dconf.enable = true; # Required for some GUI applications
   };
 
-  # VM-specific user overrides (user config comes from users/hrpr/nixos.nix)
-  users.users.${username} = {
-    # Set a default password for VM (change after first login)
-    password = "nixos";
-  };
-
   # Optimize for VM environment
   services = {
     # Enable SPICE agent for better integration
@@ -131,7 +125,7 @@
   services.openssh = {
     enable = true;
     settings = {
-      PasswordAuthentication = true;
+      PasswordAuthentication = false;
       PermitRootLogin = "no";
     };
   };

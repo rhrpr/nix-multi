@@ -1,3 +1,4 @@
+# Maintainer-specific agenix recipients. Forks should replace this file.
 let
   # Agenix identity keys (one per machine, used to decrypt secrets)
   agenix-macos = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIG+MGNiJqFMytK5nBXoCTnuL9U0mFFzfFXQYUPIZGIIK hrpr@macbook-pro";

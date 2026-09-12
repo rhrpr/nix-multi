@@ -119,18 +119,10 @@
       # Import system builder
       mkSystem = import ./lib/mksystem.nix inputs;
 
-      # User configuration
-      user = {
-        name = "hrpr";
-        email = "ryan@hrpr.dev";
-        gpuConfig = {
-          vendor = "nvidia";
-          deviceId = "10de:2206";
-          audioId = "10de:1aef";
-          pciAddress = "01:00";
-          enablePartialPassthrough = true;
-        };
-      };
+      # The maintainer profile preserves the existing outputs. Forks should
+      # create a local profile from profiles/example.nix before deployment.
+      profile = import ./profiles/rhrpr.nix;
+      user = profile.user;
 
       # Setup treefmt-nix for both systems
       systems = [
@@ -238,6 +230,7 @@
         name = "nixos-desktop";
         system = "x86_64-linux";
         inherit user;
+        hardwareModule = profile.hardwareModules.desktop;
         desktopManager = "omarchy";
       };
 
@@ -246,6 +239,7 @@
         machine = "nixos-desktop";
         system = "x86_64-linux";
         inherit user;
+        hardwareModule = profile.hardwareModules.desktop;
         desktopManager = "end4";
       };
 
@@ -254,6 +248,7 @@
         machine = "nixos-desktop";
         system = "x86_64-linux";
         inherit user;
+        hardwareModule = profile.hardwareModules.desktop;
         desktopManager = "omarchy";
       };
 
@@ -262,6 +257,7 @@
         name = "nixos-desktop";
         system = "x86_64-linux";
         inherit user;
+        hardwareModule = profile.hardwareModules.desktop;
         desktopManager = "end4";
       };
 
@@ -271,6 +267,7 @@
         machine = "nixos-vm";
         system = "x86_64-linux";
         inherit user;
+        hardwareModule = profile.hardwareModules.vm;
         vm = true;
         desktopManager = "omarchy";
       };
@@ -280,6 +277,7 @@
         machine = "nixos-vm";
         system = "x86_64-linux";
         inherit user;
+        hardwareModule = profile.hardwareModules.vm;
         vm = true;
         desktopManager = "omarchy";
       };
@@ -290,6 +288,7 @@
         machine = "nixos-vm";
         system = "x86_64-linux";
         inherit user;
+        hardwareModule = profile.hardwareModules.vm;
         vm = true;
         desktopManager = "end4";
       };

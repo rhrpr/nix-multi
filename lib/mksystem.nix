@@ -27,6 +27,7 @@
   machine ? name,
   isDarwin ? false,
   vm ? false,
+  hardwareModule ? null,
   desktopManager ? null, # "end4" or "omarchy"; null = auto-detect
 }:
 
@@ -41,6 +42,8 @@ let
 
   # GPU configuration for passthrough (only relevant for Linux hosts)
   gpuConfig = user.gpuConfig or { };
+  homeModules = user.homeModules or [ ];
+  systemSettings = user.systemSettings or { };
 
   # Common special arguments for all configurations
   # Resolve desktop manager: explicit param wins, otherwise auto-detect
@@ -57,7 +60,7 @@ let
   isOmarchy = resolvedDesktopManager == "omarchy";
 
   specialArgs = {
-    inherit username useremail gpuConfig;
+    inherit username useremail gpuConfig homeModules systemSettings;
     inherit
       nixpkgs
       home-manager
@@ -128,6 +131,7 @@ else
         ../machines/${machine}.nix
         ../users/${user.name}/nixos.nix
       ]
+      ++ nixpkgs.lib.optional (hardwareModule != null) hardwareModule
       ++ nixpkgs.lib.optionals isOmarchy [
         omarchy-nix.nixosModules.default
         ../modules/nixos/omarchy.nix

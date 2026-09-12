@@ -19,7 +19,7 @@ help:
 	@echo "Nix Multi-Platform Configuration"
 	@echo ""
 	@echo "Setup Commands:"
-	@echo "  setup          - Setup system (auto-detects platform)"
+	@echo "  setup          - Apply a detected host (requires CONFIRM_APPLY=1)"
 	@echo "  setup-macos    - Setup macOS with nix-darwin"
 	@echo "  setup-linux    - Setup Linux with NixOS"
 	@echo "  setup-vm       - Setup VM configuration"
@@ -66,7 +66,7 @@ help:
 	@echo "Maintenance:"
 	@echo "  check          - Check flake configuration"
 	@echo "  update         - Update flake inputs"
-	@echo "  clean          - Clean build artifacts"
+	@echo "  clean          - Clean build artifacts and collect garbage"
 	@echo "  fmt            - Format Nix files"
 	@echo ""
 	@echo "Debugging & Maintenance:"
@@ -77,6 +77,11 @@ help:
 # Auto-detect setup
 .PHONY: setup
 setup:
+	@if [ "$$CONFIRM_APPLY" != "1" ]; then \
+		echo "Refusing to modify this system without CONFIRM_APPLY=1."; \
+		echo "Review README.md and your profile first, then run: CONFIRM_APPLY=1 make setup"; \
+		exit 1; \
+	fi
 ifeq ($(UNAME),Darwin)
 	@$(MAKE) setup-macos
 else ifeq ($(IS_VM),true)
@@ -90,6 +95,10 @@ endif
 # Linux setup  
 .PHONY: setup-linux
 setup-linux: enable-flakes  
+	@if [ "$$CONFIRM_APPLY" != "1" ]; then \
+		echo "Refusing to modify this system without CONFIRM_APPLY=1."; \
+		exit 1; \
+	fi
 	@echo "Setting up NixOS configuration..."
 	@# Fix Git ownership issue when running with sudo
 	@if [ "$$EUID" -eq 0 ]; then \
@@ -128,12 +137,20 @@ enable-flakes:
 
 .PHONY: setup-macos
 setup-macos: enable-flakes
+	@if [ "$$CONFIRM_APPLY" != "1" ]; then \
+		echo "Refusing to modify this system without CONFIRM_APPLY=1."; \
+		exit 1; \
+	fi
 	@echo "Setting up macOS configuration..."
 	nix build .#darwinConfigurations.$(MACOS_CONFIG).system
 	sudo ./result/sw/bin/darwin-rebuild switch --flake .#$(MACOS_CONFIG)
 
 .PHONY: setup-vm
 setup-vm: enable-flakes
+	@if [ "$$CONFIRM_APPLY" != "1" ]; then \
+		echo "Refusing to modify this system without CONFIRM_APPLY=1."; \
+		exit 1; \
+	fi
 	@echo "Setting up NixOS VM configuration..."
 	@# Fix Git ownership issue when running with sudo
 	@if [ "$$EUID" -eq 0 ]; then \
@@ -393,4 +410,3 @@ libvirt-check:
 # Bluetooth debugging
 bluetooth-debug:
 	@./scripts/bluetooth-debug.sh
-

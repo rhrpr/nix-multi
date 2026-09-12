@@ -41,7 +41,7 @@ in
   environment.variables = lib.mkMerge [
     # Common variables for all platforms
     {
-      VM_SCRIPTS_DIR = "/Users/hrpr/.config/nix-multi/scripts";
+      VM_SCRIPTS_DIR = "$HOME/.config/nix-multi/scripts";
       QEMU_SYSTEM_X86_64 = "${pkgs.qemu}/bin/qemu-system-x86_64";
       QEMU_SYSTEM_AARCH64 = "${pkgs.qemu}/bin/qemu-system-aarch64";
       QEMU_IMG = "${pkgs.qemu}/bin/qemu-img";

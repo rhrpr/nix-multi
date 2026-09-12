@@ -5,6 +5,7 @@
   desktopManager ? "end4",
   isDarwin ? false,
   isLinux ? false,
+  homeModules ? [ ],
   ...
 }:
 
@@ -16,10 +17,10 @@ in
   imports =
     [
       ./core.nix
-      ./ssh.nix
       ./shells
       ./spicetify.nix
     ]
+    ++ homeModules
     ++ lib.optionals (!isOmarchy) [
       # Omarchy seeds these as mutable files and owns their live theming.
       ./git.nix
