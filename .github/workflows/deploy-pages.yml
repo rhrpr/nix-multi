@@ -30,8 +30,14 @@ jobs:
 
       - name: Verify website artifact exists
         run: |
-          test -d website/dist
-          test -f website/dist/index.html
+          if [ ! -d website/dist ]; then
+            echo "Error: website/dist is missing; commit generated site output before deployment."
+            exit 1
+          fi
+          if [ ! -f website/dist/index.html ]; then
+            echo "Error: website/dist/index.html is missing; the site artifact is incomplete."
+            exit 1
+          fi
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
