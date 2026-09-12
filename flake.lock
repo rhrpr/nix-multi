@@ -1333,6 +1333,22 @@
         "type": "github"
       }
     },
+    "omarchy": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1789156273,
+        "narHash": "sha256-8twJRNfJlLJvwHL3OyWv+R8/GVYxFS1nIoFTOoYWkb0=",
+        "owner": "omacom",
+        "repo": "omarchy",
+        "rev": "31bd80daa4613ffdee995ac27467fce5a2990806",
+        "type": "github"
+      },
+      "original": {
+        "owner": "omacom",
+        "repo": "omarchy",
+        "type": "github"
+      }
+    },
     "omarchy-nix": {
       "inputs": {
         "home-manager": "home-manager_5",
@@ -1544,6 +1560,7 @@
         "nix-openclaw": "nix-openclaw",
         "nixpkgs": "nixpkgs_4",
         "nvchad4nix": "nvchad4nix",
+        "omarchy": "omarchy",
         "omarchy-nix": "omarchy-nix",
         "plasma-manager": "plasma-manager",
         "primeagenInit": "primeagenInit",
