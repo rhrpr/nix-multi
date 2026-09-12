@@ -42,3 +42,8 @@ keys.txt
 # VM ISO files and downloads
 vm-iso/
 *.iso
+
+# Local profiles contain identity, disk layout, SSH hosts, and other values
+# that must not be copied from this repository.
+profiles/local.nix
+profiles/local/

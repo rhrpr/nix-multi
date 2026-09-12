@@ -1,5 +1,12 @@
 #!/bin/bash
 
+LINUX_CONFIG="${LINUX_CONFIG:-nixos-end4}" # nixos-end4 | nixos-omarchy | nixos-plasma
+
+if [ "${CONFIRM_APPLY:-}" != "1" ]; then
+  echo "Refusing to modify this system without CONFIRM_APPLY=1."
+  exit 1
+fi
+
 read -p "Enter files to add (leave empty to skip): " files_to_add
 if [ -n "$files_to_add" ]; then
   git add $files_to_add
@@ -30,7 +37,7 @@ if [ "$OS" = "Darwin" ]; then
 elif [ "$OS" = "Linux" ]; then
   echo "Detected Linux"
   # NixOS-specific rebuild
-  nixos-rebuild switch --flake ~/.config/nix-multi#nixos-plasma --show-trace
+  nixos-rebuild switch --flake "$HOME/.config/nix-multi#$LINUX_CONFIG" --show-trace
 else
   echo "Unsupported operating system: $OS"
   exit 1

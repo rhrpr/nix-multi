@@ -19,7 +19,7 @@ pkgs.mkShell {
     treefmtWrapper
     nixfmt
     shfmt
-    nodePackages.prettier # For formatting markdown and other files
+    prettier # For formatting markdown and other files
   ];
 
   shellHook = ''

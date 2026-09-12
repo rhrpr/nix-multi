@@ -5,6 +5,7 @@
   hostname,
   username,
   desktopManager,
+  systemSettings ? { },
   ...
 }:
 
@@ -27,31 +28,15 @@
   };
 
   # Localization
-  time.timeZone = "Europe/London";
-  i18n.defaultLocale = "en_GB.UTF-8";
-  i18n.extraLocaleSettings = {
-    LC_ADDRESS = "en_GB.UTF-8";
-    LC_IDENTIFICATION = "en_GB.UTF-8";
-    LC_MEASUREMENT = "en_GB.UTF-8";
-    LC_MONETARY = "en_GB.UTF-8";
-    LC_NAME = "en_GB.UTF-8";
-    LC_NUMERIC = "en_GB.UTF-8";
-    LC_PAPER = "en_GB.UTF-8";
-    LC_TELEPHONE = "en_GB.UTF-8";
-    LC_TIME = "en_GB.UTF-8";
-  };
+  time.timeZone = systemSettings.timeZone or "UTC";
+  i18n.defaultLocale = systemSettings.defaultLocale or "en_US.UTF-8";
+  i18n.extraLocaleSettings = systemSettings.extraLocaleSettings or { };
 
   # Enable essential programs for VM
   programs = {
     firefox.enable = true;
     zsh.enable = true;
     dconf.enable = true; # Required for some GUI applications
-  };
-
-  # VM-specific user overrides (user config comes from users/hrpr/nixos.nix)
-  users.users.${username} = {
-    # Set a default password for VM (change after first login)
-    password = "nixos";
   };
 
   # Optimize for VM environment
@@ -131,7 +116,7 @@
   services.openssh = {
     enable = true;
     settings = {
-      PasswordAuthentication = true;
+      PasswordAuthentication = false;
       PermitRootLogin = "no";
     };
   };

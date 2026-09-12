@@ -2,6 +2,10 @@
 
 This guide covers the cross-platform VM management features in nix-multi, supporting both macOS and Linux hosts.
 
+> **Profile first:** VM memory, CPU count, guest user, SSH endpoint, disk
+> layout, GPU settings, and display resolution must come from your own profile.
+> The values below that mention the maintainer's hardware are examples only.
+
 ## Quick Start
 
 ### Build and Run VM
@@ -30,7 +34,7 @@ This guide covers the cross-platform VM management features in nix-multi, suppor
 ./scripts/qemu-config.sh config x86_64
 
 # Generate QEMU options
-./scripts/qemu-config.sh opts x86_64 8G 4 3440x1440
+./scripts/qemu-config.sh opts x86_64 8G 4 1920x1080
 ```
 
 ## Platform-Specific Features
@@ -49,7 +53,7 @@ This guide covers the cross-platform VM management features in nix-multi, suppor
 **Example Configuration**:
 ```bash
 # x86_64 VM on macOS
-QEMU_OPTS="-m 6G -smp 4 -accel hvf -device virtio-gpu-pci,xres=3440,yres=1440 -audiodev coreaudio,id=audio0 -device intel-hda -device hda-duplex,audiodev=audio0"
+QEMU_OPTS="-m 6G -smp 4 -accel hvf -device virtio-gpu-pci,xres=1920,yres=1080 -audiodev coreaudio,id=audio0 -device intel-hda -device hda-duplex,audiodev=audio0"
 ```
 
 ### Linux Host
@@ -57,7 +61,7 @@ QEMU_OPTS="-m 6G -smp 4 -accel hvf -device virtio-gpu-pci,xres=3440,yres=1440 -a
 **Acceleration**: KVM for near-native performance
 **Audio**: PipeWire/PulseAudio integration
 **Display**: GTK with OpenGL acceleration
-**GPU Passthrough**: RTX 3080 partial passthrough support
+**GPU Passthrough**: Optional; configure it for your GPU and IOMMU groups
 
 **Supported VMs**:
 - x86_64 VMs with KVM acceleration
@@ -66,22 +70,22 @@ QEMU_OPTS="-m 6G -smp 4 -accel hvf -device virtio-gpu-pci,xres=3440,yres=1440 -a
 **Example Configuration**:
 ```bash
 # x86_64 VM on Linux with KVM
-QEMU_OPTS="-m 8G -smp 4 -enable-kvm -device virtio-gpu-pci,xres=3440,yres=1440 -display gtk,gl=on -audiodev pipewire,id=audio0"
+QEMU_OPTS="-m 8G -smp 4 -enable-kvm -device virtio-gpu-pci,xres=1920,yres=1080 -display gtk,gl=on -audiodev pipewire,id=audio0"
 ```
 
 ## VM Configuration
 
 ### Default VM Settings
 
-- **Memory**: 6GB (macOS), 8GB (Linux)
-- **CPU Cores**: 4 (both platforms)
-- **Resolution**: 3440x1440 (ultrawide support)
-- **SSH Port**: 22000 (host) → 22 (guest)
+- **Memory / CPU / resolution**: Set these through your VM profile or
+  environment; do not rely on repository defaults.
+- **SSH endpoint**: Configure `VM_SSH_USER`, `VM_SSH_HOST`, and
+  `VM_SSH_PORT` when invoking `scripts/vm-setup.sh`.
 - **Graphics**: VirtIO GPU with hardware acceleration
 
 ### VM Guest Features
 
-- **SSH Access**: `ssh hrpr@localhost -p 22000` (password: nixos)
+- **SSH Access**: Use a guest account and key that you create during install.
 - **Desktop**: Hyprland (Wayland tiling compositor)
 - **Audio**: Full audio support with guest agent
 - **Clipboard**: Shared clipboard between host and guest
@@ -119,7 +123,7 @@ Use the QEMU configuration helper to generate custom options:
 3. Restart VM with audio debugging
 
 **Network connectivity**:
-1. SSH: `ssh hrpr@localhost -p 22000`
+1. SSH: `ssh -p "$VM_SSH_PORT" "$VM_SSH_USER@$VM_SSH_HOST"`
 2. Check firewall settings on host
 3. Verify QEMU user networking is working
 

@@ -1,0 +1,63 @@
+name: Website
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'website/**'
+      - '.github/workflows/pages.yml'
+  pull_request:
+    paths:
+      - 'website/**'
+      - '.github/workflows/pages.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pages-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Build static website
+        env:
+          PAGES_SITE_URL: ${{ vars.PAGES_SITE_URL }}
+          REPOSITORY_OWNER: ${{ github.repository_owner }}
+          REPOSITORY_NAME: ${{ github.event.repository.name }}
+        run: |
+          if [ -z "$PAGES_SITE_URL" ]; then
+            PAGES_SITE_URL="https://${REPOSITORY_OWNER}.github.io"
+            if [ "$REPOSITORY_NAME" != "${REPOSITORY_OWNER}.github.io" ]; then
+              PAGES_SITE_URL="$PAGES_SITE_URL/$REPOSITORY_NAME"
+            fi
+          fi
+          python3 website/build.py --site-url "$PAGES_SITE_URL"
+      - name: Verify routes, links, and metadata
+        run: python3 website/check.py
+      - name: Upload public website only
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: website/dist
+
+  deploy:
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+      - name: Publish website
+        id: deployment
+        uses: actions/deploy-pages@v4

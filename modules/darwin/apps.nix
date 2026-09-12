@@ -1,4 +1,9 @@
-{ lib, pkgs, username, ... }:
+{
+  lib,
+  pkgs,
+  username,
+  ...
+}:
 let
   sockseek = pkgs.stdenvNoCC.mkDerivation rec {
     pname = "sockseek";

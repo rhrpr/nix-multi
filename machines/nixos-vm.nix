@@ -11,7 +11,6 @@
 
 {
   imports = [
-    ../modules/vm/hardware-configuration.nix
     ../modules/nixos/nix-core.nix
     ../modules/vm/system.nix
     ../modules/nixos/host-users.nix
