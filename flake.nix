@@ -89,6 +89,18 @@
       url = "github:end-4/dots-hyprland";
       flake = false;
     };
+
+    # Upstream Omarchy desktop dotfiles (tracked directly from omacom/omarchy).
+    # flake = false so we can symlink its config files from the nix store.
+    # Run `nix flake update omarchy` to pull the latest upstream commit.
+    omarchy = {
+      url = "github:omacom/omarchy";
+      flake = false;
+    };
+
+    # NixOS-native port of the real Omarchy Quattro desktop. This vendors
+    # upstream Omarchy and adapts its package/update commands for NixOS.
+    omarchy-nix.url = "github:zicochaos/omarchy-nix";
   };
 
   outputs =
@@ -220,12 +232,29 @@
         isDarwin = true;
       };
 
-      # Linux desktop host with GPU passthrough (Hyprland + end4 dots)
+      # Linux desktop host with GPU passthrough. Omarchy is the default;
+      # the explicit profile aliases below make switching desktops obvious.
       nixosConfigurations."nixos-desktop" = mkSystem {
         name = "nixos-desktop";
         system = "x86_64-linux";
         inherit user;
-        desktopManager = "hyprland";
+        desktopManager = "omarchy";
+      };
+
+      nixosConfigurations."nixos-desktop-end4" = mkSystem {
+        name = "nixos-desktop-end4";
+        machine = "nixos-desktop";
+        system = "x86_64-linux";
+        inherit user;
+        desktopManager = "end4";
+      };
+
+      nixosConfigurations."nixos-desktop-omarchy" = mkSystem {
+        name = "nixos-desktop-omarchy";
+        machine = "nixos-desktop";
+        system = "x86_64-linux";
+        inherit user;
+        desktopManager = "omarchy";
       };
 
       # Linux desktop host alias (expected by scripts)
@@ -233,23 +262,36 @@
         name = "nixos-desktop";
         system = "x86_64-linux";
         inherit user;
-        desktopManager = "hyprland";
+        desktopManager = "end4";
       };
 
-      # NixOS VM guests (Hyprland)
+      # NixOS VM guests. The short/default profile now runs Omarchy.
       nixosConfigurations."vm" = mkSystem {
-        name = "nixos-vm";
+        name = "vm";
+        machine = "nixos-vm";
         system = "x86_64-linux";
         inherit user;
         vm = true;
+        desktopManager = "omarchy";
       };
 
-      # NixOS VM alias (expected by scripts)
-      nixosConfigurations."nixos-vm-hyprland" = mkSystem {
-        name = "nixos-vm";
+      nixosConfigurations."nixos-vm-omarchy" = mkSystem {
+        name = "nixos-vm-omarchy";
+        machine = "nixos-vm";
         system = "x86_64-linux";
         inherit user;
         vm = true;
+        desktopManager = "omarchy";
+      };
+
+      # Legacy/end4 VM profile retained for comparison and rollback.
+      nixosConfigurations."nixos-vm-hyprland" = mkSystem {
+        name = "nixos-vm-hyprland";
+        machine = "nixos-vm";
+        system = "x86_64-linux";
+        inherit user;
+        vm = true;
+        desktopManager = "end4";
       };
     };
 }

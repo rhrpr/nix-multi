@@ -4,6 +4,7 @@
   lib,
   hostname,
   username,
+  desktopManager,
   ...
 }:
 
@@ -84,7 +85,7 @@
     };
 
     # Plymouth for better boot experience
-    plymouth = {
+    plymouth = lib.mkIf (desktopManager != "omarchy") {
       enable = true;
       theme = "breeze";
     };

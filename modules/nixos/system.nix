@@ -130,12 +130,10 @@
   ];
 
   # SystemD sleep configuration
-  systemd = {
-    sleep.extraConfig = ''
-      HibernateDelaySec=30min
-      SuspendState=mem
-      SuspendMode=platform
-    '';
+  systemd.sleep.settings.Sleep = {
+    HibernateDelaySec = "30min";
+    SuspendState = "mem";
+    SuspendMode = "platform";
   };
 
   # NVIDIA configuration (optional - uncomment if you have NVIDIA GPU)
@@ -158,7 +156,7 @@
       forceFullCompositionPipeline = true;
       
       open = lib.mkDefault true; # Can be overridden by GPU passthrough module
-      package = config.boot.kernelPackages.nvidiaPackages.stable;
+      package = lib.mkDefault config.boot.kernelPackages.nvidiaPackages.stable;
     };
   };
   services.xserver.videoDrivers = [ "nvidia" ];

@@ -2,23 +2,29 @@
   username,
   pkgs,
   lib,
-  desktopManager ? "plasma",
+  desktopManager ? "end4",
   isDarwin ? false,
   isLinux ? false,
   ...
 }:
 
+let
+  isOmarchy = desktopManager == "omarchy";
+in
 {
   # import sub modules
   imports =
     [
       ./core.nix
-      ./git.nix
       ./ssh.nix
-      ./starship.nix
       ./shells
-      ./terminals
       ./spicetify.nix
+    ]
+    ++ lib.optionals (!isOmarchy) [
+      # Omarchy seeds these as mutable files and owns their live theming.
+      ./git.nix
+      ./starship.nix
+      ./terminals
     ]
     ++ lib.optionals isDarwin [
       # macOS-specific modules

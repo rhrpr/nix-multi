@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, lib, ... }:
 let
   sockseek = pkgs.stdenvNoCC.mkDerivation rec {
     pname = "sockseek";
@@ -97,12 +97,13 @@ in
     protonvpn-gui
     spotify
     transmission_4
-    whatsapp-for-linux
+    karere # Maintained WhatsApp desktop client
     yubioath-flutter
     sockseek
     stemdeck
   ];
-  environment.variables.EDITOR = "nano";
+  # Desktop profiles such as Omarchy provide their own editor launcher.
+  environment.variables.EDITOR = lib.mkDefault "nano";
 
   # # For packages that need special configuration
   # services.syncthing = {

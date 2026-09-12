@@ -1,25 +1,33 @@
 {
   pkgs,
   lib,
-  desktopManager ? "plasma",
+  desktopManager ? "end4",
   ...
 }:
 
 let
   isPlasma = desktopManager == "plasma";
-  isHyprland = desktopManager == "hyprland";
+  isEnd4 = desktopManager == "end4" || desktopManager == "hyprland";
+  isOmarchy = desktopManager == "omarchy";
 in
 {
   imports =
     [
       ./vscode.nix
-      ./browser.nix  # Always import browser config for Linux
+    ]
+    ++ lib.optionals (!isOmarchy) [
+      ./browser.nix
     ]
     ++ lib.optionals isPlasma [
       ./plasma.nix
     ]
-    ++ lib.optionals isHyprland [
+    ++ lib.optionals isEnd4 [
       ./hyprland.nix
+    ]
+    ++ lib.optionals isOmarchy [
+      # Links dotfiles directly from upstream omacom/omarchy (flake input).
+      # Run `nix flake update omarchy` to pull the latest upstream configs.
+      ./omarchy.nix
     ];
 
   # Linux-specific packages

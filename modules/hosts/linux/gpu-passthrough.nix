@@ -27,10 +27,7 @@ in
           package = pkgs.qemu_kvm;
           runAsRoot = true;
           swtpm.enable = true;
-          ovmf = {
-            enable = true;
-            packages = [ pkgs.OVMFFull.fd ];
-          };
+          # Current NixOS exposes every QEMU OVMF image automatically.
           verbatimConfig = ''
             # Partial GPU passthrough configuration
             cgroup_device_acl = [
@@ -128,11 +125,11 @@ in
           (lib.optionals (pkgs.stdenv.hostPlatform.system == "x86_64-linux") [
             # Intel-specific packages (only for x86_64)
             intel-media-driver # For Intel integrated graphics (if available)
-            vaapiIntel # Hardware acceleration
+            intel-vaapi-driver # Hardware acceleration
           ])
           ++ [
             # Universal packages (all architectures)
-            vaapiVdpau
+            libva-vdpau-driver
             libvdpau-va-gl
           ];
       };
@@ -156,7 +153,7 @@ in
         virt-viewer
         spice-gtk
         spice-protocol
-        win-virtio
+        virtio-win
         win-spice
 
         # GPU monitoring and management

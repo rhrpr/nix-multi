@@ -1,4 +1,9 @@
-{ pkgs, ... }:
+{
+  pkgs,
+  lib,
+  desktopManager,
+  ...
+}:
 {
 
   ##########################################################################
@@ -15,7 +20,7 @@
     vim
     nano
     htop
-    neofetch
+    fastfetch
 
     # Hyprland-specific applications (lightweight for VM)
     kitty # Terminal
@@ -53,13 +58,13 @@
     git.enable = true;
 
     # Hyprland (configured in desktop.nix)
-    hyprland.enable = true;
+    hyprland.enable = lib.mkIf (desktopManager != "omarchy") true;
 
     # SSH for remote access
     ssh.startAgent = true;
 
     # Thunar file manager
-    thunar = {
+    thunar = lib.mkIf (desktopManager != "omarchy") {
       enable = true;
       plugins = with pkgs.xfce; [
         thunar-archive-plugin
@@ -81,14 +86,14 @@
     };
 
     # Enable Thunar services
-    gvfs.enable = true; # Trash and mount support
-    tumbler.enable = true; # Thumbnail support
+    gvfs.enable = lib.mkIf (desktopManager != "omarchy") true; # Trash and mount support
+    tumbler.enable = lib.mkIf (desktopManager != "omarchy") true; # Thumbnail support
   };
 
   # Fonts for better VM experience
   fonts.packages = with pkgs; [
     noto-fonts
-    noto-fonts-emoji
+    noto-fonts-color-emoji
     fira-code
     font-awesome
   ];

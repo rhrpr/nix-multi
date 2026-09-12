@@ -2,7 +2,7 @@
   config,
   lib,
   pkgs,
-  desktopManager ? "plasma",
+  desktopManager ? "end4",
   hyprland,
   isVM ? false,
   ...
@@ -10,14 +10,17 @@
 
 let
   isPlasma = desktopManager == "plasma";
-  isHyprland = desktopManager == "hyprland";
+  # "hyprland" remains a compatibility alias for the end4 profile.
+  isEnd4 = desktopManager == "end4" || desktopManager == "hyprland";
+  isOmarchy = desktopManager == "omarchy";
+  isHyprland = isEnd4 || isOmarchy;
 in
 {
   imports =
     [
       # Import Hyprland module if selected
     ]
-    ++ lib.optionals isHyprland [
+    ++ lib.optionals isEnd4 [
       hyprland.nixosModules.default
     ];
 
@@ -46,7 +49,7 @@ in
     })
 
     # Hyprland-specific configuration
-    (lib.mkIf isHyprland {
+    (lib.mkIf isEnd4 {
       # Use GDM or SDDM for Hyprland
       sddm = {
         enable = true;
@@ -61,7 +64,7 @@ in
   };
 
   # Hyprland configuration
-  programs.hyprland = lib.mkIf isHyprland {
+  programs.hyprland = lib.mkIf isEnd4 {
     enable = true;
     xwayland.enable = true;
     package = hyprland.packages.${pkgs.stdenv.hostPlatform.system}.hyprland;
@@ -111,18 +114,18 @@ in
       wl-clipboard
       wayland-utils
 
-      # Screen sharing and remote desktop
-      kdePackages.xwaylandvideobridge
-
       # Font packages
       noto-fonts
       noto-fonts-cjk-sans
-      noto-fonts-emoji
+      noto-fonts-color-emoji
       liberation_ttf
       fira-code
       fira-code-symbols
     ]
-    ++ lib.optionals isHyprland (
+    ++ lib.optionals (isPlasma && kdePackages ? xwaylandvideobridge) [
+      kdePackages.xwaylandvideobridge
+    ]
+    ++ lib.optionals isEnd4 (
       [
         # Hyprland core utilities
         swww # wallpaper daemon
@@ -177,7 +180,7 @@ in
       MOZ_ENABLE_WAYLAND = "1"; # Enable Wayland support in Firefox
     })
     # NVIDIA-specific Wayland/Hyprland env vars (set at login, not just in hyprland.conf)
-    (lib.mkIf isHyprland {
+    (lib.mkIf (isEnd4 && !isVM) {
       LIBVA_DRIVER_NAME = "nvidia";
       GBM_BACKEND = "nvidia-drm";
       __GLX_VENDOR_LIBRARY_NAME = "nvidia";
@@ -192,8 +195,8 @@ in
     polkit.enable = true;
     rtkit.enable = true;
     pam.services = {
-      gdm.enableGnomeKeyring = lib.mkIf isHyprland true;
-      login.enableGnomeKeyring = lib.mkIf isHyprland true;
+      gdm.enableGnomeKeyring = lib.mkIf isEnd4 true;
+      login.enableGnomeKeyring = lib.mkIf isEnd4 true;
     };
   };
 
@@ -227,7 +230,7 @@ in
   };
 
   # XDG portal configuration - configured to handle switching between desktop environments
-  xdg.portal = {
+  xdg.portal = lib.mkIf (!isOmarchy) {
     enable = true;
     # Only include the portals we actually need for the current desktop
     extraPortals =
@@ -294,7 +297,7 @@ in
       [
         noto-fonts
         noto-fonts-cjk-sans
-        noto-fonts-emoji
+        noto-fonts-color-emoji
         liberation_ttf
         fira-code
         fira-code-symbols
@@ -302,7 +305,7 @@ in
         nerd-fonts.jetbrains-mono
         font-awesome
       ]
-      ++ lib.optionals isHyprland [
+      ++ lib.optionals isEnd4 [
         # Required by end4's AGS widgets (icon font)
         material-symbols
       ];
@@ -347,7 +350,7 @@ in
   };
 
   # Thunar file manager for Hyprland
-  programs.thunar = lib.mkIf isHyprland {
+  programs.thunar = lib.mkIf isEnd4 {
     enable = true;
     plugins = with pkgs.xfce; [
       thunar-archive-plugin
@@ -355,8 +358,8 @@ in
     ];
   };
 
-  services.gvfs.enable = lib.mkIf isHyprland true; # Trash and mount support
-  services.tumbler.enable = lib.mkIf isHyprland true; # Thumbnail support
+  services.gvfs.enable = lib.mkIf isEnd4 true; # Trash and mount support
+  services.tumbler.enable = lib.mkIf isEnd4 true; # Thumbnail support
 
   # Gaming support (optional, x86_64 only)
   programs.steam = lib.mkIf (pkgs.stdenv.hostPlatform.system == "x86_64-linux") {

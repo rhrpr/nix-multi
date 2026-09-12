@@ -39,10 +39,7 @@
         package = lib.mkDefault pkgs.qemu_kvm;
         runAsRoot = lib.mkDefault true;
         swtpm.enable = lib.mkDefault true;
-        ovmf = {
-          enable = lib.mkDefault true;
-          packages = lib.mkDefault [ pkgs.OVMFFull.fd ];
-        };
+        # Current NixOS exposes every QEMU OVMF image automatically.
       };
     };
 
@@ -69,13 +66,13 @@
     spice-vdagent # Spice guest agent
 
     # Windows guest drivers
-    win-virtio # VirtIO drivers for Windows
+    virtio-win # VirtIO drivers for Windows
     win-spice # Spice guest tools for Windows
 
     # GPU passthrough and sharing tools
     looking-glass-client # Client for Looking Glass
     scream # Network audio for Windows VMs
-    barrier # Share mouse/keyboard between host and guest
+    input-leap # Share mouse/keyboard between host and guest
 
     # NVIDIA tools for monitoring and management
     nvidia-system-monitor-qt # GUI for NVIDIA monitoring

@@ -15,6 +15,8 @@
   hermes-agent,
   spicetify-nix,
   dots-hyprland,
+  omarchy, # upstream omacom/omarchy dotfiles (flake = false)
+  omarchy-nix,
   ...
 }:
 
@@ -22,9 +24,10 @@
   name,
   system,
   user,
+  machine ? name,
   isDarwin ? false,
   vm ? false,
-  desktopManager ? null, # explicit override; null = auto-detect
+  desktopManager ? null, # "end4" or "omarchy"; null = auto-detect
 }:
 
 let
@@ -45,11 +48,13 @@ let
     if desktopManager != null then
       desktopManager
     else if isVM then
-      "hyprland"
+      "omarchy"
     else if isDarwin then
       "none"
     else
-      "hyprland"; # default Linux desktop to Hyprland
+      "omarchy"; # default Linux desktop to Omarchy
+
+  isOmarchy = resolvedDesktopManager == "omarchy";
 
   specialArgs = {
     inherit username useremail gpuConfig;
@@ -68,6 +73,8 @@ let
       hermes-agent
       spicetify-nix
       dots-hyprland
+      omarchy
+      omarchy-nix
       ;
     inherit isDarwin isLinux isVM;
     hostname = name;
@@ -97,7 +104,7 @@ if isDarwin then
     specialArgs = specialArgs;
     modules = [
       { nixpkgs.config.allowUnfree = true; }
-      ../machines/${name}.nix
+      ../machines/${machine}.nix
       ../users/${user.name}/darwin.nix
       home-manager.darwinModules.home-manager
       nix-openclaw.darwinModules.openclaw
@@ -115,27 +122,37 @@ else
   nixpkgs.lib.nixosSystem {
     inherit system;
     specialArgs = specialArgs;
-    modules = [
-      { nixpkgs.config.allowUnfree = true; }
-      ../machines/${name}.nix
-      ../users/${user.name}/nixos.nix
-      home-manager.nixosModules.home-manager
-      {
-        home-manager =
-          (mkHomeManagerConfig { })
-          // (
-            if isVM then
-              {
-                sharedModules = [ spicetify-nix.homeManagerModules.default ];
-              }
-            else
-              {
-                sharedModules = [
-                  plasma-manager.homeManagerModules.plasma-manager
-                  spicetify-nix.homeManagerModules.default
+    modules =
+      [
+        { nixpkgs.config.allowUnfree = true; }
+        ../machines/${machine}.nix
+        ../users/${user.name}/nixos.nix
+      ]
+      ++ nixpkgs.lib.optionals isOmarchy [
+        omarchy-nix.nixosModules.default
+        ../modules/nixos/omarchy.nix
+      ]
+      ++ [
+        home-manager.nixosModules.home-manager
+        {
+          home-manager =
+            (mkHomeManagerConfig { })
+            // {
+              sharedModules =
+                (
+                  if isVM then
+                    [ spicetify-nix.homeManagerModules.default ]
+                  else
+                    [
+                      plasma-manager.homeManagerModules.plasma-manager
+                      spicetify-nix.homeManagerModules.default
+                    ]
+                )
+                ++ nixpkgs.lib.optionals isOmarchy [
+                  omarchy-nix.homeManagerModules.default
+                  { omarchy.enable = true; }
                 ];
-              }
-          );
-      }
-    ];
+            };
+        }
+      ];
   }

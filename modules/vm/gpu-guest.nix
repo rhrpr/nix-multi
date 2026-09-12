@@ -71,7 +71,7 @@ in
     environment.systemPackages = with pkgs; [
       nvidia-system-monitor-qt
       nvtopPackages.nvidia
-      glxinfo
+      mesa-demos # Provides glxinfo
       vulkan-tools
     ];
   };
