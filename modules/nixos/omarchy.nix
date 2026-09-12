@@ -1,28 +1,54 @@
 {
   lib,
+  pkgs,
   username,
   useremail,
   isVM,
+  currentSystem,
+  omarchy, # upstream omacom/omarchy flake input (flake = false, pinned in flake.lock)
+  omarchy-nix, # NixOS port flake — provides packages.${system}.omarchy
   ...
 }:
 
 # ---------------------------------------------------------------------------
 # Omarchy NixOS system module
 #
-# Responsibility split:
-#   THIS FILE  — system-level wiring: packages, services, autologin, groups,
-#                session variables.  Delegates to omarchy-nix for the heavy
-#                NixOS plumbing.
+# HOW UPSTREAM TRACKING WORKS
+# ============================
+# omarchy-nix builds its omarchy package from its own pinned copy of the
+# upstream (github:omacom/omarchy/quattro, stored in omarchy-nix's flake.lock).
+# That means updating omarchy-nix in our flake.lock does not necessarily
+# pull the latest upstream commit — omarchy-nix controls that pointer.
 #
-#   home/linux/omarchy.nix — dotfiles symlinked directly from the upstream
-#                            omacom/omarchy flake input, so `nix flake update
-#                            omarchy` always reflects the latest upstream config.
+# To decouple the two: we build the omarchy package from the `omarchy` flake
+# input (github:omacom/omarchy, pinned in OUR flake.lock) by overriding the
+# package's `src`.  All of omarchy-nix's NixOS patches still apply; only the
+# source tree changes.  This way:
+#
+#   nix flake update omarchy    →  pulls latest omacom/omarchy commit
+#   nixos-rebuild switch        →  omarchy-nix rebuilds the package from it,
+#                                  activation scripts seed the new configs
+#
+# The home-manager module (omarchy-nix.homeManagerModules.default) seeds
+# dotfiles as MUTABLE copies — not symlinks — so the theme engine and user
+# edits survive. That module handles all file management; no additional home
+# module is needed in this repo.
 # ---------------------------------------------------------------------------
+
+let
+  # Build the omarchy package from the directly pinned upstream snapshot.
+  # overrideAttrs replaces `src`; omarchy-nix's NixOS-specific patches
+  # (env-bootstrap path fixup, systemd unit rewriting, etc.) still apply.
+  omarchyPkg = (omarchy-nix.packages.${currentSystem}.omarchy).overrideAttrs (_old: {
+    src = omarchy;
+  });
+in
 {
   # The omarchy-nix module provides the actual upstream Omarchy Quattro
   # desktop, adapted for declarative NixOS package management.
   omarchy = {
     enable = true;
+    package = omarchyPkg;
     full_name = username;
     email_address = useremail;
     timezone = "Europe/London";

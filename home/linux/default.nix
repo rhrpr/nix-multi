@@ -24,11 +24,13 @@ in
     ++ lib.optionals isEnd4 [
       ./hyprland.nix
     ]
-    ++ lib.optionals isOmarchy [
-      # Links dotfiles directly from upstream omacom/omarchy (flake input).
-      # Run `nix flake update omarchy` to pull the latest upstream configs.
-      ./omarchy.nix
-    ];
+    # Note: omarchy dotfiles are seeded by omarchy-nix.homeManagerModules.default
+    # (included in mksystem.nix sharedModules for isOmarchy).  That module
+    # copies files as mutable seeds — not symlinks — so the theme engine and
+    # user edits survive.  The source package is built from the `omarchy` flake
+    # input (see modules/nixos/omarchy.nix), so `nix flake update omarchy`
+    # always reflects the latest upstream.
+    ;
 
   # Linux-specific packages
   home.packages =
