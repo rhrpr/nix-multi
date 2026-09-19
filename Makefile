@@ -20,7 +20,7 @@ help:
 	@echo "Nix Multi-Platform Configuration"
 	@echo ""
 	@echo "Setup Commands:"
-	@echo "  setup          - Apply a detected host (requires CONFIRM_APPLY=1)"
+	@echo "  setup          - Apply a detected host"
 	@echo "  setup-macos    - Setup macOS with nix-darwin"
 	@echo "  setup-linux    - Setup Linux with NixOS"
 	@echo "  setup-vm       - Setup VM configuration"
@@ -85,7 +85,7 @@ confirm-apply:
 	fi
 
 .PHONY: setup
-setup: confirm-apply
+setup:
 ifeq ($(UNAME),Darwin)
 	@$(MAKE) setup-macos
 else ifeq ($(IS_VM),true)
@@ -98,7 +98,7 @@ endif
 
 # Linux setup  
 .PHONY: setup-linux
-setup-linux: confirm-apply enable-flakes
+setup-linux: enable-flakes
 	@echo "Setting up NixOS configuration..."
 	@# Fix Git ownership issue when running with sudo
 	@if [ "$$EUID" -eq 0 ]; then \
@@ -136,13 +136,13 @@ enable-flakes:
 	fi
 
 .PHONY: setup-macos
-setup-macos: confirm-apply enable-flakes
+setup-macos: enable-flakes
 	@echo "Setting up macOS configuration..."
 	nix build .#darwinConfigurations.$(MACOS_CONFIG).system
 	sudo ./result/sw/bin/darwin-rebuild switch --flake .#$(MACOS_CONFIG)
 
 .PHONY: setup-vm
-setup-vm: confirm-apply enable-flakes
+setup-vm: enable-flakes
 	@echo "Setting up NixOS VM configuration..."
 	@# Fix Git ownership issue when running with sudo
 	@if [ "$$EUID" -eq 0 ]; then \
