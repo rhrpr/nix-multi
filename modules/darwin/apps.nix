@@ -1,4 +1,9 @@
-{ lib, pkgs, username, ... }:
+{
+  lib,
+  pkgs,
+  username,
+  ...
+}:
 let
   sockseek = pkgs.stdenvNoCC.mkDerivation rec {
     pname = "sockseek";
@@ -183,6 +188,7 @@ in
       #"libreoffice" # Open-source office software
       # "little-snitch" # Paid Firewall App
       #"lulu"           # Open-source firewall for macOS
+      "microsoft-edge"  # Microsoft Edge browser
       #"mixxx" # DJ software
       #"mixed-in-key" # Key detection and management tool for DJs
       #"moonlight" # Game streaming client

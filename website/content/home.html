@@ -1,0 +1,39 @@
+<main id="main">
+  <section class="hero wrap">
+    <div class="hero-copy">
+      <p class="eyebrow"><span class="status-dot"></span> MACOS · NIXOS · VIRTUAL MACHINES</p>
+      <h1>Your machines.<br>Your workflow.<br><em>One foundation.</em></h1>
+      <p class="hero-description">Turn a collection of carefully tuned machines into a configuration you can understand, version, and rebuild.</p>
+      <div class="actions"><a class="button primary" href="./docs/getting-started/">Make it yours <span aria-hidden="true">↗</span></a><a class="text-link" href="./docs/">Explore the docs <span aria-hidden="true">→</span></a></div>
+      <p class="hero-note">Built with Nix. Shaped by everyday use.</p>
+    </div>
+    <div class="system-panel" aria-label="Configuration architecture">
+      <div class="panel-bar"><span class="terminal-dots" aria-hidden="true">● ● ●</span><span>your-environment.nix</span><span aria-hidden="true">↗</span></div>
+      <div class="config-code"><span class="muted-code"># A setup that travels with you.</span><br><span class="code-blue">environment</span> = {<br>&nbsp; foundation = <span class="code-lime">"nix"</span>;<br>&nbsp; machines = [<br>&nbsp;&nbsp;&nbsp; <span class="code-lime">"macOS" "NixOS" "VMs"</span><br>&nbsp; ];<br>&nbsp; profile = <span class="code-lime">"yours"</span>;<br>};<span class="cursor" aria-hidden="true"></span></div>
+      <div class="config-caption">CONCEPTUAL OVERVIEW</div>
+      <div class="system-nodes"><div><span>01</span><strong>macOS</strong><small>nix-darwin</small></div><div><span>02</span><strong>Linux</strong><small>NixOS</small></div><div><span>03</span><strong>VMs</strong><small>NixOS guests</small></div></div>
+      <div class="panel-bottom"><span class="status-dot"></span> Shared modules. Individual profiles.</div>
+    </div>
+  </section>
+  <div class="foundation-band"><div class="wrap"><p>THE BUILDING BLOCKS</p><span>Nix flakes</span><span>Home Manager</span><span>nix-darwin</span><span>NixOS</span><span>Agenix</span></div></div>
+  <section class="section wrap" id="why">
+    <div class="section-heading"><p class="eyebrow">LESS SETUP DRIFT. MORE INTENT.</p><h2>Make the setup<br>part of the work.</h2><p>Keep the choices that make your environment yours, and give them a home in version control.</p></div>
+    <div class="feature-grid">
+      <article><span class="feature-number">01 / REPEATABLE</span><h3>Rebuild with context.</h3><p>Flakes capture dependencies. Modules capture decisions. Bring the configuration along when you move to another machine.</p><a href="./docs/workflows/">The daily workflow <span aria-hidden="true">→</span></a></article>
+      <article><span class="feature-number">02 / PERSONAL</span><h3>Your profile, clearly defined.</h3><p>Keep identity, hardware, and host preferences separate from the reusable system and Home Manager modules.</p><a href="./docs/architecture/">Inside the architecture <span aria-hidden="true">→</span></a></article>
+      <article><span class="feature-number">03 / CONNECTED</span><h3>Work across environments.</h3><p>Bring shared tools to macOS, a NixOS desktop, and VM guests. Add host-specific capabilities where they belong.</p><a href="./docs/platforms/">Find your platform <span aria-hidden="true">→</span></a></article>
+    </div>
+  </section>
+  <section class="platform-section section" id="platforms"><div class="wrap">
+    <div class="section-heading"><p class="eyebrow">A SHARED CORE. ROOM FOR DIFFERENCES.</p><h2>At home on your hardware.</h2></div>
+    <div class="platform-grid">
+      <article><span class="platform-label">APPLE SILICON</span><h3>macOS</h3><p>A declarative development environment alongside the Mac apps you use every day.</p><ul><li>nix-darwin system configuration</li><li>Home Manager shell and tools</li><li>Aerospace window management</li><li>UTM and QEMU workflows</li></ul><a href="./docs/platforms/#macos">Explore macOS <span aria-hidden="true">↗</span></a></article>
+      <article><span class="platform-label">NATIVE DESKTOP</span><h3>NixOS</h3><p>Own the desktop, the development stack, and the hardware configuration in one place.</p><ul><li>end4, Omarchy, and KDE Plasma 6</li><li>Machine-specific hardware modules</li><li>Optional libvirt host tooling</li><li>Optional GPU passthrough</li></ul><a href="./docs/platforms/#nixos">Explore NixOS <span aria-hidden="true">↗</span></a></article>
+      <article><span class="platform-label">ROOM TO EXPERIMENT</span><h3>Virtual machines</h3><p>Explore a guest environment with dedicated VM modules and platform-aware helpers.</p><ul><li>NixOS guest configurations</li><li>UTM workflow for Apple Silicon</li><li>QEMU configuration helpers</li><li>Guest tools and SSH deployment</li></ul><a href="./docs/platforms/#vms">Explore VMs <span aria-hidden="true">↗</span></a></article>
+    </div>
+  </div></section>
+  <section class="section wrap workflow-section"><div><p class="eyebrow">FROM REPOSITORY TO YOUR REALITY</p><h2>Understand it.<br>Adapt it.<br><em>Then apply it.</em></h2><p>This is a working personal configuration, with real opinions and hardware-specific choices. Start with your own profile.</p><a class="button primary" href="./docs/getting-started/">Start the guide <span aria-hidden="true">→</span></a></div>
+    <ol class="steps"><li><span>01</span><div><h3>Explore the foundation</h3><p>Read the modules, choose your platform, and inspect the commands before activation.</p></div></li><li><span>02</span><div><h3>Make your own profile</h3><p>Set your identity, host outputs, hardware modules, and encryption recipients.</p></div></li><li><span>03</span><div><h3>Validate, then switch</h3><p>Evaluate the flake and build your selected host before activating the configuration.</p></div></li></ol>
+  </section>
+  <section class="cta wrap"><div><p class="eyebrow">TAKE THE NEXT STEP</p><h2>Build a setup worth keeping.</h2><p>Explore the source. Understand the choices. Make it your own.</p></div><a class="button light" href="https://github.com/rhrpr/nix-multi">View the repository <span aria-hidden="true">↗</span></a></section>
+</main>

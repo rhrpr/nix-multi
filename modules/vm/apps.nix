@@ -60,9 +60,6 @@
     # Hyprland (configured in desktop.nix)
     hyprland.enable = lib.mkIf (desktopManager != "omarchy") true;
 
-    # SSH for remote access
-    ssh.startAgent = true;
-
     # Thunar file manager
     thunar = lib.mkIf (desktopManager != "omarchy") {
       enable = true;

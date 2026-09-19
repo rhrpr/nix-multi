@@ -1,0 +1,36 @@
+<p class="eyebrow">01 / START HERE</p><h1>Make it yours.</h1><p class="lead">Create a profile for your identity and hardware before asking Nix to change your system.</p>
+<h2 id="prerequisites">1. Prepare your environment</h2><p>On macOS, install Nix using the <a href="https://github.com/DeterminateSystems/nix-installer">Determinate Nix Installer</a> and review its installation options. On NixOS, use your existing Nix installation. Ensure the <code>nix-command</code> and <code>flakes</code> experimental features are enabled. You also need Git.</p><p>Fork <a href="https://github.com/rhrpr/nix-multi/fork">the repository</a>, then clone your fork. Replace <code>YOUR-USERNAME</code> below.</p>
+<pre><code>git clone https://github.com/YOUR-USERNAME/nix-multi.git
+cd nix-multi
+cp profiles/example.nix profiles/local.nix</code></pre>
+<h2 id="profile">2. Set your identity and hardware</h2><p>Edit <code>profiles/local.nix</code>: set your user name, email, time zone, locale, and any host preferences. Keep <code>gpuConfig</code> empty until you have reviewed GPU passthrough for your hardware.</p><p>For each NixOS target, generate fresh hardware configuration on that target:</p>
+<pre><code>sudo nixos-generate-config --show-hardware-config</code></pre>
+<p>Save the output in your own hardware module, for example <code>profiles/local/hardware/nixos-desktop.nix</code>. Update the profile's <code>hardwareModules</code> paths. Review disk UUIDs, file systems, boot loader, firmware, and networking. macOS does not use the NixOS hardware module.</p>
+<div class="callout"><strong>The local profile paths are ignored by Git.</strong><p>Nix flakes normally see only tracked files in a Git checkout. After reviewing your local profile and hardware modules, explicitly track the files you need with <code>git add -f</code>, or choose a different tracked profile name. Never add private keys or plaintext secrets.</p></div>
+<h2 id="outputs">3. Connect the profile to your host</h2><p>In <code>flake.nix</code>, change the profile import to your own file. Define an output name for your host and point it at the appropriate reusable machine configuration. For example, this Darwin output uses the existing macOS machine module:</p>
+<pre><code>darwinConfigurations."my-mac" = mkSystem {
+  name = "my-mac";
+  machine = "macbook-pro";
+  system = "aarch64-darwin";
+  inherit user;
+  isDarwin = true;
+};</code></pre>
+<p>For NixOS, use <code>machine = "nixos-desktop";</code>, your own output and host name, <code>system = "x86_64-linux";</code>, and <code>hardwareModule = profile.hardwareModules.desktop;</code>. Set <code>desktopManager</code> to <code>"end4"</code>, <code>"omarchy"</code>, or <code>"plasma"</code>. See the <a href="../architecture/">architecture guide</a> for the composition model.</p>
+<h2 id="secrets">4. Replace secret recipients</h2><p>Base your root <code>secrets.nix</code> on <code>secrets.nix.example</code>. Add your own public recipient keys and create new encrypted files for enabled secret declarations. Existing encrypted secrets cannot be decrypted by your fork. Adapt secret module paths and identities, and omit maintainer-specific SSH modules.</p><p>Follow the <a href="https://github.com/rhrpr/nix-multi/blob/main/secrets/README.md">Agenix guide</a> alongside the relevant platform modules. Keep private keys outside Git and the Nix store.</p>
+<h2 id="validate">5. Evaluate and build</h2><p>Review the modules imported for your host, track your new configuration files, then evaluate:</p>
+<pre><code>nix flake check
+
+# macOS example: build without switching the active system
+nix build '.#darwinConfigurations.my-mac.system' --no-link
+
+# NixOS example: replace my-desktop with your output name
+nix build '.#nixosConfigurations.my-desktop.config.system.build.toplevel' --no-link</code></pre>
+<p>Run the build for your platform. A cross-platform flake may need a suitable remote builder for builds targeting a different operating system.</p>
+<h2 id="activate">6. Apply your chosen host</h2><p>Only after reviewing a successful build, run the matching activation target with your output name:</p>
+<pre><code># macOS
+CONFIRM_APPLY=1 make setup-macos MACOS_CONFIG=my-mac
+
+# NixOS desktop
+CONFIRM_APPLY=1 make setup-linux LINUX_CONFIG=my-desktop</code></pre>
+<p>Activation installs packages and changes system settings. The explicit confirmation is required by the repository's setup commands. Keep a known working generation available while trying changes.</p>
+<a class="next-link" href="../workflows/">Next: everyday workflows <span aria-hidden="true">→</span></a>

@@ -16,13 +16,12 @@ let
   isHyprland = isEnd4 || isOmarchy;
 in
 {
-  imports =
-    [
-      # Import Hyprland module if selected
-    ]
-    ++ lib.optionals isEnd4 [
-      hyprland.nixosModules.default
-    ];
+  imports = [
+    # Import Hyprland module if selected
+  ]
+  ++ lib.optionals isEnd4 [
+    hyprland.nixosModules.default
+  ];
 
   # Common desktop configuration
   services.xserver = {
@@ -209,7 +208,7 @@ in
     pulse.enable = true;
     jack.enable = true;
     wireplumber.enable = true;
-    
+
     # Bluetooth audio support
     wireplumber.configPackages = [
       (pkgs.writeTextDir "share/wireplumber/bluetooth.lua.d/51-bluez-config.lua" ''

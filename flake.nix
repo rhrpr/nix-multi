@@ -119,18 +119,10 @@
       # Import system builder
       mkSystem = import ./lib/mksystem.nix inputs;
 
-      # User configuration
-      user = {
-        name = "hrpr";
-        email = "ryan@hrpr.dev";
-        gpuConfig = {
-          vendor = "nvidia";
-          deviceId = "10de:2206";
-          audioId = "10de:1aef";
-          pciAddress = "01:00";
-          enablePartialPassthrough = true;
-        };
-      };
+      # The maintainer profile preserves the existing outputs. Forks should
+      # create a local profile from profiles/example.nix before deployment.
+      profile = import ./profiles/rhrpr.nix;
+      user = profile.user;
 
       # Setup treefmt-nix for both systems
       systems = [
@@ -232,45 +224,46 @@
         isDarwin = true;
       };
 
-      # Linux desktop host with GPU passthrough. Omarchy is the default;
-      # the explicit profile aliases below make switching desktops obvious.
-      nixosConfigurations."nixos-desktop" = mkSystem {
+      # Keep the hardware and host name stable when changing desktops.
+      nixosConfigurations."nixos-desktop" = self.nixosConfigurations.nixos-omarchy; # nixos-end4 | nixos-omarchy | nixos-plasma
+
+      nixosConfigurations."nixos-omarchy" = mkSystem {
         name = "nixos-desktop";
         system = "x86_64-linux";
         inherit user;
-        desktopManager = "omarchy";
+        hardwareModule = profile.hardwareModules.desktop;
+        desktopManager = "omarchy"; # "end4" | "omarchy" | "plasma"
       };
 
-      nixosConfigurations."nixos-desktop-end4" = mkSystem {
-        name = "nixos-desktop-end4";
+      nixosConfigurations."nixos-end4" = mkSystem {
+        name = "nixos-desktop";
         machine = "nixos-desktop";
         system = "x86_64-linux";
         inherit user;
-        desktopManager = "end4";
+        hardwareModule = profile.hardwareModules.desktop;
+        desktopManager = "end4"; # "end4" | "omarchy" | "plasma"
       };
 
-      nixosConfigurations."nixos-desktop-omarchy" = mkSystem {
-        name = "nixos-desktop-omarchy";
-        machine = "nixos-desktop";
-        system = "x86_64-linux";
-        inherit user;
-        desktopManager = "omarchy";
-      };
-
-      # Linux desktop host alias (expected by scripts)
       nixosConfigurations."nixos-plasma" = mkSystem {
         name = "nixos-desktop";
         system = "x86_64-linux";
         inherit user;
-        desktopManager = "end4";
+        hardwareModule = profile.hardwareModules.desktop;
+        desktopManager = "plasma"; # "end4" | "omarchy" | "plasma"
       };
 
-      # NixOS VM guests. The short/default profile now runs Omarchy.
+      # Existing explicit aliases retain their desktop behavior.
+      nixosConfigurations."nixos-desktop-end4" = self.nixosConfigurations.nixos-end4;
+      nixosConfigurations."nixos-desktop-omarchy" = self.nixosConfigurations.nixos-omarchy;
+
+      # x86_64 guests use an x86_64 hardware module because Omarchy supports
+      # x86_64 only.
       nixosConfigurations."vm" = mkSystem {
         name = "vm";
         machine = "nixos-vm";
         system = "x86_64-linux";
         inherit user;
+        hardwareModule = profile.hardwareModules.vmX86;
         vm = true;
         desktopManager = "omarchy";
       };
@@ -280,16 +273,29 @@
         machine = "nixos-vm";
         system = "x86_64-linux";
         inherit user;
+        hardwareModule = profile.hardwareModules.vmX86;
         vm = true;
         desktopManager = "omarchy";
       };
 
-      # Legacy/end4 VM profile retained for comparison and rollback.
+      # End4 Hyprland VM for x86_64 hosts.
       nixosConfigurations."nixos-vm-hyprland" = mkSystem {
         name = "nixos-vm-hyprland";
         machine = "nixos-vm";
         system = "x86_64-linux";
         inherit user;
+        hardwareModule = profile.hardwareModules.vmX86;
+        vm = true;
+        desktopManager = "end4";
+      };
+
+      # ARM64 UTM guest profile for Apple Silicon hosts.
+      nixosConfigurations."nixos-vm-arm64" = mkSystem {
+        name = "nixos-vm-arm64";
+        machine = "nixos-vm";
+        system = "aarch64-linux";
+        inherit user;
+        hardwareModule = profile.hardwareModules.vm;
         vm = true;
         desktopManager = "end4";
       };

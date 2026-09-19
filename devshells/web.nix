@@ -12,9 +12,9 @@ pkgs.mkShell {
     git
 
     # Additional web development tools
-    nodePackages.typescript
-    nodePackages.prettier
-    nodePackages.eslint
+    typescript
+    prettier
+    eslint
 
     # Add treefmt and formatters
     treefmtWrapper

@@ -1,4 +1,4 @@
-# SSH client configuration managed by Home Manager
+# Maintainer-specific SSH client configuration managed by Home Manager.
 # Private keys are placed at ~/.ssh/ by agenix during system activation
 # Public keys are written here (they are not sensitive)
 {
@@ -16,7 +16,8 @@
     settings = {
       "*" = {
         AddKeysToAgent = if isDarwin then "yes" else "no";
-      } // lib.optionalAttrs isDarwin {
+      }
+      // lib.optionalAttrs isDarwin {
         UseKeychain = "yes";
       };
 
