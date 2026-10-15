@@ -114,6 +114,7 @@ in
       "nikitabobko/tap" # aerospace - an i3-like tiling window manager for macOS
       "FelixKratz/formulae" # janky borders - highlight active window borders
       "trycua/lume"
+      "stategraph/stategraph"
     ];
 
     brews = [
@@ -142,6 +143,7 @@ in
       "p11-kit" # Library to load and share PKCS#11 modules
       "regclient" # Docker registry synchronization utility
       "taglib" # TagLib library
+      "stategraph"  # Stategraph CLI
       "syncthing" # Open source continuous file synchronization tool
       "terraform-ls" # Language server for Terraform
       "tfenv" # Terraform version manager
@@ -158,6 +160,7 @@ in
       "android-studio" # Android development environment
       "antigravity" # Google Antigravity multi-agent command centre
       "aural" # audio player
+      "artcraft" # OSS Adobe
       "arturia-software-center" # Arturia software management tool
       "battery" # Battery management tool
       "balenaetcher" # ISO to USB
@@ -172,10 +175,12 @@ in
       "cyberduck" # FTP, SFTP, WebDAV, S3 file transfer client
       "discord" # Voice, video, and text chat app
       "docker-desktop" # Docker Desktop App
+      "microsoft-edge" 
       "firefox" # Web browser
       "ghostty" # terminal emulator
       "google-chrome" # Web browser
       "gimp" # GNU Multiple Precision Arithmetic Library
+      "github-copilot-app" # Github co-pilot app
       # "github-copilot-for-xcode" # Github Copilot for xCode
       # "ibkr" # Interactive Brokers trading platform
       "iterm2" # MacOS Terminal emulator
@@ -188,7 +193,6 @@ in
       #"libreoffice" # Open-source office software
       # "little-snitch" # Paid Firewall App
       #"lulu"           # Open-source firewall for macOS
-      "microsoft-edge"  # Microsoft Edge browser
       #"mixxx" # DJ software
       #"mixed-in-key" # Key detection and management tool for DJs
       #"moonlight" # Game streaming client

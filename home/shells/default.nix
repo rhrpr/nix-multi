@@ -68,6 +68,11 @@ in
       PATH = "$PATH:$HOME/.rd/bin";
     };
     initContent = ''
+      # Local, untracked secrets (API keys, tokens) — never committed to git
+      if [ -f "$HOME/.config/zsh/secrets.zsh" ]; then
+        source "$HOME/.config/zsh/secrets.zsh"
+      fi
+
       # Custom functions
       rgrep() {
         rg -rnIi --color "$1" ./
