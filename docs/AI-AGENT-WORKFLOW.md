@@ -28,6 +28,12 @@ that need its session database, cost dashboard, or conductor features. Herdr rem
 default. Do not let Herdr and Agent Deck manage the same live agent session: there must be
 one terminal owner per task.
 
+## One-screen control room
+
+The Herdr runtime below is wrapped in a voice- and hotkey-driven control room
+(AeroSpace workspace `1AI`, Hammerspoon push-to-talk, login bring-up). See
+[CONTROL-ROOM.md](CONTROL-ROOM.md).
+
 ## Architecture
 
 | Layer | Tool | Responsibility | Persistent data |

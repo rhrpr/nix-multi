@@ -87,6 +87,12 @@ in
       [session]
       resume_agents_on_restore = true
 
+      # Finished / needs-attention alerts go to macOS Notification Center so
+      # blocked agents are visible from any app (control room).
+      [ui.toast]
+      delivery = "system"
+      delay_seconds = 1
+
       [worktrees]
       directory = "~/.herdr/worktrees"
 

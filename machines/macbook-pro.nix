@@ -15,6 +15,7 @@
     ../modules/darwin/host-users.nix
     ../modules/darwin/apps.nix
     ../modules/darwin/ai-tools.nix
+    ../modules/darwin/control-room.nix
     ../modules/darwin/hermes.nix
     ../modules/darwin/lm-studio.nix
     ../modules/darwin/secrets.nix
