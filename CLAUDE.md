@@ -277,6 +277,22 @@ Start with defaults (`max_concurrent_children: 1`, `max_concurrency: 1`).
 After observing memory pressure and token throughput, raise to 2.
 Edit `home/macos/hermes.nix` and rebuild.
 
+## AI Control Room (macOS only)
+
+One-screen Herdr control room with voice (Hammerspoon + whisper.cpp), AeroSpace
+desktop layout and login bring-up. Full guide: `docs/CONTROL-ROOM.md`.
+
+| File | Purpose |
+|------|---------|
+| `home/macos/control-room/default.nix` | Options (`programs.controlRoom`), packages, launchd boot agent |
+| `home/macos/control-room/config.nix` | This Mac's projects, apps, spaces, desks, hotkeys |
+| `home/macos/control-room/control_room.py` | `control-room` CLI (up/boot/status/dash/voice/desk/doctor) |
+| `home/macos/control-room/hammerspoon.lua` | Push-to-talk + hotkeys (`~/.hammerspoon/init.lua`) |
+| `home/macos/aerospace.nix` | `~/.aerospace.toml`, app rules generated from `programs.controlRoom.apps` |
+| `modules/darwin/control-room.nix` | AeroSpace/Hammerspoon casks, reopen-windows defaults |
+
+Test voice routing offline: `control-room parse "approve nix claude"`.
+
 ## Troubleshooting
 
 ### Build Issues

@@ -6,6 +6,8 @@
     ./aerospace.nix
     ./hermes.nix
     ./herdr.nix
+    ./control-room
+    ./control-room/config.nix
   ];
 
   # macOS-specific packages
