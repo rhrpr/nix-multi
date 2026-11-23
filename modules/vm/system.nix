@@ -63,12 +63,6 @@
       "rd.udev.log_level=3"
     ];
 
-    # Optimize initrd
-    initrd = {
-      verbose = false;
-      systemd.enable = true;
-    };
-
     # Plymouth for better boot experience
     plymouth = lib.mkIf (desktopManager != "omarchy") {
       enable = true;

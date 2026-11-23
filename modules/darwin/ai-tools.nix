@@ -141,10 +141,10 @@
       # update, and close issues concurrently without conflicts.
       ai.beads
 
-      # vibe-kanban — Kanban board for orchestrating AI coding agents.
-      # Provides a visual board where each card can be assigned to claude-code,
-      # codex, gemini-cli, or a human; tracks agent progress in real-time.
-      ai.vibe-kanban
+      # vibe-kanban — removed from upstream llm-agents.nix as of the 2026-11-23
+      # flake update (package no longer exists in the package set); re-add if
+      # it reappears upstream or is found under a new name.
+      # ai.vibe-kanban
 
       # gitbutler — Git client for managing multiple simultaneous feature
       # branches (virtual branches). Lets each AI agent work on its own branch
