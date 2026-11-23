@@ -120,8 +120,9 @@ in
     brews = [
       "awk" # Pattern-directed scanning and processing language
       "age" # Age (Agenix)
-      "azure-cli" # Azure CLI (az)
+      #"azure-cli" # Azure CLI (az)
       "btop" # Resource monitor showing CPU, memory, disks, network
+      "bitwarden-cli" # Bitwarden CLI manager
       "ca-certificates" # Bundle of CA root certificates
       "cask" # Extension mechanism for Homebrew
       "coreutils" # GNU core utilities (ls, cat, etc)
@@ -187,6 +188,7 @@ in
       "intellij-idea-ce" # IntelliJ Idea Community Edition
       "jetbrains-air" # Intellij Agentic AI Manager
       #"knockknock"     # Security tool to show persistent apps
+      "ladybird"  # Truly independant browser
       "lm-studio" # Local AI model runner and chat interface
       #"logitech-g-hub" # Logitech gaming configuration app
       #"logitech-options" # Configuration tool for Logitech devices
