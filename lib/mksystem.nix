@@ -59,7 +59,10 @@ let
       "omarchy"; # default Linux desktop to Omarchy
 
   isOmarchy = resolvedDesktopManager == "omarchy";
-  supportsSpicetify = system != "aarch64-linux";
+  # TEMP: spicetify-nix pulls nixpkgs' spotify, which fetches its dmg from a
+  # web.archive.org snapshot that's currently dropping connections mid-download.
+  # Disabled on Darwin until that mirror stabilizes; re-enable by reverting this line.
+  supportsSpicetify = system != "aarch64-linux" && !isDarwin;
 
   specialArgs = {
     inherit

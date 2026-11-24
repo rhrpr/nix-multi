@@ -119,6 +119,7 @@ in
     enable = true;
     package = pkgs.nushell;
     shellAliases = shellAliases;
+    loadSessionVariables = true;
   };
 
   home.packages = [ pkgs.kubectl ];
