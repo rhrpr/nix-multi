@@ -6,7 +6,8 @@
   <a href="#getting-started">Getting started</a> ·
   <a href="#choose-your-desktop">Desktop choices</a> ·
   <a href="#everyday-workflows">Workflows</a> ·
-  <a href="website/README.md">Website & documentation</a>
+  <a href="website/README.md">Website & documentation</a> ·
+  <a href="https://github.com/rhrpr/nix-multi">Github</a>
 </p>
 
 # Your machines. Your workflow. One foundation.
