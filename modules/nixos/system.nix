@@ -6,10 +6,6 @@
 }:
 
 {
-  imports = [
-    # Include the results of the hardware scan.
-    ./hardware-configuration.nix
-  ];
 
   # UEFI + systemd-boot
   boot.loader.systemd-boot.enable = true;
@@ -86,9 +82,6 @@
     "acpi.ec_no_wakeup=1"
   ];
 
-  # Networking
-  networking.networkmanager.enable = true;
-
   # Localization
   time.timeZone = "Europe/London";
   i18n.defaultLocale = "en_GB.UTF-8";
@@ -109,10 +102,6 @@
     hostName = hostname;
     networkmanager.enable = true;
   };
-
-  time.timeZone = systemSettings.timeZone or "UTC";
-  i18n.defaultLocale = systemSettings.defaultLocale or "en_US.UTF-8";
-  i18n.extraLocaleSettings = systemSettings.extraLocaleSettings or { };
 
   programs = {
     firefox.enable = true;
