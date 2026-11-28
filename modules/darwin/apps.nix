@@ -5,6 +5,12 @@
   ...
 }:
 let
+  # Shared across nix-darwin and the NixOS Linuxbrew bootstrap — see
+  # modules/shared/homebrew-apps.nix for field docs and the Linux dedup logic.
+  homebrewApps = (import ../shared/homebrew-apps.nix).entries;
+  forDarwin =
+    type: builtins.filter (e: e.type == type && builtins.elem "darwin" e.platforms) homebrewApps;
+
   sockseek = pkgs.stdenvNoCC.mkDerivation rec {
     pname = "sockseek";
     version = "3.0.5";
@@ -95,19 +101,16 @@ in
     # You need to install all these Apps manually first so that your apple account have records for them.
     # otherwise Apple Store will refuse to install them.
     # For details, see https://github.com/mas-cli/mas
-    masApps = {
-      #"Amphetamine" = 937984704; # Keep-awake utility to prevent Mac from sleeping
-      "Bitwarden" = 1352778147; # Password manager application
-      #"Ferromagnetic" = 1546537151; # Utility for managing magnet links
-      #"Magnet" = 441258766; # Window management tool for arranging windows
-      "iMovie" = 408981434; # Apple's video editing software
-      "Xcode" = 497799835; # Apple xCode
-      "Pages" = 361309726;
-      "Keynote" = 361285480; # Apple's presentation software
-      "Numbers" = 361304891; # Apple's spreadsheet software
-      "Apple Developer" = 640199958; # Apple Developer
-      # "Testflight" = 899247664; #TestFlight
-    };
+    # Generated from modules/shared/homebrew-apps.nix (type == "mas").
+    # Disabled/experimental mas apps (Amphetamine, Ferromagnetic, Magnet,
+    # Testflight) were dropped rather than carried over commented-out —
+    # re-add them to the shared list if they come back into rotation.
+    masApps = builtins.listToAttrs (
+      map (e: {
+        name = e.name;
+        value = e.id;
+      }) (forDarwin "mas")
+    );
 
     taps = [
       "hashicorp/tap"
@@ -117,111 +120,21 @@ in
       "stategraph/stategraph"
     ];
 
-    brews = [
-      "awk" # Pattern-directed scanning and processing language
-      "age" # Age (Agenix)
-      #"azure-cli" # Azure CLI (az)
-      "btop" # Resource monitor showing CPU, memory, disks, network
-      "bitwarden-cli" # Bitwarden CLI manager
-      "ca-certificates" # Bundle of CA root certificates
-      "cask" # Extension mechanism for Homebrew
-      "coreutils" # GNU core utilities (ls, cat, etc)
-      "fastlane" # Automate beta deployment and releases for your iOS and Android apps
-      "ffmpeg" # Audio and video converter/processor
-      "jq" # Command-line JSON processor
-      "gallery-dl" # Command-line downloader for image galleries
-      # gemini-cli moved to modules/darwin/ai-tools.nix (llm-agents.nix)
-      "gettext" # GNU internationalization (i18n) library
-      "gnutls" # GNU Transport Layer Security Library
-      "htop" # Interactive process viewer
-      "jansson" # C library for encoding/decoding JSON
-      "libidn2" # International domain name library
-      "lume" # Command-line tool for virtual machines
-      "mas" # Mac App Store command line interface
-      "nettle" # Low-level cryptographic library
-      "openssl@3" # Cryptography and SSL/TLS toolkit
-      # openspec moved to modules/darwin/ai-tools.nix (llm-agents.nix)
-      "p11-kit" # Library to load and share PKCS#11 modules
-      "regclient" # Docker registry synchronization utility
-      "taglib" # TagLib library
-      "stategraph"  # Stategraph CLI
-      "syncthing" # Open source continuous file synchronization tool
-      "terraform-ls" # Language server for Terraform
-      "tfenv" # Terraform version manager
-      "tmux" # Terminal multiplexer
-      "tree-sitter" # Parser generator tool and library
-      "unbound" # Validating, recursive, and caching DNS resolver
-      "yt-dlp" # YouTube video downloader
-      "wget" # Command-line utility for downloading files from the web
-      "xcodegen" # Command line tool to generate Xcode project files
-    ];
+    # Generated from modules/shared/homebrew-apps.nix (type == "brew").
+    # Disabled/experimental entries (azure-cli, gemini-cli, openspec — the
+    # latter two moved to modules/darwin/ai-tools.nix) were dropped rather
+    # than carried over commented-out.
+    brews = map (e: e.name) (forDarwin "brew");
 
-    casks = [
-      "ableton-live-standard" # Digital audio workstation for music production
-      "android-studio" # Android development environment
-      "antigravity" # Google Antigravity multi-agent command centre
-      "aural" # audio player
-      "artcraft" # OSS Adobe
-      "arturia-software-center" # Arturia software management tool
-      "battery" # Battery management tool
-      "balenaetcher" # ISO to USB
-      "betterdisplay" # Display scaling (hidpi)
-      "brave-browser" # Privacy focused browser
-      "blender" # Blender app for video editin
-      "caffeine" # Keepalive app for macos
-      "chatgpt" # ChatGPT Desktop App
-      "codex" # ChatGPT Codex
-      "cursor" # Cursor AI code editor
-      "claude" # Claude AI desktop app (.app bundle via homebrew)
-      "cyberduck" # FTP, SFTP, WebDAV, S3 file transfer client
-      "discord" # Voice, video, and text chat app
-      "docker-desktop" # Docker Desktop App
-      "microsoft-edge" 
-      "firefox" # Web browser
-      "ghostty" # terminal emulator
-      "google-chrome" # Web browser
-      "gimp" # GNU Multiple Precision Arithmetic Library
-      "github-copilot-app" # Github co-pilot app
-      # "github-copilot-for-xcode" # Github Copilot for xCode
-      # "ibkr" # Interactive Brokers trading platform
-      "iterm2" # MacOS Terminal emulator
-      "intellij-idea-ce" # IntelliJ Idea Community Edition
-      "jetbrains-air" # Intellij Agentic AI Manager
-      #"knockknock"     # Security tool to show persistent apps
-      "ladybird"  # Truly independant browser
-      "lm-studio" # Local AI model runner and chat interface
-      #"logitech-g-hub" # Logitech gaming configuration app
-      #"logitech-options" # Configuration tool for Logitech devices
-      #"libreoffice" # Open-source office software
-      # "little-snitch" # Paid Firewall App
-      #"lulu"           # Open-source firewall for macOS
-      #"mixxx" # DJ software
-      #"mixed-in-key" # Key detection and management tool for DJs
-      #"moonlight" # Game streaming client
-      #"musicbrainz-picard" # Audio Tagger
-      "obsidian" # Markdown knowledge base and note-taking app
-      "obs" # Open Source Streaming Software
-      #"oversight"      # Monitors and notifies when microphone or camera is activated
-      #"philips-hue-sync" # Phillips Hue Sync App
-      "proton-mail-bridge" # Proton email
-      "protonvpn" # VPN client
-      "postman" # API Client
-      "rekordbox" # DJ software
-      "spotify" # Music streaming service
-      #"stats" # System monitor for the menu bar
-      #"steam" # Gaming platform and store
-      #"microsoft-teams" # MS Teams
-      #"rancher" # Kubernetes and containers host
-      #"reamp" # WinAMP reimplementation for macOS
-      "rectangle" # OSS Window snapping for MacOS
-      #"telegram" # Messaging app
-      "transmission" # BitTorrent client
-      #"utm" # Virtual machines UI using QEMU
-      #"vagrant" # Tool for building and managing virtual machine environments
-      #"vagrant-vmware-utility" # Vagrant plugin for VMware
-      "yubico-authenticator" # Authentication tool for YubiKey devices
-      #"vanilla" # macOS app to hide menu bar icons
-      #"xbar" # Bar Display Tool
-    ];
+    # Generated from modules/shared/homebrew-apps.nix (type == "cask").
+    # Disabled/experimental casks from the old literal list (knockknock,
+    # logitech-g-hub, logitech-options, libreoffice, little-snitch, lulu,
+    # mixxx, mixed-in-key, moonlight, musicbrainz-picard, oversight,
+    # philips-hue-sync, stats, steam, microsoft-teams, rancher, reamp,
+    # telegram, utm, vagrant, vagrant-vmware-utility, vanilla, xbar,
+    # github-copilot-for-xcode, ibkr) were dropped rather than carried over
+    # commented-out — re-add them to the shared list if they come back into
+    # rotation.
+    casks = map (e: e.name) (forDarwin "cask");
   };
 }

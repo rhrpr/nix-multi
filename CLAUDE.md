@@ -53,6 +53,24 @@ make iso-build                      # Build NixOS ARM64 ISO for UTM
 make iso-minimal                    # Build minimal NixOS ISO
 ```
 
+### Homebrew App Parity (macOS + Linux)
+```bash
+# Bootstrap Homebrew on NixOS and install the Linux-capable subset of apps
+make brew-linux-setup
+
+# Regenerate /etc/Brewfile.linux after editing the shared app list, then re-run above
+make setup-linux
+```
+`modules/shared/homebrew-apps.nix` is the single source of truth for every
+Homebrew brew/cask/mas entry on both OSes. `modules/darwin/apps.nix` derives
+its `homebrew.brews`/`casks`/`masApps` from it; `modules/nixos/homebrew.nix`
+derives a generated `/etc/Brewfile.linux` from it, limited to formulae that
+(a) actually run on Linux and (b) aren't already provided by nixpkgs in
+`modules/nixos/apps.nix` — so nothing is ever double-installed. GUI casks and
+Mac App Store apps have no Linux brew path at all (Homebrew Cask and the Mac
+App Store are macOS-only); for those, each entry's `linuxNixPkg` field
+documents the nixpkgs package that already gives Linux parity instead.
+
 ### Secret Management (Agenix)
 ```bash
 # Create new encrypted secrets

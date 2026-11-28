@@ -23,6 +23,7 @@ help:
 	@echo "  setup          - Apply a detected host"
 	@echo "  setup-macos    - Setup macOS with nix-darwin"
 	@echo "  setup-linux    - Setup Linux with NixOS"
+	@echo "  brew-linux-setup - Bootstrap Homebrew on Linux + brew bundle (apps from modules/shared/homebrew-apps.nix)"
 	@echo "  setup-vm       - Setup VM configuration"
 	@echo "  apply-libvirt  - Apply libvirt host configuration (requires rebuild)"
 	@echo ""
@@ -106,6 +107,13 @@ setup-linux: enable-flakes
 	fi
 	nix build .#nixosConfigurations.$(LINUX_CONFIG).config.system.build.toplevel --no-link
 	sudo nixos-rebuild switch --flake .#$(LINUX_CONFIG)
+
+.PHONY: brew-linux-setup
+brew-linux-setup:
+	@echo "Bootstrapping Homebrew and running 'brew bundle' against /etc/Brewfile.linux..."
+	@echo "(Brewfile is generated from modules/shared/homebrew-apps.nix — run"
+	@echo " 'make setup-linux' first after changing that list.)"
+	brew-linux-bundle
 
 .PHONY: enable-flakes
 enable-flakes:
