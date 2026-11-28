@@ -40,8 +40,25 @@
       # hermes-desktop packages fail to build. Sourcing them here keeps the
       # CLI and the HM module on the same version.
       hermesPkgs = hermes-agent.packages.${pkgs.stdenv.hostPlatform.system};
+
+      # This file is symlinked between modules/darwin/ai-tools.nix and
+      # modules/nixos/ai-tools.nix, so it's the single source for both OSes.
+      # gemini-cli, opencode, herdr, backlog-md, beads, openspec, and
+      # claude-code-router have moved entirely to Homebrew on BOTH OSes (see
+      # modules/shared/homebrew-nix-apps.nix) — real formulae exist for all of
+      # them, and it sidesteps llm-agents.nix's flaky npm-dependent Linux
+      # builds, so they're no longer listed below at all.
+      #
+      # hermes-agent is the one exception that still needs an OS split: the
+      # HM module (home/macos/hermes.nix) keeps macOS's hermes-agent CLI
+      # version-matched to hermes-desktop via the NousResearch flake input,
+      # so darwin stays nix-managed; NixOS has no such coupling, so it gets
+      # hermes-agent via brew instead (homebrew-nix-apps.nix's darwinNixPkg
+      # field records this split).
+      isLinux = pkgs.stdenv.hostPlatform.isLinux;
+      nixOnlyOnDarwin = pkg: lib.optional (!isLinux) pkg;
     in
-    [
+    lib.flatten [
 
       ##########################################################################
       # AI Coding Agents
@@ -64,12 +81,12 @@
       # gemini-cli — Google Gemini brought to the terminal. Useful as a
       # second-opinion agent or for tasks that benefit from Gemini's long
       # context window (e.g. large repo summarisation).
-      ai.gemini-cli
+      # Installed via Homebrew on both OSes — see modules/shared/homebrew-nix-apps.nix.
 
       # opencode — terminal coding agent configured declaratively in
       # home/macos/hermes.nix to use LM Studio and local models by default.
       # Its webfetch/websearch tools remain available to the local models.
-      ai.opencode
+      # Installed via Homebrew on both OSes — see modules/shared/homebrew-nix-apps.nix.
 
       # antigravity-cli — terminal interface for Google's Antigravity agents.
       # The executable is `agy`; Herdr's integration records conversation IDs
@@ -83,12 +100,16 @@
       # `hermes` command used for model auth, config, status, and interactive
       # sessions. Must be on PATH before running `hermes model` OAuth flow.
       # From the NousResearch flake input (see hermesPkgs note above).
-      hermesPkgs.default
+      # On NixOS: installed via Homebrew instead (see isLinux note above) —
+      # no HM module there to keep version-pinned against.
+      (nixOnlyOnDarwin hermesPkgs.default)
 
       # claude-code-router — Proxy layer that routes Claude Code requests to
       # alternative model providers (OpenRouter, Bedrock, local models).
       # Lets you swap the backend without changing your claude-code workflow.
-      # NOTE: commented out — npm dep fetch fails with HTTP/2 error on npmjs.org
+      # NOTE: commented out here on both OSes — npm dep fetch fails with
+      # HTTP/2 error on npmjs.org under llm-agents.nix. Installed via
+      # Homebrew on both OSes instead — see modules/shared/homebrew-nix-apps.nix.
       # ai.claude-code-router
 
       # oh-my-claudecode — Multi-agent orchestration harness for Claude Code.
@@ -129,17 +150,17 @@
       # herdr — agent-aware terminal multiplexer and persistent runtime.
       # Owns real terminal panes, project workspaces, git worktrees, lifecycle
       # status, remote attachment, and supported native agent restoration.
-      ai.herdr
+      # Installed via Homebrew on both OSes — see modules/shared/homebrew-nix-apps.nix.
 
       # backlog-md — Git-native project collaboration between humans and AI.
       # Stores tasks as markdown files committed to the repo; agents read and
       # update backlog items directly, keeping work in version control.
-      ai.backlog-md
+      # Installed via Homebrew on both OSes — see modules/shared/homebrew-nix-apps.nix.
 
       # beads — Distributed issue tracker designed for AI-assisted workflows.
       # Issues live in the repo as structured data; multiple agents can claim,
       # update, and close issues concurrently without conflicts.
-      ai.beads
+      # Installed via Homebrew on both OSes — see modules/shared/homebrew-nix-apps.nix.
 
       # vibe-kanban — removed from upstream llm-agents.nix as of the 2026-11-23
       # flake update (package no longer exists in the package set); re-add if
@@ -156,7 +177,7 @@
       # capability specs as markdown in the repo; agents draft a spec, get it
       # approved, implement against it, then archive it. `openspec init` wires
       # up the AGENTS.md / tool instructions for the project.
-      ai.openspec
+      # Installed via Homebrew on both OSes — see modules/shared/homebrew-nix-apps.nix.
 
       # trellis — Out-of-the-box engineering framework for AI coding.
       # Scaffolds projects with conventions that AI agents understand natively,

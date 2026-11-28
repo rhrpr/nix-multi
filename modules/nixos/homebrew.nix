@@ -8,7 +8,7 @@
 #      loader and the common shared libraries they expect (NixOS's /lib
 #      layout otherwise breaks them).
 #   2. Generates /etc/Brewfile.linux from the single source of truth in
-#      modules/shared/homebrew-apps.nix, limited to brew formulae that are
+#      modules/shared/homebrew-nix-apps.nix, limited to brew formulae that are
 #      both Linux-capable AND not already provided by nixpkgs in
 #      modules/nixos/apps.nix (so nothing is ever installed twice).
 #   3. Installs a `brew-linux-bundle` script that bootstraps Homebrew itself
@@ -18,7 +18,7 @@
 #      it's invoked explicitly via `make brew-linux-setup` (see Makefile).
 { pkgs, lib, ... }:
 let
-  homebrewApps = (import ../shared/homebrew-apps.nix).entries;
+  homebrewApps = (import ../shared/homebrew-nix-apps.nix).entries;
 
   linuxBrews = builtins.filter (
     e: e.type == "brew" && builtins.elem "linux" e.platforms && e.linuxNixPkg == null
@@ -31,7 +31,7 @@ let
   darwinOnly = builtins.filter (e: !(builtins.elem "linux" e.platforms)) homebrewApps;
 
   brewfile = pkgs.writeText "Brewfile.linux" ''
-    # Generated from modules/shared/homebrew-apps.nix — do not edit by hand.
+    # Generated from modules/shared/homebrew-nix-apps.nix — do not edit by hand.
     # Rebuild (nixos-rebuild switch) after changing the shared list, then
     # re-run `make brew-linux-setup` to apply it.
     #
@@ -42,7 +42,7 @@ let
     ) skippedAsNixManaged}
     #
     # Skipped — darwin-only (cask/mas has no Linux support, or the formula
-    # is macOS-specific; see modules/shared/homebrew-apps.nix `note` fields):
+    # is macOS-specific; see modules/shared/homebrew-nix-apps.nix `note` fields):
     ${lib.concatMapStringsSep "\n" (e: "#   ${e.name} (${e.desc})") darwinOnly}
 
     ${lib.concatMapStringsSep "\n" (e: ''brew "${e.name}" # ${e.desc}'') linuxBrews}

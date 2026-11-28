@@ -147,6 +147,7 @@ else
       { nixpkgs.config.allowUnfree = true; }
       ../machines/${machine}.nix
       ../modules/shared/user.nix
+      ../modules/nixos/ai-tools.nix
     ]
     ++ nixpkgs.lib.optional (hardwareModule != null) hardwareModule
     ++ nixpkgs.lib.optionals isOmarchy [

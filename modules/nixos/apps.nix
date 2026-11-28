@@ -1,5 +1,23 @@
 { pkgs, lib, ... }:
 let
+  # GUI apps declared once in modules/shared/homebrew-nix-apps.nix as a
+  # Homebrew cask/mas app (darwin) with a nixpkgs equivalent (`linuxNixPkg`)
+  # for Linux parity. Resolving those attribute names here means adding or
+  # retiring a cross-platform GUI app only ever touches that one shared
+  # file — this list, and modules/darwin/apps.nix's cask/mas lists, follow
+  # automatically. Dotted names (e.g. "jetbrains.idea-community") resolve
+  # through nested attrsets via attrByPath.
+  guiAppEntries = builtins.filter (
+    e: (e.type == "cask" || e.type == "mas") && e.linuxNixPkg != null
+  ) (import ../shared/homebrew-nix-apps.nix).entries;
+  linuxGuiPkgNames = lib.unique (map (e: e.linuxNixPkg) guiAppEntries);
+  linuxGuiPkgs = map (
+    name:
+    lib.attrByPath (lib.splitString "." name) (
+      throw "modules/nixos/apps.nix: nixpkgs has no attribute `${name}` (declared as linuxNixPkg in modules/shared/homebrew-nix-apps.nix)"
+    ) pkgs
+  ) linuxGuiPkgNames;
+
   sockseek = pkgs.stdenvNoCC.mkDerivation rec {
     pname = "sockseek";
     version = "3.0.5";
@@ -60,7 +78,6 @@ in
 
     # Core utilities
     btop
-    bitwarden-desktop
     cacert
     coreutils
     fastlane
@@ -84,24 +101,19 @@ in
     tree-sitter
     unbound
     yt-dlp
-
-    # GUI applications that have Nix equivalents
-    android-studio
-    code-cursor
-    discord
-    chromium
-    ghostty
+  ]
+  # GUI applications that have Nix equivalents — generated from every
+  # cask/mas entry's linuxNixPkg in modules/shared/homebrew-nix-apps.nix.
+  ++ linuxGuiPkgs
+  ++ (with pkgs; [
+    # GUI apps with no Homebrew-cask counterpart in homebrew-nix-apps.nix —
+    # curated here directly instead.
+    chromium # FOSS build; kept alongside the google-chrome cask's Linux pick above rather than replacing it
     gparted
-    obsidian
-    postman
-    protonvpn-gui
-    spotify
-    transmission_4
     karere # Maintained WhatsApp desktop client
-    yubioath-flutter
     sockseek
     stemdeck
-  ];
+  ]);
   # Desktop profiles such as Omarchy provide their own editor launcher.
   environment.variables.EDITOR = lib.mkDefault "nano";
 

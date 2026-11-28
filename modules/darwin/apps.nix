@@ -6,10 +6,13 @@
 }:
 let
   # Shared across nix-darwin and the NixOS Linuxbrew bootstrap — see
-  # modules/shared/homebrew-apps.nix for field docs and the Linux dedup logic.
-  homebrewApps = (import ../shared/homebrew-apps.nix).entries;
+  # modules/shared/homebrew-nix-apps.nix for field docs and the Linux dedup logic.
+  homebrewApps = (import ../shared/homebrew-nix-apps.nix).entries;
   forDarwin =
-    type: builtins.filter (e: e.type == type && builtins.elem "darwin" e.platforms) homebrewApps;
+    type:
+    builtins.filter (
+      e: e.type == type && builtins.elem "darwin" e.platforms && (e.darwinNixPkg or null) == null
+    ) homebrewApps;
 
   sockseek = pkgs.stdenvNoCC.mkDerivation rec {
     pname = "sockseek";
@@ -101,7 +104,7 @@ in
     # You need to install all these Apps manually first so that your apple account have records for them.
     # otherwise Apple Store will refuse to install them.
     # For details, see https://github.com/mas-cli/mas
-    # Generated from modules/shared/homebrew-apps.nix (type == "mas").
+    # Generated from modules/shared/homebrew-nix-apps.nix (type == "mas").
     # Disabled/experimental mas apps (Amphetamine, Ferromagnetic, Magnet,
     # Testflight) were dropped rather than carried over commented-out —
     # re-add them to the shared list if they come back into rotation.
@@ -120,13 +123,13 @@ in
       "stategraph/stategraph"
     ];
 
-    # Generated from modules/shared/homebrew-apps.nix (type == "brew").
+    # Generated from modules/shared/homebrew-nix-apps.nix (type == "brew").
     # Disabled/experimental entries (azure-cli, gemini-cli, openspec — the
     # latter two moved to modules/darwin/ai-tools.nix) were dropped rather
     # than carried over commented-out.
     brews = map (e: e.name) (forDarwin "brew");
 
-    # Generated from modules/shared/homebrew-apps.nix (type == "cask").
+    # Generated from modules/shared/homebrew-nix-apps.nix (type == "cask").
     # Disabled/experimental casks from the old literal list (knockknock,
     # logitech-g-hub, logitech-options, libreoffice, little-snitch, lulu,
     # mixxx, mixed-in-key, moonlight, musicbrainz-picard, oversight,

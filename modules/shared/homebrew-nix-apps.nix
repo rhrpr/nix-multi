@@ -1,11 +1,60 @@
-# Single source of truth for Homebrew-managed apps across both nix-darwin
-# (macOS, native Homebrew) and the Linuxbrew bootstrap on NixOS.
+# Single source of truth for every app managed by Homebrew (macOS) or its
+# nixpkgs equivalent (NixOS) — the one place that decides, per app, which
+# package manager owns it on which OS. Nothing else in the repo should
+# hand-list a cross-platform GUI app or a brew-vs-nix choice; add/change an
+# entry here and every consumer below follows automatically.
 #
-# modules/darwin/apps.nix derives its homebrew.brews/casks/masApps from this
-# list. modules/nixos/homebrew.nix derives its generated Brewfile from it,
-# limited to formulae that both (a) actually run on Linux and (b) aren't
-# already provided by nixpkgs in modules/nixos/apps.nix — so an app is never
-# installed twice by two different package managers.
+# ---------------------------------------------------------------------------
+# Consumers — each reads this same `entries` list and filters it down to its
+# own slice. These are the actual predicates (kept in sync with the code —
+# if a predicate here stops matching its module, the comment is stale, not
+# the code):
+#
+#   modules/darwin/apps.nix (forDarwin)
+#     entries where: elem "darwin" platforms && (darwinNixPkg or null) == null
+#     -> homebrew.brews / homebrew.casks / homebrew.masApps (by `type`)
+#     i.e. "Homebrew can install this on darwin, and darwin isn't opted out
+#     via darwinNixPkg" — the common case, true for nearly every entry.
+#
+#   modules/nixos/homebrew.nix (linuxBrews)
+#     entries where: type == "brew" && elem "linux" platforms && linuxNixPkg == null
+#     -> generated /etc/Brewfile.linux, applied by `make brew-linux-setup`
+#     i.e. "a real brew formula exists for Linux, and nixpkgs isn't already
+#     providing it" — CLI tools only; casks/mas can never match (they never
+#     have "linux" in `platforms`, a hard Homebrew capability fact, not a
+#     judgment call).
+#
+#   modules/nixos/apps.nix (linuxGuiPkgs)
+#     entries where: (type == "cask" || type == "mas") && linuxNixPkg != null
+#     -> pkgs.<linuxNixPkg> (dotted names like "jetbrains.idea" resolve
+#        through nested attrsets), folded into environment.systemPackages
+#     i.e. "this is a GUI app that only Homebrew Cask/mas can install, and
+#     only on darwin — so linuxNixPkg is how it reaches Linux at all."
+#
+# A brew-type entry's Linux story works the other way round from a
+# cask/mas's: brews CAN run on Linux via Homebrew itself (platforms includes
+# "linux"), so linuxNixPkg on a brew entry just means "skip brew, nixpkgs
+# already has this" (see modules/nixos/apps.nix's manually-curated "Core
+# utilities" list for those). Casks and mas apps have no such option —
+# Homebrew Cask and the Mac App Store are darwin-only, full stop — so for
+# them linuxNixPkg isn't a dedup choice, it's the *only* route to Linux.
+#
+# Worked examples:
+#   - {name="cursor"; type="cask"; linuxNixPkg="code-cursor";}
+#     -> darwin: `brew install --cask cursor`. linux: pkgs.code-cursor,
+#        generated into modules/nixos/apps.nix's systemPackages.
+#   - {name="hermes-agent"; type="brew"; linuxNixPkg=null;
+#      darwinNixPkg="hermes-agent (NousResearch flake...)";}
+#     -> darwin: skipped by forDarwin (darwinNixPkg != null) — stays on the
+#        NousResearch flake input in modules/darwin/ai-tools.nix instead,
+#        because that HM module needs it version-matched to hermes-desktop.
+#        linux: no such coupling exists, so `brew install hermes-agent` wins
+#        (linuxNixPkg == null means "don't skip brew here").
+#   - {name="chatgpt"; type="cask"; linuxNixPkg=null;
+#      note="No official Linux desktop client.";}
+#     -> darwin only; `note` records that this was confirmed unavailable on
+#        Linux, not just never looked into.
+# ---------------------------------------------------------------------------
 #
 # Fields per entry:
 #   name         Homebrew formula/cask name (tap-prefixed where needed, e.g.
@@ -24,6 +73,15 @@
 #                instead of brew). When null and platforms excludes "linux",
 #                `note` explains why there's no Linux path (confirmed as
 #                unavailable from direct knowledge, not guessed).
+#   darwinNixPkg Symmetric counterpart to linuxNixPkg: non-null when macOS
+#                already gets this via nix instead of brew (e.g. the llm-
+#                agents.nix overlay in modules/darwin/ai-tools.nix), even
+#                though `platforms` includes "darwin" because Homebrew can
+#                install it there too. modules/darwin/apps.nix's forDarwin
+#                filter skips any entry with darwinNixPkg != null, the same
+#                way modules/nixos/homebrew.nix skips linuxNixPkg != null,
+#                so nothing is ever double-installed on either OS. null
+#                (the common case) means brew is the install path on darwin.
 #   id           Numeric App Store id, only for type == "mas"
 #   desc         Short human description
 #   note         Extra context (tap caveats, "verify before enabling", etc.)
@@ -354,6 +412,101 @@
     }
 
     # ---------------------------------------------------------------------
+    # AI CLI tools — real Homebrew formulae exist for all of these, so brew
+    # is the install path on BOTH darwin and linux (platforms = both),
+    # replacing modules/*/ai-tools.nix's llm-agents.nix overlay for them
+    # (whose Linux builds have been flaky — claude-code-router/
+    # oh-my-claudecode fail there outright). The one exception is
+    # hermes-agent: its darwinNixPkg below keeps macOS on nix because the HM
+    # module (home/macos/hermes.nix) needs it version-matched to
+    # hermes-desktop via the NousResearch flake input — a coupling that
+    # doesn't exist on NixOS, so Linux still gets it via brew.
+    # ---------------------------------------------------------------------
+    {
+      name = "gemini-cli";
+      type = "brew";
+      platforms = [
+        "darwin"
+        "linux"
+      ];
+      linuxNixPkg = null;
+      desc = "Interact with Google Gemini AI models from the command-line";
+    }
+    {
+      name = "opencode";
+      type = "brew";
+      platforms = [
+        "darwin"
+        "linux"
+      ];
+      linuxNixPkg = null;
+      desc = "AI coding agent, built for the terminal (opencode.ai)";
+    }
+    {
+      name = "herdr";
+      type = "brew";
+      platforms = [
+        "darwin"
+        "linux"
+      ];
+      linuxNixPkg = null;
+      desc = "Agent multiplexer that lives in your terminal";
+    }
+    {
+      name = "backlog-md";
+      type = "brew";
+      platforms = [
+        "darwin"
+        "linux"
+      ];
+      linuxNixPkg = null;
+      desc = "Markdown-native task manager & kanban visualizer for any git repo";
+    }
+    {
+      name = "beads";
+      type = "brew";
+      platforms = [
+        "darwin"
+        "linux"
+      ];
+      linuxNixPkg = null;
+      desc = "Memory upgrade for your coding agent (gastownhall/beads)";
+    }
+    {
+      name = "openspec";
+      type = "brew";
+      platforms = [
+        "darwin"
+        "linux"
+      ];
+      linuxNixPkg = null;
+      desc = "Spec-driven development (SDD) for AI coding assistants (openspec.dev)";
+    }
+    {
+      name = "claude-code-router";
+      type = "brew";
+      platforms = [
+        "darwin"
+        "linux"
+      ];
+      linuxNixPkg = null;
+      desc = "Routes Claude Code requests to different models and customizes requests";
+      note = "Disabled under llm-agents.nix on both OSes (npm dep fetch fails over HTTP/2) — brew gives both OSes a working install path.";
+    }
+    {
+      name = "hermes-agent";
+      type = "brew";
+      platforms = [
+        "darwin"
+        "linux"
+      ];
+      linuxNixPkg = null;
+      darwinNixPkg = "hermes-agent (NousResearch flake input, see modules/darwin/ai-tools.nix)";
+      desc = "Self-improving AI agent that creates skills from experience (NousResearch hermes-agent CLI)";
+      note = "On macOS the HM module (home/macos/hermes.nix) needs this version-matched to hermes-desktop via the NousResearch flake input, so darwin stays nix-managed; no such coupling exists on NixOS, so brew installs it there.";
+    }
+
+    # ---------------------------------------------------------------------
     # casks (GUI apps) — always darwin-only: Homebrew Cask has no Linux
     # support, full stop. linuxNixPkg below is how parity is actually reached
     # on Linux, via nixpkgs instead of brew.
@@ -560,8 +713,9 @@
       name = "intellij-idea-ce";
       type = "cask";
       platforms = [ "darwin" ];
-      linuxNixPkg = "jetbrains.idea-community";
+      linuxNixPkg = "jetbrains.idea";
       desc = "IntelliJ Idea Community Edition";
+      note = "jetbrains.idea-community was discontinued/removed from nixpkgs upstream (2025-07); its suggested free-edition successor idea-oss is itself unmaintained and marked insecure (NIXPKGS-2026-2269), so this points at jetbrains.idea (the actively-maintained unified distribution) instead — unfree but not insecure.";
     }
     {
       name = "jetbrains-air";
@@ -611,8 +765,9 @@
       name = "protonvpn";
       type = "cask";
       platforms = [ "darwin" ];
-      linuxNixPkg = "protonvpn-gui";
+      linuxNixPkg = "proton-vpn";
       desc = "VPN client";
+      note = "nixpkgs renamed protonvpn-gui to proton-vpn.";
     }
     {
       name = "postman";

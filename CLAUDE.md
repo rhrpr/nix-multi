@@ -61,7 +61,7 @@ make brew-linux-setup
 # Regenerate /etc/Brewfile.linux after editing the shared app list, then re-run above
 make setup-linux
 ```
-`modules/shared/homebrew-apps.nix` is the single source of truth for every
+`modules/shared/homebrew-nix-apps.nix` is the single source of truth for every
 Homebrew brew/cask/mas entry on both OSes. `modules/darwin/apps.nix` derives
 its `homebrew.brews`/`casks`/`masApps` from it; `modules/nixos/homebrew.nix`
 derives a generated `/etc/Brewfile.linux` from it, limited to formulae that
